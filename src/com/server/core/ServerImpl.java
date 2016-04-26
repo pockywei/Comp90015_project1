@@ -6,6 +6,7 @@ import java.net.Socket;
 import com.server.ServerSettings;
 import com.utils.log.CrashHandler;
 import com.utils.protocal.Command;
+import com.utils.protocal.connection.Connection;
 import com.utils.protocal.connection.Request;
 import com.utils.protocal.connection.Response;
 
@@ -42,14 +43,14 @@ public class ServerImpl extends ServerControl {
     }
 
     @Override
-    public Response response(Socket s) throws IOException {
-        Response c = super.response(s);
+    public Connection response(Socket s) throws IOException {
+        Response c = (Response) super.response(s);
         return c;
     }
 
     @Override
-    public Request request(Socket s, Command com) throws IOException {
-        Request c = super.request(s, com);
+    public Connection request(Socket s, Command com) throws IOException {
+        Request c = (Request) super.request(s, com);
         return c;
     }
 }

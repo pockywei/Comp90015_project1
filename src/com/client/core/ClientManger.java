@@ -6,7 +6,6 @@ import java.net.Socket;
 import com.base.BaseManager;
 import com.utils.protocal.Command;
 import com.utils.protocal.connection.Connection;
-import com.utils.protocal.connection.Request;
 import com.utils.protocal.connection.inter.RequestListener;
 
 public class ClientManger extends BaseManager implements RequestListener {
@@ -31,7 +30,7 @@ public class ClientManger extends BaseManager implements RequestListener {
     }
 
     @Override
-    public Request request(Socket s, Command com) throws IOException {
+    public Connection request(Socket s, Command com) throws IOException {
         return null;
     }
 

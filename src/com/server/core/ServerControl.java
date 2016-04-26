@@ -66,7 +66,7 @@ public abstract class ServerControl extends BaseManager
     }
 
     @Override
-    public Response response(Socket s) throws IOException {
+    public Connection response(Socket s) throws IOException {
         log.debug("incomming connection: " + UtilHelper.getSocketAddr(s));
         Response response = null;
         synchronized (responses) {
@@ -77,7 +77,7 @@ public abstract class ServerControl extends BaseManager
     }
 
     @Override
-    public Request request(Socket s, Command com) throws IOException {
+    public Connection request(Socket s, Command com) throws IOException {
         log.debug("outgoing connection: " + UtilHelper.getSocketAddr(s));
         Request c = null;
         synchronized (requests) {
