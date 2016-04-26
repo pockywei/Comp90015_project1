@@ -23,19 +23,19 @@ public enum Command {
 
     LOCK_REQUEST,
 
-    INVALID_MESSAGE,
+    INVALID_MESSAGE(Protocal.INVALIED_ERROR),
 
-    AUTHENTICATION_FAIL,
+    AUTHENTICATION_FAIL(Protocal.AUTH_FAIL),
 
-    LOGIN_SUCCESS,
+    LOGIN_SUCCESS(Protocal.LOGIN_SUCC),
 
-    LOGIN_FAILED,
+    LOGIN_FAILED(Protocal.LOGIN_FAIL),
 
     REDIRECT,
 
-    REGISTER_FAILED,
+    REGISTER_FAILED(Protocal.REGISTER_FAIL),
 
-    REGISTER_SUCCESS,
+    REGISTER_SUCCESS(Protocal.REGISTER_SUCC),
 
     LOCK_DENIED,
 
@@ -73,6 +73,19 @@ public enum Command {
         map.put("LOCK_REQUEST", LOCK_REQUEST);
         map.put("LOCK_DENIED", LOCK_DENIED);
         map.put("LOCK_ALLOWED", LOCK_ALLOWED);
+    }
+
+    private String response = "";
+
+    Command() {
+    }
+
+    Command(String response) {
+        this.response = response;
+    }
+
+    public String getResponse() {
+        return response;
     }
 
     public static boolean isClientRequest(Command com) {

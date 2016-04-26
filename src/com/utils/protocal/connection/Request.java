@@ -46,10 +46,6 @@ public abstract class Request extends Connection {
     }
 
     protected abstract Message getSendMsg();
-    
-    public boolean nextMessage(Command com) {
-        return nextMessage(com, null);
-    }
 
     /**
      * For next request.

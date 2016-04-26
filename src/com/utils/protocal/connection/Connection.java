@@ -31,7 +31,7 @@ public abstract class Connection extends BaseRunnable {
     }
 
     /**
-     * The read stream will be blocked until the socket time out.
+     * The read stream will be blocked until the socket time out or close.
      * 
      */
     protected String read() throws Exception {

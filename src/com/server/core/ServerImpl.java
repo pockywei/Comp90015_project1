@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.Socket;
 
 import com.server.ServerSettings;
+import com.server.beans.ServerInfo;
 import com.utils.log.CrashHandler;
 import com.utils.protocal.Command;
 import com.utils.protocal.connection.Connection;
@@ -52,5 +53,12 @@ public class ServerImpl extends ServerControl {
     public Connection request(Socket s, Command com) throws IOException {
         Request c = (Request) super.request(s, com);
         return c;
+    }
+
+    public ServerInfo redirect() {
+        // Find which server should be connected to.
+        // TODO
+
+        return null;
     }
 }
