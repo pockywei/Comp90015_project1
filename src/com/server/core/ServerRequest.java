@@ -29,7 +29,7 @@ public class ServerRequest extends Request {
         switch (msg.getCommand()) {
             case INVALID_MESSAGE:
             case AUTHENTICATION_FAIL:
-                String info = msg.getInfo();
+                String info = msg.getInfo(); 
                 log.info(info);
                 return true;
             case LOCK_DENIED:

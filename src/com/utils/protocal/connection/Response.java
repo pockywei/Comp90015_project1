@@ -51,6 +51,8 @@ public class Response extends Connection {
         // process all case and write back a respnose.
         Message msg = new ParserJson(json).getMsg();
         String respnose = "";
+        // if request data is not a json object, then reply as an invalid
+        // message. Close connection.
         if (msg == null) {
             respnose = responseMsg(Command.INVALID_MESSAGE,
                     Command.INVALID_MESSAGE.getResponse());
@@ -61,6 +63,7 @@ public class Response extends Connection {
 
         switch (msg.getCommand()) {
             case LOCK_REQUEST:
+                // TODO
 
             case AUTHENTICATE:
                 String secret = msg.getSecret();
@@ -73,9 +76,16 @@ public class Response extends Connection {
                             "respnose message parsing exception. " + respnose);
                     return true;
                 }
+                // if succeed, reply nothing and keep the connection alive.
                 return false;
             case SERVER_ANNOUNCE:
+                // the secret of the server.
+                String id = msg.getId();
+                
+                
 
+                // if succeed, reply nothing and keep the connection alive.
+                return false;
             case ACTIVITY_BROADCAST:
 
             case REGISTER:

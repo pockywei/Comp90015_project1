@@ -13,9 +13,9 @@ public class ParserJson {
     public ParserJson(String json) {
         this.json = json;
     }
-    
+
     public Message getMsg() throws Exception {
-        Message msg = new Message();
+        Message msg = null;
         JsonObject root = new JsonParser().parse(json).getAsJsonObject();
         if (!root.isJsonObject() || !root.has(Protocal.COMMAND)) {
             throw new Exception();
@@ -26,7 +26,7 @@ public class ParserJson {
         if (com == null) {
             throw new Exception();
         }
-        msg.setCommand(com);
+        msg = new Message(com);
         switch (com) {
             case LOGIN_FAILED:
             case LOGIN_SUCCESS:
