@@ -1,23 +1,23 @@
-package com.client.core;
+package com.server.core;
 
 import java.io.IOException;
 import java.net.Socket;
 
 import com.client.UserSettings;
-import com.server.core.ServerRequest;
+import com.server.ServerSettings;
 import com.utils.UtilHelper;
 import com.utils.protocal.Command;
 import com.utils.protocal.Message;
 import com.utils.protocal.connection.Request;
 import com.utils.protocal.json.ParserJson;
 
-public class ClientRequest extends Request {
+public class ServerRequest extends Request {
 
-    public ClientRequest(Socket socket, Command com) throws IOException {
+    public ServerRequest(Socket socket, Command com) throws IOException {
         super(socket, com);
     }
 
-    public ClientRequest(Socket socket, Command com, String activity)
+    public ServerRequest(Socket socket, Command com, String activity)
             throws IOException {
         super(socket, com, activity);
     }
@@ -25,30 +25,25 @@ public class ClientRequest extends Request {
     @Override
     protected boolean process(String json) throws Exception {
         Message msg = new ParserJson(json).getMsg();
+        log.debug("response json: " + json + " by " + msg.getCommand());
         switch (msg.getCommand()) {
             case INVALID_MESSAGE:
-            case LOGIN_FAILED:
-            case REGISTER_FAILED:
+            case AUTHENTICATION_FAIL:
                 String info = msg.getInfo();
-                // Close connection when received these message.
-                // Show the info onto GUI
-                // TODO
+                log.info(info);
                 return true;
-            case REGISTER_SUCCESS:
-                // login...
-                // TODO
-                return true;
-            case LOGIN_SUCCESS:
-                info = msg.getInfo();
-                // Show the info onto GUI
-                // TODO
+            case LOCK_DENIED:
+                // Remove the username from local storage
+
                 return false;
-            case REDIRECT:
-                // Re-login to the given server.
-                ClientManger.getInstance().request(
-                        new Socket(msg.getHostnmae(), msg.getPort()),
-                        Command.LOGIN);
-                return true;
+            case LOCK_ALLOWED:
+                // If all servers allow, then close connection
+                // sending register success to client
+                // TODO
+                // if () {
+                // return true;
+                // }
+                return false;
             default:
                 break;
         }
@@ -58,20 +53,30 @@ public class ClientRequest extends Request {
     @Override
     protected Message getSendMsg() {
         switch (com) {
-            case REGISTER:
-            case LOGIN:
+            case LOCK_REQUEST:
                 return Message.getUserMsg(UserSettings.getUsername(),
                         UserSettings.getSecret(), com);
-            case LOGOUT:
-                return new Message(com);
-            case ACTIVITY_MESSAGE:
-                return Message.getActivityMsg(UserSettings.getUsername(),
-                        UserSettings.getSecret(),
+            case AUTHENTICATE:
+                return Message.getAuthenticateMsg(
+                        ServerSettings.getRemoteSecret(), com);
+            case SERVER_ANNOUNCE:
+                return Message.getAnnounceMsg(ServerSettings.getLocalSecret(),
+                        ServerSettings.getLocalLoad(),
+                        ServerSettings.getLocalHostname(),
+                        ServerSettings.getLocalPort(), com);
+            case ACTIVITY_BROADCAST:
+                return Message.getBroadcastMsg(
                         UtilHelper.isEmptyStr(activity) ? "" : activity, com);
             default:
                 break;
         }
         return null;
+    }
+
+    @Override
+    public void close() {
+        super.close();
+        ServerImpl.getInstance().removeConnection(this);
     }
 
     @Override
@@ -81,7 +86,7 @@ public class ClientRequest extends Request {
         }
 
         try {
-            next(new ClientRequest(getSocket(), com, activity));
+            next(new ServerRequest(getSocket(), com, activity));
         }
         catch (IOException e) {
             log.error("Send next message failed as the exception: " + e);

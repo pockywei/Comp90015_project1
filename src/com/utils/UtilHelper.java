@@ -15,6 +15,11 @@ public class UtilHelper {
         return new BigInteger(130, random).toString(32);
     }
 
+    /**
+     * 
+     * @param s
+     * @return true: empty; false: not
+     */
     public static boolean isEmptyStr(String s) {
         if (s != null && s.length() != 0) {
             return false;

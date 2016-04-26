@@ -81,7 +81,7 @@ public abstract class ServerControl extends BaseManager
         log.debug("outgoing connection: " + UtilHelper.getSocketAddr(s));
         Request c = null;
         synchronized (requests) {
-            c = new Request(s, com);
+            c = new ServerRequest(s, com);
             requests.add(c);
         }
         return c;

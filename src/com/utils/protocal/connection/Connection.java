@@ -7,7 +7,6 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 import com.base.BaseRunnable;
-import com.server.core.ServerImpl;
 import com.utils.UtilHelper;
 import com.utils.protocal.Command;
 
@@ -35,23 +34,8 @@ public abstract class Connection extends BaseRunnable {
      * The read stream will be blocked until the socket time out.
      * 
      */
-    protected void read() {
-        String message = null;
-        boolean close = false;
-        try {
-            while (!close && ((message = reader.readLine()) != null)) {
-                close = process(message);
-            }
-            log.debug("connection closed to " + getSocketAddr());
-        }
-        catch (Exception e) {
-            log.error("connection " + getSocketAddr()
-                    + " closed with exception: " + e);
-        }
-        finally {
-            ServerImpl.getInstance().removeConnection(this);
-            close();
-        }
+    protected String read() throws Exception {
+        return reader.readLine();
     }
 
     /**
@@ -62,6 +46,11 @@ public abstract class Connection extends BaseRunnable {
      */
     protected abstract boolean process(String json) throws Exception;
 
+    /**
+     * Write a message into the connection.
+     * 
+     * @param msg
+     */
     protected void write(String msg) {
         if (outwriter != null) {
             outwriter.println(msg);
@@ -85,13 +74,16 @@ public abstract class Connection extends BaseRunnable {
             log.error("received exception closing the connection "
                     + getSocketAddr() + ": " + e);
         }
+        finally {
+            stop();
+        }
     }
 
-    public boolean isConnected() {
+    public boolean isClosed() {
         if (socket == null) {
             return false;
         }
-        return socket.isConnected();
+        return socket.isClosed();
     }
 
     public String getSocketAddr() {
@@ -103,5 +95,9 @@ public abstract class Connection extends BaseRunnable {
 
     public Command getCommand() {
         return com;
+    }
+
+    protected Socket getSocket() {
+        return socket;
     }
 }
