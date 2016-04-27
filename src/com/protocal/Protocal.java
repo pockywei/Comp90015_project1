@@ -1,4 +1,4 @@
-package com.utils.protocal;
+package com.protocal;
 
 public class Protocal {
 

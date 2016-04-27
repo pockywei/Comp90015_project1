@@ -1,4 +1,4 @@
-package com.utils.protocal;
+package com.protocal;
 
 import com.server.beans.ServerInfo;
 import com.server.beans.UserInfo;

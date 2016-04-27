@@ -1,11 +1,11 @@
-package com.utils.protocal.connection;
+package com.protocal.connection;
 
 import java.io.IOException;
 import java.net.Socket;
 
-import com.utils.protocal.Command;
-import com.utils.protocal.Message;
-import com.utils.protocal.json.JsonBuilder;
+import com.protocal.Command;
+import com.protocal.Message;
+import com.protocal.json.JsonBuilder;
 
 public abstract class Request extends Connection {
 

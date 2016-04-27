@@ -5,9 +5,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 import com.base.BaseRunnable;
+import com.protocal.connection.inter.SocketListener;
 import com.server.ServerSettings;
 import com.utils.log.ListeningException;
-import com.utils.protocal.connection.inter.SocketListener;
 
 public class ServerListener extends BaseRunnable {
 

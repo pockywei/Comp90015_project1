@@ -1,10 +1,10 @@
-package com.utils.protocal.json;
+package com.protocal.json;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.utils.protocal.Command;
-import com.utils.protocal.Message;
-import com.utils.protocal.Protocal;
+import com.protocal.Command;
+import com.protocal.Message;
+import com.protocal.Protocal;
 
 public class ParserJson {
 

@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.net.Socket;
 
 import com.client.UserSettings;
+import com.protocal.Command;
+import com.protocal.Message;
+import com.protocal.connection.Request;
+import com.protocal.json.ParserJson;
 import com.server.core.ServerRequest;
 import com.utils.UtilHelper;
-import com.utils.protocal.Command;
-import com.utils.protocal.Message;
-import com.utils.protocal.connection.Request;
-import com.utils.protocal.json.ParserJson;
 
 public class ClientRequest extends Request {
 

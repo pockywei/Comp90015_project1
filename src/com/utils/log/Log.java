@@ -27,33 +27,49 @@ public final class Log {
     }
 
     public void info(String msg) {
-        output(msg, LogOption.I.getName());
+        output(msg, LogOption.I);
     }
 
     public void error(String msg) {
-        output(msg, LogOption.E.getName());
+        output(msg, LogOption.E);
     }
 
     public void warn(String msg) {
-        output(msg, LogOption.W.getName());
+        output(msg, LogOption.W);
     }
 
     public void fatal(String msg) {
-        output(msg, LogOption.F.getName());
+        output(msg, LogOption.F);
     }
 
     public void debug(String msg) {
-        output(msg, LogOption.D.getName());
+        output(msg, LogOption.D);
     }
 
-    private synchronized void output(String msg, String op) {
+    private synchronized void output(String msg, LogOption op) {
         String output = format(msg, op);
         switch (type) {
             case SYSTEM_OUT:
                 System.out.print(output);
                 break;
             case LOG_OUT:
-                log.info(output);
+                switch (op) {
+                    case I:
+                        log.info(output);
+                        break;
+                    case E:
+                        log.error(output);
+                        break;
+                    case W:
+                        log.warn(output);
+                        break;
+                    case F:
+                        log.fatal(output);
+                        break;
+                    case D:
+                        log.debug(output);
+                        break;
+                }
                 break;
             case FILE_OUT:
                 FileUtils.getInstance().write(output, FileUtils.OUTPUT_PATH);
@@ -64,7 +80,7 @@ public final class Log {
         }
     }
 
-    private String format(String msg, String op) {
+    private String format(String msg, LogOption op) {
         return String.format(OUTPUT_FORMAT, formatter.format(new Date()),
                 Thread.currentThread().getName(), op, msg);
     }

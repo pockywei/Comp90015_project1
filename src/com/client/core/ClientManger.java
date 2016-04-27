@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.net.Socket;
 
 import com.base.BaseManager;
-import com.utils.protocal.Command;
-import com.utils.protocal.connection.Connection;
-import com.utils.protocal.connection.inter.RequestListener;
+import com.protocal.Command;
+import com.protocal.connection.Connection;
+import com.protocal.connection.inter.RequestListener;
 
 public class ClientManger extends BaseManager implements RequestListener {
 

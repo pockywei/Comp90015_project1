@@ -1,4 +1,4 @@
-package com.utils.protocal.connection;
+package com.protocal.connection;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,8 +7,8 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 import com.base.BaseRunnable;
+import com.protocal.Command;
 import com.utils.UtilHelper;
-import com.utils.protocal.Command;
 
 public abstract class Connection extends BaseRunnable {
 

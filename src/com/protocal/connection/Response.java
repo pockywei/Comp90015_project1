@@ -1,17 +1,16 @@
-package com.utils.protocal.connection;
+package com.protocal.connection;
 
 import java.io.IOException;
 import java.net.Socket;
 
-import com.client.core.ClientManger;
+import com.protocal.Command;
+import com.protocal.Message;
+import com.protocal.json.JsonBuilder;
+import com.protocal.json.ParserJson;
 import com.server.ServerSettings;
 import com.server.beans.ServerInfo;
 import com.server.beans.UserInfo;
 import com.server.core.ServerImpl;
-import com.utils.protocal.Command;
-import com.utils.protocal.Message;
-import com.utils.protocal.json.JsonBuilder;
-import com.utils.protocal.json.ParserJson;
 
 public class Response extends Connection {
 
