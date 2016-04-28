@@ -1,4 +1,4 @@
-package com.utils.log;
+package com.utils.log.exception;
 
 public class ListeningException extends Exception {
 

@@ -19,8 +19,9 @@ public class Response extends Connection {
     }
 
     @Override
-    public void runTask() throws Exception {
+    public boolean runTask() throws Exception {
         listening();
+        return false;
     }
 
     /**

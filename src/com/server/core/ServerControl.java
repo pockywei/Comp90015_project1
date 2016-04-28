@@ -44,7 +44,7 @@ public abstract class ServerControl extends BaseManager
     public abstract void initServer();
 
     @Override
-    public void runTask() throws Exception {
+    public boolean runTask() throws Exception {
         log.info("using activity interval of "
                 + ServerSettings.getActivityInterval() + " milliseconds");
         while (!stop) {
@@ -63,6 +63,7 @@ public abstract class ServerControl extends BaseManager
         }
         log.info("closing " + responses.size() + " response connections");
         clear();
+        return false;
     }
 
     @Override

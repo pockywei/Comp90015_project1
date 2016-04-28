@@ -13,8 +13,6 @@ public abstract class Request extends Connection {
 
     public Request(Socket socket, Command com) throws IOException {
         super(socket, com);
-        // As request would be continual to send activity message or announce.
-        isLoop = true;
     }
 
     public Request(Socket socket, Command com, String activity)
@@ -24,7 +22,7 @@ public abstract class Request extends Connection {
     }
 
     @Override
-    public void runTask() throws Exception {
+    public boolean runTask() throws Exception {
         Message msg = getSendMsg();
         if (msg == null) {
             log.error("sending message error by command " + com);
@@ -43,6 +41,7 @@ public abstract class Request extends Connection {
                     "write or read or parse exception, closing request. " + e);
             close();
         }
+        return true;
     }
 
     protected abstract Message getSendMsg();

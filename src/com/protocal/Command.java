@@ -84,6 +84,10 @@ public enum Command {
         this.response = response;
     }
 
+    public void setResponseInfo(String responseInfo) {
+        this.response = responseInfo;
+    }
+
     public String getResponse() {
         return response;
     }

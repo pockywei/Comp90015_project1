@@ -86,7 +86,7 @@ public class ServerRequest extends Request {
         }
 
         try {
-            next(new ServerRequest(getSocket(), com, activity));
+            post(new ServerRequest(getSocket(), com, activity));
         }
         catch (IOException e) {
             log.error("Send next message failed as the exception: " + e);

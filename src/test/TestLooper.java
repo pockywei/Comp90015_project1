@@ -7,18 +7,18 @@ public class TestLooper extends BaseRunnable {
     private String message;
 
     public TestLooper(String message) {
-        isLoop = true;
         this.message = message;
     }
 
     @Override
-    public void runTask() throws Exception {
+    public boolean runTask() throws Exception {
         System.out.println(
                 Thread.currentThread().getName() + " running once. " + message);
+        return true;
     }
 
     public void sendMsgAgain(String msg) {
-        next(new TestLooper(msg));
+        post(new TestLooper(msg));
     }
 
 }

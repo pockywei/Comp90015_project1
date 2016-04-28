@@ -7,25 +7,17 @@ import com.utils.log.Log;
 public abstract class BaseRunnable implements Runnable {
     protected static final Log log = Log.getInstance();
     protected boolean stop = true;
-    /**
-     * true: the thread will keep doing runnable by the next() method until
-     * stop.
-     * 
-     * false: only run once.
-     */
-    protected boolean isLoop = false;
     private LinkedBlockingQueue<BaseRunnable> queue = new LinkedBlockingQueue<>();
 
     @Override
     public void run() {
         stop = false;
         try {
-            // Start doing first task.
-            runTask();
             // e.g. if connection should not be closed, each connection can set
             // (isLoop = true) to keep the connection thread alive.
+            boolean isLoop = true;
             while (isLoop && !stop) {
-                queue.take().runTask();
+                isLoop = queue.take().runTask();
             }
         }
         catch (Exception e) {
@@ -36,7 +28,15 @@ public abstract class BaseRunnable implements Runnable {
         }
     }
 
-    public abstract void runTask() throws Exception;
+    /**
+     * true: the thread will keep doing runnable by the post() method until
+     * stop.
+     * 
+     * false: stop doing runnable.
+     * 
+     * default value should return false;
+     */
+    public abstract boolean runTask() throws Exception;
 
     public boolean isRunning() {
         return !stop;
@@ -48,11 +48,12 @@ public abstract class BaseRunnable implements Runnable {
     }
 
     public void start() {
+        post(this);
         // Starting a thread or adding this runnable into a thread-pool.
         new Thread(this).start();
     }
 
-    protected void next(BaseRunnable runnable) {
+    protected void post(BaseRunnable runnable) {
         queue.offer(runnable);
     }
 }

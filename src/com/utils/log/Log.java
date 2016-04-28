@@ -27,23 +27,23 @@ public final class Log {
     }
 
     public void info(String msg) {
-        output(msg, LogOption.I);
+        output(msg, LogOption.INFO);
     }
 
     public void error(String msg) {
-        output(msg, LogOption.E);
+        output(msg, LogOption.ERROR);
     }
 
     public void warn(String msg) {
-        output(msg, LogOption.W);
+        output(msg, LogOption.WARN);
     }
 
     public void fatal(String msg) {
-        output(msg, LogOption.F);
+        output(msg, LogOption.FATAL);
     }
 
     public void debug(String msg) {
-        output(msg, LogOption.D);
+        output(msg, LogOption.DEBUG);
     }
 
     private synchronized void output(String msg, LogOption op) {
@@ -54,19 +54,19 @@ public final class Log {
                 break;
             case LOG_OUT:
                 switch (op) {
-                    case I:
+                    case INFO:
                         log.info(output);
                         break;
-                    case E:
+                    case ERROR:
                         log.error(output);
                         break;
-                    case W:
+                    case WARN:
                         log.warn(output);
                         break;
-                    case F:
+                    case FATAL:
                         log.fatal(output);
                         break;
-                    case D:
+                    case DEBUG:
                         log.debug(output);
                         break;
                 }
@@ -82,7 +82,7 @@ public final class Log {
 
     private String format(String msg, LogOption op) {
         return String.format(OUTPUT_FORMAT, formatter.format(new Date()),
-                Thread.currentThread().getName(), op, msg);
+                Thread.currentThread().getName(), op.name(), msg);
     }
 
 }

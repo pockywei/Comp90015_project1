@@ -7,7 +7,7 @@ import java.net.Socket;
 import com.base.BaseRunnable;
 import com.protocal.connection.inter.SocketListener;
 import com.server.ServerSettings;
-import com.utils.log.ListeningException;
+import com.utils.log.exception.ListeningException;
 
 public class ServerListener extends BaseRunnable {
 
@@ -23,7 +23,7 @@ public class ServerListener extends BaseRunnable {
     }
 
     @Override
-    public void runTask() throws Exception {
+    public boolean runTask() throws Exception {
         log.info("listening for new connections on " + localPort);
         try {
             while (!stop) {
@@ -41,6 +41,7 @@ public class ServerListener extends BaseRunnable {
         finally {
             stop();
         }
+        return false;
     }
 
     @Override

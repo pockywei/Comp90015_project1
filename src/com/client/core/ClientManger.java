@@ -25,8 +25,9 @@ public class ClientManger extends BaseManager implements RequestListener {
     }
 
     @Override
-    public void runTask() throws Exception {
-
+    public boolean runTask() throws Exception {
+        
+        return false;
     }
 
     @Override
