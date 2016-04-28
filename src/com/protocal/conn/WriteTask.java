@@ -3,7 +3,7 @@ package com.protocal.conn;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-import com.protocal.connection.inter.ConnectionListener;
+import com.protocal.conn.inter.ConnectionListener;
 import com.utils.UtilHelper;
 
 public class WriteTask extends AbstractSocketTask {

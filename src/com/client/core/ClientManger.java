@@ -1,14 +1,8 @@
 package com.client.core;
 
-import java.io.IOException;
-import java.net.Socket;
-
 import com.base.BaseManager;
-import com.protocal.Command;
-import com.protocal.connection.Connection;
-import com.protocal.connection.inter.RequestListener;
 
-public class ClientManger extends BaseManager implements RequestListener {
+public class ClientManger extends BaseManager {
 
     private static ClientManger instance = null;
 
@@ -28,11 +22,6 @@ public class ClientManger extends BaseManager implements RequestListener {
     public boolean runTask() throws Exception {
         
         return false;
-    }
-
-    @Override
-    public Connection request(Socket s, Command com) throws IOException {
-        return null;
     }
 
 }

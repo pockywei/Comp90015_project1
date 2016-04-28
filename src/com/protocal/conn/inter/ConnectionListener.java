@@ -1,6 +1,4 @@
-package com.protocal.connection.inter;
-
-import com.protocal.conn.inter.ConnectionType;
+package com.protocal.conn.inter;
 
 public interface ConnectionListener {
     

@@ -1,28 +1,15 @@
 package com.client.core;
 
-import java.io.IOException;
-import java.net.Socket;
-
 import com.client.UserSettings;
 import com.protocal.Command;
 import com.protocal.Message;
-import com.protocal.connection.Request;
 import com.protocal.json.ParserJson;
-import com.server.core.ServerRequest;
 import com.utils.UtilHelper;
 
-public class ClientRequest extends Request {
+public class ClientRequest  {
 
-    public ClientRequest(Socket socket, Command com) throws IOException {
-        super(socket, com);
-    }
-
-    public ClientRequest(Socket socket, Command com, String activity)
-            throws IOException {
-        super(socket, com, activity);
-    }
-
-    @Override
+    private Command com;
+    
     protected boolean process(String json) throws Exception {
         Message msg = new ParserJson(json).getMsg();
         switch (msg.getCommand()) {
@@ -45,9 +32,9 @@ public class ClientRequest extends Request {
                 return false;
             case REDIRECT:
                 // Re-login to the given server.
-                ClientManger.getInstance().request(
-                        new Socket(msg.getHostnmae(), msg.getPort()),
-                        Command.LOGIN);
+//                ClientManger.getInstance().request(
+//                        new Socket(msg.getHostnmae(), msg.getPort()),
+//                        Command.LOGIN);
                 return true;
             default:
                 break;
@@ -55,7 +42,6 @@ public class ClientRequest extends Request {
         return false;
     }
 
-    @Override
     protected Message getSendMsg() {
         switch (com) {
             case REGISTER:
@@ -67,26 +53,12 @@ public class ClientRequest extends Request {
             case ACTIVITY_MESSAGE:
                 return Message.getActivityMsg(UserSettings.getUsername(),
                         UserSettings.getSecret(),
-                        UtilHelper.isEmptyStr(activity) ? "" : activity, com);
+                        UtilHelper.isEmptyStr("") ? "" : "", com);
             default:
                 break;
         }
         return null;
     }
 
-    @Override
-    public boolean nextMessage(Command com, String activity) {
-        if (isClosed()) {
-            return false;
-        }
 
-        try {
-            post(new ClientRequest(getSocket(), com, activity));
-        }
-        catch (IOException e) {
-            log.error("Send next message failed as the exception: " + e);
-            return false;
-        }
-        return true;
-    }
 }

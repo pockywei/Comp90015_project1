@@ -3,9 +3,9 @@ package com.protocal.conn;
 import java.io.IOException;
 import java.net.Socket;
 
+import com.protocal.conn.inter.ConnectionListener;
 import com.protocal.conn.inter.ConnectionType;
 import com.protocal.conn.inter.Response;
-import com.protocal.connection.inter.ConnectionListener;
 import com.utils.UtilHelper;
 import com.utils.log.Log;
 
@@ -65,6 +65,7 @@ public class Connection implements ConnectionListener {
         if (this.type == null) {
             this.type = type;
             // add the connection to the ServerImpl by different type.
+            // TODO
 
         }
     }

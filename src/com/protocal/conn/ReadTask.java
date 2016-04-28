@@ -4,8 +4,8 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
+import com.protocal.conn.inter.ConnectionListener;
 import com.protocal.conn.inter.Response;
-import com.protocal.connection.inter.ConnectionListener;
 
 public class ReadTask extends AbstractSocketTask {
 
@@ -69,5 +69,6 @@ public class ReadTask extends AbstractSocketTask {
         if (reader != null) {
             reader.close();
         }
+        stop();
     }
 }

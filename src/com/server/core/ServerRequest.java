@@ -1,28 +1,17 @@
 package com.server.core;
 
-import java.io.IOException;
-import java.net.Socket;
-
 import com.client.UserSettings;
 import com.protocal.Command;
 import com.protocal.Message;
-import com.protocal.connection.Request;
 import com.protocal.json.ParserJson;
 import com.server.ServerSettings;
 import com.utils.UtilHelper;
+import com.utils.log.Log;
 
-public class ServerRequest extends Request {
-
-    public ServerRequest(Socket socket, Command com) throws IOException {
-        super(socket, com);
-    }
-
-    public ServerRequest(Socket socket, Command com, String activity)
-            throws IOException {
-        super(socket, com, activity);
-    }
-
-    @Override
+public class ServerRequest {
+    private static final Log log = Log.getInstance();
+    private Command com;
+        
     protected boolean process(String json) throws Exception {
         Message msg = new ParserJson(json).getMsg();
         log.debug("response json: " + json + " by " + msg.getCommand());
@@ -50,7 +39,6 @@ public class ServerRequest extends Request {
         return false;
     }
 
-    @Override
     protected Message getSendMsg() {
         switch (com) {
             case LOCK_REQUEST:
@@ -66,32 +54,11 @@ public class ServerRequest extends Request {
                         ServerSettings.getLocalPort(), com);
             case ACTIVITY_BROADCAST:
                 return Message.getBroadcastMsg(
-                        UtilHelper.isEmptyStr(activity) ? "" : activity, com);
+                        UtilHelper.isEmptyStr("") ? "" : "", com);
             default:
                 break;
         }
         return null;
     }
 
-    @Override
-    public void close() {
-        super.close();
-        ServerImpl.getInstance().removeConnection(this);
-    }
-
-    @Override
-    public boolean nextMessage(Command com, String activity) {
-        if (isClosed()) {
-            return false;
-        }
-
-        try {
-            post(new ServerRequest(getSocket(), com, activity));
-        }
-        catch (IOException e) {
-            log.error("Send next message failed as the exception: " + e);
-            return false;
-        }
-        return true;
-    }
 }

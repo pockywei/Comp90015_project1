@@ -1,7 +1,5 @@
 package com.protocal.conn.inter;
 
-import com.protocal.connection.inter.ConnectionListener;
-
 public interface Response {
 
     /**

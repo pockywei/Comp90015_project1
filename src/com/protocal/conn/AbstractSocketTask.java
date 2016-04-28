@@ -5,7 +5,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 import com.base.BaseRunnable;
-import com.protocal.connection.inter.ConnectionListener;
+import com.protocal.conn.inter.ConnectionListener;
 import com.utils.UtilHelper;
 
 public abstract class AbstractSocketTask extends BaseRunnable {

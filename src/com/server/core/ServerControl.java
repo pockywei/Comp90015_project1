@@ -6,11 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.base.BaseManager;
-import com.protocal.Command;
-import com.protocal.connection.Connection;
-import com.protocal.connection.Request;
-import com.protocal.connection.Response;
-import com.protocal.connection.inter.SocketListener;
+import com.protocal.conn.Connection;
+import com.protocal.conn.TestResponse;
+import com.protocal.conn.inter.SocketListener;
 import com.server.ServerSettings;
 import com.utils.UtilHelper;
 import com.utils.log.CrashHandler;
@@ -19,14 +17,14 @@ public abstract class ServerControl extends BaseManager
         implements SocketListener {
 
     /* Outgoing connection */
-    private List<Request> requests = null;
+//    private List<Request> requests = null;
     /* Incoming connection */
-    private List<Response> responses = null;
+    private List<TestResponse> responses = null;
     private ServerListener listener = null;
 
     public ServerControl() {
         super();
-        requests = new ArrayList<>();
+//        requests = new ArrayList<>();
         responses = new ArrayList<>();
         try {
             listener = new ServerListener(this);
@@ -67,38 +65,36 @@ public abstract class ServerControl extends BaseManager
     }
 
     @Override
-    public Connection response(Socket s) throws IOException {
+    public void distributSocket(Socket s) throws IOException {
         log.debug("incomming connection: " + UtilHelper.getSocketAddr(s));
-        Response response = null;
-        synchronized (responses) {
-            response = new Response(s);
-            responses.add(response);
-        }
-        return response;
+//        Response response = null;
+//        synchronized (responses) {
+//            response = new Response(s);
+//            responses.add(response);
+//        }
     }
 
-    @Override
-    public Connection request(Socket s, Command com) throws IOException {
-        log.debug("outgoing connection: " + UtilHelper.getSocketAddr(s));
-        Request c = null;
-        synchronized (requests) {
-            c = new ServerRequest(s, com);
-            requests.add(c);
-        }
-        return c;
-    }
+//    public Connection request(Socket s, Command com) throws IOException {
+//        log.debug("outgoing connection: " + UtilHelper.getSocketAddr(s));
+//        Request c = null;
+//        synchronized (requests) {
+//            c = new ServerRequest(s, com);
+//            requests.add(c);
+//        }
+//        return c;
+//    }
 
     public void removeConnection(Connection c) {
-        if (c instanceof Request) {
-            synchronized (requests) {
-                requests.remove(c);
-            }
-        }
-        else {
-            synchronized (responses) {
-                responses.remove(c);
-            }
-        }
+//        if (c instanceof Request) {
+//            synchronized (requests) {
+//                requests.remove(c);
+//            }
+//        }
+//        else {
+//            synchronized (responses) {
+//                responses.remove(c);
+//            }
+//        }
     }
 
     @Override
@@ -108,19 +104,19 @@ public abstract class ServerControl extends BaseManager
             listener.stop();
         }
         DataTable.getInstance().clear();
-        synchronized (requests) {
-            log.info("closing " + requests.size() + " request connections");
-            for (Connection c : requests) {
-                c.close();
-            }
-            requests.clear();
-        }
-        synchronized (responses) {
-            log.info("closing " + responses.size() + " response connections");
-            for (Connection c : responses) {
-                c.close();
-            }
-            responses.clear();
-        }
+//        synchronized (requests) {
+//            log.info("closing " + requests.size() + " request connections");
+//            for (Connection c : requests) {
+//                c.close();
+//            }
+//            requests.clear();
+//        }
+//        synchronized (responses) {
+//            log.info("closing " + responses.size() + " response connections");
+//            for (Connection c : responses) {
+//                c.close();
+//            }
+//            responses.clear();
+//        }
     }
 }

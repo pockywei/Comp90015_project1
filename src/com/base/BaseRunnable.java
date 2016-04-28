@@ -1,5 +1,6 @@
 package com.base;
 
+import java.net.Socket;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import com.utils.log.Log;
@@ -43,8 +44,11 @@ public abstract class BaseRunnable implements Runnable {
     }
 
     public void stop() {
-        stop = true;
-        log.debug("Task has been stopped.");
+        if (!stop) {
+            stop = true;
+            post(new StopRunnable());
+            log.debug("Task has been stopped.");
+        }
     }
 
     public void start() {

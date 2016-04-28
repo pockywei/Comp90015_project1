@@ -1,4 +1,4 @@
-package com.protocal.connection;
+package com.protocal.conn;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -12,41 +12,8 @@ import com.server.beans.ServerInfo;
 import com.server.beans.UserInfo;
 import com.server.core.ServerImpl;
 
-public class Response extends Connection {
+public class TestResponse  {
 
-    public Response(Socket socket) throws IOException {
-        super(socket);
-    }
-
-    @Override
-    public boolean runTask() throws Exception {
-        listening();
-        return false;
-    }
-
-    /**
-     * The read stream will be blocked until the socket time out or close.
-     * 
-     */
-    protected void listening() {
-        String message = null;
-        boolean close = false;
-        try {
-            while (!close && ((message = read()) != null)) {
-                close = process(message);
-            }
-            log.debug("connection closed to " + getSocketAddr());
-        }
-        catch (Exception e) {
-            log.error("connection " + getSocketAddr()
-                    + " closed with exception: " + e);
-        }
-        finally {
-            close();
-        }
-    }
-
-    @Override
     protected boolean process(String json) throws Exception {
         // process all case and write back a respnose.
         Message msg = new ParserJson(json).getMsg();
@@ -56,8 +23,8 @@ public class Response extends Connection {
         if (msg == null) {
             respnose = responseMsg(Command.INVALID_MESSAGE,
                     Command.INVALID_MESSAGE.getResponse());
-            write(respnose);
-            log.error("respnose message parsing exception. " + respnose);
+//            write(respnose);
+//            log.error("respnose message parsing exception. " + respnose);
             return true;
         }
 
@@ -71,9 +38,9 @@ public class Response extends Connection {
                 if (!ServerSettings.getLocalSecret().equals(secret)) {
                     respnose = responseMsg(Command.AUTHENTICATION_FAIL,
                             Command.AUTHENTICATION_FAIL.getResponse());
-                    write(respnose);
-                    log.error(
-                            "respnose message parsing exception. " + respnose);
+//                    write(respnose);
+//                    log.error(
+//                            "respnose message parsing exception. " + respnose);
                     return true;
                 }
                 // if succeed, reply nothing and keep the connection alive.
@@ -146,12 +113,6 @@ public class Response extends Connection {
                 break;
         }
         return null;
-    }
-
-    @Override
-    public void close() {
-        super.close();
-        ServerImpl.getInstance().removeConnection(this);
     }
 
 }
