@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.base.BaseManager;
-import com.protocal.conn.Connection;
-import com.protocal.conn.TestResponse;
-import com.protocal.conn.inter.SocketListener;
+import com.protocal.connection.Connection;
+import com.protocal.connection.TestResponse;
+import com.protocal.connection.inter.SocketListener;
 import com.server.ServerSettings;
 import com.utils.UtilHelper;
 import com.utils.log.CrashHandler;

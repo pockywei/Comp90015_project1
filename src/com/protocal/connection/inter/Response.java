@@ -1,4 +1,4 @@
-package com.protocal.conn.inter;
+package com.protocal.connection.inter;
 
 public interface Response {
 

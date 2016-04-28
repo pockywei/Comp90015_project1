@@ -1,4 +1,4 @@
-package com.protocal.conn.inter;
+package com.protocal.connection.inter;
 
 import com.protocal.Command;
 import com.protocal.Message;

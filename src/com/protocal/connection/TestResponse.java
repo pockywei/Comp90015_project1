@@ -1,4 +1,4 @@
-package com.protocal.conn;
+package com.protocal.connection;
 
 import java.io.IOException;
 import java.net.Socket;

@@ -2,9 +2,9 @@ package test;
 
 import java.net.Socket;
 
-import com.protocal.conn.Connection;
-import com.protocal.conn.inter.ConnectionListener;
-import com.protocal.conn.inter.Response;
+import com.protocal.connection.Connection;
+import com.protocal.connection.inter.ConnectionListener;
+import com.protocal.connection.inter.Response;
 
 public class TestConnection {
 

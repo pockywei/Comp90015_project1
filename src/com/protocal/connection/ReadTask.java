@@ -1,11 +1,11 @@
-package com.protocal.conn;
+package com.protocal.connection;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
-import com.protocal.conn.inter.ConnectionListener;
-import com.protocal.conn.inter.Response;
+import com.protocal.connection.inter.ConnectionListener;
+import com.protocal.connection.inter.Response;
 
 public class ReadTask extends AbstractSocketTask {
 

@@ -1,9 +1,9 @@
-package com.protocal.conn;
+package com.protocal.connection;
 
 import java.io.PrintWriter;
 import java.net.Socket;
 
-import com.protocal.conn.inter.ConnectionListener;
+import com.protocal.connection.inter.ConnectionListener;
 import com.utils.UtilHelper;
 
 public class WriteTask extends AbstractSocketTask {

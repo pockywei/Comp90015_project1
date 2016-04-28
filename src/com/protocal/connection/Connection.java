@@ -1,11 +1,11 @@
-package com.protocal.conn;
+package com.protocal.connection;
 
 import java.io.IOException;
 import java.net.Socket;
 
-import com.protocal.conn.inter.ConnectionListener;
-import com.protocal.conn.inter.ConnectionType;
-import com.protocal.conn.inter.Response;
+import com.protocal.connection.inter.ConnectionListener;
+import com.protocal.connection.inter.ConnectionType;
+import com.protocal.connection.inter.Response;
 import com.utils.UtilHelper;
 import com.utils.log.Log;
 

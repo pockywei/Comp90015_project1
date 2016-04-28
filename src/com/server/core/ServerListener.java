@@ -5,7 +5,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 import com.base.BaseRunnable;
-import com.protocal.conn.inter.SocketListener;
+import com.protocal.connection.inter.SocketListener;
 import com.server.ServerSettings;
 import com.utils.log.exception.ListeningException;
 
