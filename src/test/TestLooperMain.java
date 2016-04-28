@@ -1,6 +1,6 @@
 package test;
 
-public class TestMain {
+public class TestLooperMain {
 
     public static void main(String[] args) {
         TestLooper looper = new TestLooper("");

@@ -8,14 +8,15 @@ import com.base.BaseRunnable;
 import com.protocal.connection.inter.ConnectionListener;
 import com.utils.UtilHelper;
 
-public abstract class SocketTask extends BaseRunnable {
+public abstract class AbstractSocketTask extends BaseRunnable {
 
     private Socket socket;
-    protected ConnectionListener closeListener = null;
+    protected ConnectionListener connectionListener = null;
 
-    public SocketTask(Socket socket, ConnectionListener closeListener) throws Exception {
+    public AbstractSocketTask(Socket socket,
+            ConnectionListener connectionListener) throws Exception {
         this.socket = socket;
-        this.closeListener = closeListener;
+        this.connectionListener = connectionListener;
     }
 
     protected OutputStream getOutputStream() throws Exception {
@@ -32,8 +33,8 @@ public abstract class SocketTask extends BaseRunnable {
         }
         return UtilHelper.getSocketAddr(socket);
     }
-    
+
     public void close() throws Exception {
-        closeListener = null;
+        connectionListener = null;
     }
 }

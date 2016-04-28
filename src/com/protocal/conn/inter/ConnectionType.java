@@ -1,4 +1,4 @@
-package com.protocal.conn;
+package com.protocal.conn.inter;
 
 public enum ConnectionType {
     USER_CONN, SERVER_CONN;
