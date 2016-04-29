@@ -76,6 +76,6 @@ public class Connection implements ConnectionListener {
             return false;
         }
         writer.sendMessage(msg);
-        return false;
+        return true;
     }
 }

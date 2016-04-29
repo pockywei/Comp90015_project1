@@ -18,8 +18,7 @@ public class ClientTest {
     private static final Log log = Log.getInstance();
 
     public static void main(String[] args) throws Exception {
-        String addr = "sunrise.cis.unimelb.edu.au";
-        Socket s = new Socket(addr, 5123);
+        Socket s = new Socket("sunrise.cis.unimelb.edu.au", 5123);
         String address = s.getInetAddress() + ":" + s.getPort();
         System.out.println(address);
 
