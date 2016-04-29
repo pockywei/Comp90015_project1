@@ -1,4 +1,4 @@
-package com.server.core;
+package test;
 
 import com.client.UserSettings;
 import com.protocal.Command;
@@ -8,7 +8,7 @@ import com.server.ServerSettings;
 import com.utils.UtilHelper;
 import com.utils.log.Log;
 
-public class ServerRequest {
+public class TestServerRequest {
     private static final Log log = Log.getInstance();
     private Command com;
         

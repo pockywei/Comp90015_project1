@@ -1,4 +1,4 @@
-package com.client.core;
+package test;
 
 import com.client.UserSettings;
 import com.protocal.Command;
@@ -6,7 +6,7 @@ import com.protocal.Message;
 import com.protocal.json.ParserJson;
 import com.utils.UtilHelper;
 
-public class ClientRequest  {
+public class TestClientRequest  {
 
     private Command com;
     
