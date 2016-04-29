@@ -1,5 +1,6 @@
 package com.protocal;
 
+import com.google.gson.JsonObject;
 import com.server.beans.ServerInfo;
 import com.server.beans.UserInfo;
 
@@ -11,10 +12,10 @@ public class Message {
     private String username = "";
     private String hostnmae = "";
     private int port = 0;
-    private String activity = "";
     private int load = 0;
     private String id = "";
     private String server = "";
+    private Activity activity = null;
 
     public Message() {
     }
@@ -71,11 +72,11 @@ public class Message {
         this.port = port;
     }
 
-    public String getActivity() {
+    public Activity getActivity() {
         return activity;
     }
 
-    public void setActivity(String activity) {
+    public void setActivity(Activity activity) {
         this.activity = activity;
     }
 
@@ -106,8 +107,15 @@ public class Message {
     @Override
     public String toString() {
         return com.name() + " " + info + " " + secret + " " + username + " "
-                + hostnmae + " " + port + " " + activity + " " + load + " " + id
-                + " " + server;
+                + hostnmae + " " + port + " " + toActivity() + " " + load + " "
+                + id + " " + server;
+    }
+
+    private String toActivity() {
+        if (activity == null) {
+            return null;
+        }
+        return activity.toString();
     }
 
     public UserInfo toUserInfo() {
@@ -115,7 +123,15 @@ public class Message {
     }
 
     public ServerInfo toServerInfo() {
-        return new ServerInfo(getPort(), getHostnmae(), getSecret(), getLoad());
+        return new ServerInfo(getId(), getPort(), getHostnmae(), getSecret(),
+                getLoad());
+    }
+
+    public JsonObject getActivityJson() {
+        JsonObject activity = new JsonObject();
+        activity.addProperty(Protocal.ACTIVITY_MESSAGE,
+                getActivity().toString());
+        return activity;
     }
 
     /**
@@ -172,7 +188,7 @@ public class Message {
     }
 
     public static Message getActivityMsg(String username, String secret,
-            String activity, Command com) {
+            Activity activity, Command com) {
         Message msg = new Message(com);
         msg.setSecret(secret);
         msg.setUsername(username);
@@ -180,7 +196,7 @@ public class Message {
         return msg;
     }
 
-    public static Message getBroadcastMsg(String activity, Command com) {
+    public static Message getBroadcastMsg(Activity activity, Command com) {
         Message msg = new Message(com);
         msg.setActivity(activity);
         return msg;
@@ -193,5 +209,9 @@ public class Message {
         msg.setUsername(username);
         msg.setServer(server);
         return msg;
+    }
+
+    public static Activity getActivity(String message) {
+        return new Activity().setMessage(message);
     }
 }

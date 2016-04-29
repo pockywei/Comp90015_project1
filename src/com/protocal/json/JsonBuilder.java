@@ -12,11 +12,14 @@ public class JsonBuilder {
     public JsonBuilder(Message msg) {
         this.msg = msg;
     }
-    
-    public String getJson(Command com) {
-        JsonObject json = new JsonObject();
-        json.addProperty(Protocal.COMMAND, com.name());
-        switch (com) {
+
+    public String getJson() {
+        if (msg == null || msg.getCommand() == null) {
+            return null;
+        }
+        final JsonObject json = new JsonObject();
+        json.addProperty(Protocal.COMMAND, msg.getCommand().name());
+        switch (msg.getCommand()) {
             case LOGIN_FAILED:
             case LOGIN_SUCCESS:
             case AUTHENTICATION_FAIL:
@@ -50,10 +53,10 @@ public class JsonBuilder {
             case ACTIVITY_MESSAGE:
                 json.addProperty(Protocal.USER_NAME, msg.getUsername());
                 json.addProperty(Protocal.SECRET, msg.getSecret());
-                json.addProperty(Protocal.ACTIVITY, msg.getActivity());
+                json.add(Protocal.ACTIVITY, msg.getActivityJson());
                 break;
             case ACTIVITY_BROADCAST:
-                json.addProperty(Protocal.ACTIVITY, msg.getActivity());
+                json.add(Protocal.ACTIVITY, msg.getActivityJson());
                 break;
             case LOCK_ALLOWED:
                 json.addProperty(Protocal.USER_NAME, msg.getUsername());
@@ -65,5 +68,4 @@ public class JsonBuilder {
         }
         return json.toString();
     }
-
 }

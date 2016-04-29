@@ -23,8 +23,8 @@ public class ClientTest {
         String address = s.getInetAddress() + ":" + s.getPort();
         System.out.println(address);
 
-        String user = "zac";
-        String secret = "123456";
+        String user = "anonymous";
+        String secret = "";
 
         // write
         PrintWriter out = new PrintWriter(s.getOutputStream(), true);
@@ -37,71 +37,80 @@ public class ClientTest {
         Message msg = null;
 
         // Register
-        json = new JsonBuilder(
-                Message.getUserMsg(user, secret, Command.REGISTER))
-                        .getJson(Command.REGISTER);
-        log.info("request: " + json);
+        // json = new JsonBuilder(
+        // Message.getUserMsg(user, secret, Command.REGISTER))
+        // .getJson(Command.REGISTER);
+        // log.info("request: " + json);
+        //
+        // out.println(json);
+        // out.flush();
+        //
+        // // Read
+        // back = input.readLine();
+        // log.info("back : " + back);
+        // msg = new ParserJson(back).getMsg();
 
-        out.write(json);
+        // switch (msg.getCommand()) {
+        // case REGISTER_SUCCESS:
+        // Login
+        // json = new JsonBuilder(
+        // Message.getUserMsg(user, secret, Command.LOGIN))
+        // .getJson(Command.LOGIN);
+        // log.info("request login: " + json);
+        //
+        // out.println(json);
+        // out.flush();
+        //
+        // // Read
+        // back = input.readLine();
+        // log.info("back : " + back);
+
+        // Login
+        // json = new JsonBuilder(new Message(Command.LOGOUT))
+        // .getJson(Command.LOGOUT);
+        // log.info("request login: " + json);
+        //
+        // out.println(json);
+        // out.flush();
+        //
+        // // Read
+        // back = input.readLine();
+        // log.info("back : " + back);
+        //
+        // msg = new ParserJson(back).getMsg();
+        // switch (msg.getCommand()) {
+        // case LOGIN_SUCCESS:
+        // Send an Activity Message
+        json = new JsonBuilder(Message.getActivityMsg(user, secret,
+                Message.getActivity("Hi everyone, this is from Eyebrow."),
+                Command.ACTIVITY_MESSAGE)).getJson();
+
+        log.info("request message: " + json);
+        out.println(json);
         out.flush();
 
-        // Read
         back = input.readLine();
         log.info("back : " + back);
-        msg = new ParserJson(back).getMsg();
-
-        switch (msg.getCommand()) {
-            case REGISTER_SUCCESS:
-                // Login
-                json = new JsonBuilder(
-                        Message.getUserMsg(user, secret, Command.LOGIN))
-                                .getJson(Command.LOGIN);
-                log.info("request login: " + json);
-
-                out.write(json);
-                out.flush();
-
-                // Read
-                back = input.readLine();
-                log.info("back : " + back);
-
-                msg = new ParserJson(back).getMsg();
-                switch (msg.getCommand()) {
-                    case LOGIN_SUCCESS:
-                        // Send an Activity Message
-                        json = new JsonBuilder(
-                                Message.getActivityMsg(user, secret,
-                                        "Hi everyone! Please send back message to me!",
-                                        Command.ACTIVITY_MESSAGE))
-                                                .getJson(Command.LOGIN);
-
-                        log.info("request message: " + json);
-
-                        out.write(json);
-                        out.flush();
-
-                        back = input.readLine();
-                        log.info("back : " + back);
-
-                        // Listen message
-                        while ((back = input.readLine()) != null) {
-                            log.info("back : " + back);
-                        }
-                        break;
-                    case LOGIN_FAILED:
-                        log.info("LOGIN_FAILED: " + msg.getInfo());
-                        break;
-                    default:
-                        break;
-                }
-
-                break;
-            case REGISTER_FAILED:
-                log.info("REGISTER_FAILED: " + msg.getInfo());
-                break;
-            default:
-                break;
-        }
+        //
+        // // Listen message
+        // while ((back = input.readLine()) != null) {
+        // log.info("back : " + back);
+        // }
+        // break;
+        // case LOGIN_FAILED:
+        // log.info("LOGIN_FAILED: " + msg.getInfo());
+        // break;
+        // default:
+        // break;
+        // }
+        //
+        // break;
+        // case REGISTER_FAILED:
+        // log.info("REGISTER_FAILED: " + msg.getInfo());
+        // break;
+        // default:
+        // break;
+        // }
 
     }
 }

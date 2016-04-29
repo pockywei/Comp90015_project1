@@ -3,8 +3,10 @@ package com.utils;
 import java.math.BigInteger;
 import java.net.Socket;
 import java.security.SecureRandom;
+import java.util.UUID;
 
 public class UtilHelper {
+    
     private static SecureRandom random = new SecureRandom();
 
     public static String getSocketAddr(Socket socket) {
@@ -13,6 +15,10 @@ public class UtilHelper {
 
     public static String getSecret() {
         return new BigInteger(130, random).toString(32);
+    }
+    
+    public static String getServerID() {
+        return UUID.randomUUID().toString();
     }
 
     /**

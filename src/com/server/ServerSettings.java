@@ -20,6 +20,7 @@ public class ServerSettings {
             log.error(String.format(ERROR_INFO, localPort, getLocalPort()));
             return;
         }
+        ServerSettings.localInfo.setId(UtilHelper.getServerID());
         ServerSettings.localInfo.setPort(localPort);
         ServerSettings.localInfo.setHostname(localHost);
         ServerSettings.localInfo.setSecret(UtilHelper.getSecret());
@@ -45,6 +46,10 @@ public class ServerSettings {
     public static int getLocalLoad() {
         return localInfo.getLoad();
     }
+    
+    public static String getLocalID() {
+        return localInfo.getId();
+    }
 
     public static int getRemotePort() {
         return remoteInfo.getPort();
@@ -64,9 +69,5 @@ public class ServerSettings {
 
     private static boolean verifyPort(int port) {
         return port < 0 || port > MAX_PORT_RANGE;
-    }
-
-    public static String showLocalInfo() {
-        return localInfo.toString();
     }
 }

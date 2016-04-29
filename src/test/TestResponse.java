@@ -1,4 +1,4 @@
-package com.protocal.connection;
+package test;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -95,20 +95,20 @@ public class TestResponse  {
             case AUTHENTICATION_FAIL:
             case INVALID_MESSAGE:
                 return new JsonBuilder(Message.getResponseMsg(info, com))
-                        .getJson(com);
+                        .getJson();
             case REDIRECT:
                 return new JsonBuilder(Message.getRedirectMsg(
                         server.getHostname(), server.getPort(), com))
-                                .getJson(com);
+                                .getJson();
             case LOCK_DENIED:
                 return new JsonBuilder(Message.getUserMsg(user.getUsername(),
-                        user.getSecret(), com)).getJson(com);
+                        user.getSecret(), com)).getJson();
 
             case LOCK_ALLOWED:
                 return new JsonBuilder(
                         Message.getLockAllowedMsg(user.getUsername(),
                                 user.getSecret(), server.getSecret(), com))
-                                        .getJson(com);
+                                        .getJson();
             default:
                 break;
         }

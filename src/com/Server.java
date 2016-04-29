@@ -15,6 +15,7 @@ import com.base.BaseSubject;
 import com.server.ServerSettings;
 import com.server.core.ServerImpl;
 import com.server.core.ServerListener;
+import com.utils.UtilHelper;
 import com.utils.log.Log;
 
 public class Server extends BaseSubject {
@@ -101,7 +102,10 @@ public class Server extends BaseSubject {
 
         ServerSettings.setInfo(localPort, localHost, remotePort, remoteHost,
                 remoteSecret, activityInterval);
-        log.info("Local Info: " + ServerSettings.showLocalInfo());
+        if (UtilHelper.isEmptyStr(remoteHost)) {
+            log.info("the current server will start alone, here by the secret: "
+                    + ServerSettings.getLocalSecret());
+        }
         log.info("starting server");
         ServerImpl.getInstance();
     }

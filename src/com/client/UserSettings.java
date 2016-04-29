@@ -10,7 +10,7 @@ public class UserSettings {
     public static void setUser(String username, String secret,
             String remoteHost, int remotePort) {
         UserSettings.user = new UserInfo(username, secret);
-        UserSettings.remoteServer = new ServerInfo(remotePort, remoteHost,
+        UserSettings.remoteServer = new ServerInfo(null, remotePort, remoteHost,
                 null);
     }
 

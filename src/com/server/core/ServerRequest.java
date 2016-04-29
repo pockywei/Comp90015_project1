@@ -53,8 +53,8 @@ public class ServerRequest {
                         ServerSettings.getLocalHostname(),
                         ServerSettings.getLocalPort(), com);
             case ACTIVITY_BROADCAST:
-                return Message.getBroadcastMsg(
-                        UtilHelper.isEmptyStr("") ? "" : "", com);
+//                return Message.getBroadcastMsg(
+//                        UtilHelper.isEmptyStr("") ? "" : "", com);
             default:
                 break;
         }

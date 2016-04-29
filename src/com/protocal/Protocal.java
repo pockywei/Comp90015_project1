@@ -13,6 +13,7 @@ public class Protocal {
     public static final String SERVER_PORT = "port";
     public static final String ACTIVITY = "activity";
     public static final String ANONYMOUS = "anonymous";
+    public static final String ACTIVITY_MESSAGE = "message";
 
     public static final String INVALIED_ERROR = "Invalied message or JSON parse error while parsing message.";
     public static final String AUTH_FAIL = "the supplied secret is incorrect.";

@@ -87,13 +87,23 @@ public class ParserJson {
                 }
                 msg.setUsername(root.get(Protocal.USER_NAME).getAsString());
                 msg.setSecret(root.get(Protocal.SECRET).getAsString());
-                msg.setActivity(root.get(Protocal.ACTIVITY).getAsString());
+                JsonObject activity = root.get(Protocal.ACTIVITY)
+                        .getAsJsonObject();
+                if (!activity.isJsonObject()) {
+                    throw new Exception();
+                }
+                msg.setActivity(Message.getActivity(activity.toString()));
                 break;
             case ACTIVITY_BROADCAST:
                 if (!root.has(Protocal.ACTIVITY)) {
                     throw new Exception();
                 }
-                msg.setActivity(root.get(Protocal.ACTIVITY).getAsString());
+
+                activity = root.get(Protocal.ACTIVITY).getAsJsonObject();
+                if (!activity.isJsonObject()) {
+                    throw new Exception();
+                }
+                msg.setActivity(Message.getActivity(activity.toString()));
                 break;
             case LOCK_ALLOWED:
                 if (!root.has(Protocal.USER_NAME) || !root.has(Protocal.SECRET)

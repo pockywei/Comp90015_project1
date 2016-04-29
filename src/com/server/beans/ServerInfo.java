@@ -2,6 +2,7 @@ package com.server.beans;
 
 public class ServerInfo implements ServerValue {
 
+    private String id = null;
     private int port = 3780;
     private String hostname = "localhost";
     private String secret = null;
@@ -11,17 +12,19 @@ public class ServerInfo implements ServerValue {
     public ServerInfo() {
     }
 
-    public ServerInfo(int port, String hostname, String secret) {
+    public ServerInfo(String id, int port, String hostname, String secret) {
+        this.id = id;
         this.port = port;
         this.hostname = hostname;
         this.secret = secret;
     }
 
-    public ServerInfo(int port, String hostname, String secret, int load) {
-        this(port, hostname, secret);
+    public ServerInfo(String id, int port, String hostname, String secret,
+            int load) {
+        this(id, port, hostname, secret);
         this.load = load;
     }
-
+    
     @Override
     public String getKey() {
         return getSecret();
@@ -57,6 +60,14 @@ public class ServerInfo implements ServerValue {
 
     public void setLoad(int load) {
         this.load = load;
+    }
+    
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     @Override

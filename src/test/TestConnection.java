@@ -11,7 +11,7 @@ public class TestConnection {
     public static void main(String[] args) throws Exception {
         int n = 10;
         Socket s = new Socket("127.0.0.1", 9091);
-        Connection c = new Connection(s, new TestResponse());
+        Connection c = new Connection(s, new iResponse());
         for (int i = 0; i < n; i++) {
             c.sendMessage("HI " + i);
             Thread.sleep(1000);
@@ -20,7 +20,7 @@ public class TestConnection {
 
 }
 
-class TestResponse implements Response {
+class iResponse implements Response {
 
     @Override
     public boolean process(String json, ConnectionListener connection)

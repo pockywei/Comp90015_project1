@@ -51,9 +51,9 @@ public class ClientRequest  {
             case LOGOUT:
                 return new Message(com);
             case ACTIVITY_MESSAGE:
-                return Message.getActivityMsg(UserSettings.getUsername(),
-                        UserSettings.getSecret(),
-                        UtilHelper.isEmptyStr("") ? "" : "", com);
+//                return Message.getActivityMsg(UserSettings.getUsername(),
+//                        UserSettings.getSecret(),
+//                        UtilHelper.isEmptyStr("") ? "" : "", com);
             default:
                 break;
         }

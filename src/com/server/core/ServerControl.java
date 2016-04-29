@@ -7,11 +7,12 @@ import java.util.List;
 
 import com.base.BaseManager;
 import com.protocal.connection.Connection;
-import com.protocal.connection.TestResponse;
 import com.protocal.connection.inter.SocketListener;
 import com.server.ServerSettings;
 import com.utils.UtilHelper;
 import com.utils.log.CrashHandler;
+
+import test.TestResponse;
 
 public abstract class ServerControl extends BaseManager
         implements SocketListener {
