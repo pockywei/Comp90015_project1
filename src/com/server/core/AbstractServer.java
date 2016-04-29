@@ -14,7 +14,7 @@ import com.utils.log.CrashHandler;
 
 import test.TestResponse;
 
-public abstract class ServerControl extends BaseManager
+public abstract class AbstractServer extends BaseManager
         implements SocketListener {
 
     /* Outgoing connection */
@@ -23,7 +23,7 @@ public abstract class ServerControl extends BaseManager
     private List<TestResponse> responses = null;
     private ServerListener listener = null;
 
-    public ServerControl() {
+    public AbstractServer() {
         super();
 //        requests = new ArrayList<>();
         responses = new ArrayList<>();
@@ -32,7 +32,7 @@ public abstract class ServerControl extends BaseManager
         }
         catch (IOException e) {
             log.fatal("failed to startup a listening thread: " + e);
-            CrashHandler.getInstance().exit();
+            CrashHandler.getInstance().errorExit();
         }
         initServer();
         start();

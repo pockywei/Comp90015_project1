@@ -4,13 +4,13 @@ import com.server.ServerSettings;
 import com.server.beans.ServerInfo;
 import com.utils.log.CrashHandler;
 
-public class ServerImpl extends ServerControl {
+public class ServerManager extends AbstractServer {
 
-    private static ServerImpl instance = null;
+    private static ServerManager instance = null;
 
-    public synchronized static ServerImpl getInstance() {
+    public synchronized static ServerManager getInstance() {
         if (instance == null) {
-            instance = new ServerImpl();
+            instance = new ServerManager();
         }
         return instance;
     }
@@ -26,7 +26,7 @@ public class ServerImpl extends ServerControl {
             log.error("failed to make connection to "
                     + ServerSettings.getRemoteHost() + ":"
                     + ServerSettings.getRemotePort() + " :" + e);
-            CrashHandler.getInstance().exit();
+            CrashHandler.getInstance().errorExit();
         }
     }
 

@@ -10,7 +10,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
     private static final Log log = Log.getInstance();
     private static CrashHandler instance = null;
     private List<BaseManager> managerList;
-    private boolean isCrash = false;
+    private boolean isExit = false;
     private static final String OUTPUT_CRASH = "System shutdown by the exception!"
             + FileUtils.NEW_LINE;
 
@@ -31,7 +31,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
             return;
         }
         synchronized (managerList) {
-            if (!isCrash) {
+            if (!isExit) {
                 managerList.add(ba);
             }
         }
@@ -46,11 +46,11 @@ public class CrashHandler implements UncaughtExceptionHandler {
             br.append(e.toString() + FileUtils.NEW_LINE);
         }
         log.error(br.toString());
-        exit();
+        exit(-1);
     }
-    
-    public void exit() {
-        isCrash = true;
+
+    private void exit(int arg) {
+        isExit = true;
         // Received Exception, clear all system resource.
         synchronized (managerList) {
             for (BaseManager ba : managerList) {
@@ -58,7 +58,14 @@ public class CrashHandler implements UncaughtExceptionHandler {
             }
             managerList.clear();
         }
-        System.exit(-1);
+        System.exit(arg);
     }
 
+    public void exit() {
+        exit(0);
+    }
+    
+    public void errorExit() {
+        exit(-1);
+    }
 }

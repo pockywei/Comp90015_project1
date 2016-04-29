@@ -24,11 +24,6 @@ public class ClientManger extends BaseManager {
         }
         return instance;
     }
-    
-    public void launchFrame() {
-        // start a frame.
-        
-    }
 
     public void addUIListener(FrameUpdateListener frame) {
         synchronized (frameList) {
@@ -45,10 +40,8 @@ public class ClientManger extends BaseManager {
     @Override
     public void clear() {
         stop();
-        synchronized (connection) {
-            if (connection != null) {
-                connection.close();
-            }
+        if (connection != null) {
+            connection.close();
         }
         synchronized (frameList) {
             frameList.clear();
@@ -58,6 +51,8 @@ public class ClientManger extends BaseManager {
     @Override
     public boolean runTask() throws Exception {
         // do nothing...
+        // Update solution may be that adds a heart-beat mechanism to keep the
+        // socket connection with servers.
         return false;
     }
 

@@ -1,13 +1,17 @@
 package com.client.core;
 
 import com.client.UserSettings;
+import com.client.core.inter.FrameUpdateListener;
 import com.client.core.request.LoginRequest;
 import com.protocal.Message;
 import com.protocal.connection.inter.ConnectionListener;
 import com.protocal.connection.inter.Response;
 import com.protocal.json.ParserJson;
+import com.utils.log.Log;
 
 public class ClientResponse implements Response {
+
+    private static final Log log = Log.getInstance();
 
     @Override
     public boolean process(String json, ConnectionListener connection)
@@ -18,23 +22,20 @@ public class ClientResponse implements Response {
             case LOGIN_FAILED:
             case REGISTER_FAILED:
                 String info = msg.getInfo();
-                // Close connection when received these message.
-                // Show the info onto GUI
-                // TODO
-                
+                log.debug(info + " " + msg.getCommand());
+                ClientManger.getInstance().notifyFrameFailed(info);
                 return true;
             case REGISTER_SUCCESS:
                 info = msg.getInfo();
-                // Close connection when received these message.
-                // Show the info onto GUI
-                // TODO
-
+                log.debug(info + " " + msg.getCommand());
+                ClientManger.getInstance().notifyFrameSuccess(msg.getCommand(),
+                        info);
                 return true;
             case LOGIN_SUCCESS:
                 info = msg.getInfo();
-                // Show the info onto GUI
-                // TODO
-
+                log.debug(info + " " + msg.getCommand());
+                ClientManger.getInstance().notifyFrameSuccess(msg.getCommand(),
+                        info);
                 return false;
             case REDIRECT:
                 // Re-login to the given server.

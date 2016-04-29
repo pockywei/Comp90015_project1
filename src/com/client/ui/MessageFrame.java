@@ -2,20 +2,17 @@ package com.client.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.border.Border;
-import javax.swing.BoxLayout;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,8 +27,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.protocal.Command;
 
-// @SuppressWarnings("serial")
-public class TextFrame extends BaseFrame {
+public class MessageFrame extends BaseFrame {
+
+    private static final long serialVersionUID = 1L;
     private static final Logger log = LogManager.getLogger();
     private JTextArea inputText;
     private JTextArea outputText;
@@ -39,16 +37,14 @@ public class TextFrame extends BaseFrame {
     private JButton disconnectButton;
     private JSONParser parser = new JSONParser();
 
-    public TextFrame() {
-        setTitle("ActivityStreamer Text I/O");
+    public MessageFrame() {
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
-        // mainPanel.setLayout(new GridLayout(2, 2));
 
         JPanel inputPanel = new JPanel();
         JPanel outputPanel = new JPanel();
         inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.PAGE_AXIS));
-        // inputPanel.setLayout(new BorderLayout());
+
         outputPanel.setLayout(new BorderLayout());
         Border lineBorder = BorderFactory.createTitledBorder(
                 BorderFactory.createLineBorder(Color.lightGray),
@@ -57,12 +53,11 @@ public class TextFrame extends BaseFrame {
         lineBorder = BorderFactory.createTitledBorder(
                 BorderFactory.createLineBorder(Color.lightGray),
                 "JSON output, received from server");
-        // outputPanel.setBorder(lineBorder);
         outputPanel.setName("Text outputs");
 
         inputText = new JTextArea();
         JScrollPane scrollPane = new JScrollPane(inputText);
-        // inputPanel.add(scrollPane, BorderLayout.CENTER);
+
         inputPanel.add(scrollPane);
         scrollPane.setPreferredSize(new Dimension(300, 40));
 
@@ -71,7 +66,7 @@ public class TextFrame extends BaseFrame {
         disconnectButton = new JButton("Disconnect");
         buttonGroup.add(sendButton);
         buttonGroup.add(disconnectButton);
-        // inputPanel.add(buttonGroup,BorderLayout.SOUTH);
+
         inputPanel.add(buttonGroup);
         sendButton.addActionListener(this);
         disconnectButton.addActionListener(this);
@@ -127,7 +122,7 @@ public class TextFrame extends BaseFrame {
     }
 
     public static void main(String[] args) {
-        TextFrame frame = new TextFrame();
+        MessageFrame frame = new MessageFrame();
     }
 
     @Override

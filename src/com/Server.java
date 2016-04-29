@@ -13,7 +13,7 @@ import org.apache.commons.cli.ParseException;
 
 import com.base.BaseSubject;
 import com.server.ServerSettings;
-import com.server.core.ServerImpl;
+import com.server.core.ServerManager;
 import com.server.core.ServerListener;
 import com.utils.UtilHelper;
 import com.utils.log.Log;
@@ -107,7 +107,7 @@ public class Server extends BaseSubject {
                     + ServerSettings.getLocalSecret());
         }
         log.info("starting server");
-        ServerImpl.getInstance();
+        ServerManager.getInstance();
     }
 
 }

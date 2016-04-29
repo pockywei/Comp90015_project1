@@ -10,7 +10,7 @@ import com.protocal.json.ParserJson;
 import com.server.ServerSettings;
 import com.server.beans.ServerInfo;
 import com.server.beans.UserInfo;
-import com.server.core.ServerImpl;
+import com.server.core.ServerManager;
 
 public class TestResponse  {
 

@@ -17,16 +17,20 @@ import javax.swing.JToolBar;
 import com.base.BaseFrame;
 import com.protocal.Command;
 
-public class LoginView extends BaseFrame {
+public class LoginFrame extends BaseFrame {
 
-    public static void main(String[] args) {
+    private static final long serialVersionUID = 1L;
 
-        JFrame frame = new JFrame("Demo application");
-        frame.setSize(440, 330);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    public LoginFrame() {
+        initView();
+    }
+    
+    public void initView() {
+        setSize(440, 330);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JPanel panel = new JPanel();
-        frame.add(panel);
+        add(panel);
         placeComponents(panel);
 
         JLabel label = new JLabel("Connect to server first:Menu->Connect");
@@ -35,9 +39,12 @@ public class LoginView extends BaseFrame {
         bar.setFloatable(false);
         bar.add(label);
 
-        frame.add(bar, BorderLayout.SOUTH);
+        add(bar, BorderLayout.SOUTH);
+        setVisible(true);
+    }
 
-        frame.setVisible(true);
+    public static void main(String[] args) {
+        LoginFrame frame = new LoginFrame();
 
     }
 
@@ -109,18 +116,18 @@ public class LoginView extends BaseFrame {
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
     public void actionSuccess(Command com, String info) {
 
     }
 
     @Override
     public void actionFailed(String info) {
+
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        // TODO Auto-generated method stub
 
     }
 
