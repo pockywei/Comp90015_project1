@@ -2,11 +2,11 @@ package com.server.core.request;
 
 import com.protocal.Message;
 import com.protocal.connection.AbstractRequest;
-import com.protocal.connection.Connection;
+import com.protocal.connection.inter.ConnectionListener;
 
-public class LockRequest extends AbstractRequest{
+public class LockRequest extends AbstractRequest {
 
-    public LockRequest(Connection connection) {
+    public LockRequest(ConnectionListener connection) {
         super(connection);
     }
 
@@ -14,6 +14,5 @@ public class LockRequest extends AbstractRequest{
     public Message getRequestMessage() {
         return null;
     }
-
 
 }

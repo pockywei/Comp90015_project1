@@ -14,6 +14,13 @@ public class UserSettings {
                 null);
     }
 
+    public static void resetServerInfo(int remotePort, String remoteHost) {
+        synchronized (UserSettings.remoteServer) {
+            UserSettings.remoteServer.setHostname(remoteHost);
+            UserSettings.remoteServer.setPort(remotePort);
+        }
+    }
+
     public static String getUsername() {
         return user.getUsername();
     }

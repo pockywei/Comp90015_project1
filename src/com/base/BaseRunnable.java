@@ -5,6 +5,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import com.utils.log.Log;
 
 public abstract class BaseRunnable implements Runnable {
+    
     protected static final Log log = Log.getInstance();
     protected boolean stop = true;
     private LinkedBlockingQueue<BaseRunnable> queue = new LinkedBlockingQueue<>();

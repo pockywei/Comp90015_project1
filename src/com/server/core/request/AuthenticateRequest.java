@@ -2,11 +2,11 @@ package com.server.core.request;
 
 import com.protocal.Message;
 import com.protocal.connection.AbstractRequest;
-import com.protocal.connection.Connection;
+import com.protocal.connection.inter.ConnectionListener;
 
-public class AuthenticateRequest extends AbstractRequest{
+public class AuthenticateRequest extends AbstractRequest {
 
-    public AuthenticateRequest(Connection connection) {
+    public AuthenticateRequest(ConnectionListener connection) {
         super(connection);
     }
 
@@ -14,6 +14,5 @@ public class AuthenticateRequest extends AbstractRequest{
     public Message getRequestMessage() {
         return null;
     }
-
 
 }

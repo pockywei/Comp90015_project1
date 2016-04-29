@@ -83,6 +83,18 @@ public class ClientActionController {
         });
 
     }
+    
+    public void GuestLoginButton(JButton GuestLoginButton) {
+
+        GuestLoginButton.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent event) {
+                JOptionPane.showMessageDialog(null, "Guest login button");
+            }
+        });
+    }
+
+    
 
     public void ListenregisterButton(JButton register_Button) {
 

@@ -3,14 +3,14 @@ package com.client.core.request;
 import com.protocal.Command;
 import com.protocal.Message;
 import com.protocal.connection.AbstractRequest;
-import com.protocal.connection.Connection;
+import com.protocal.connection.inter.ConnectionListener;
 
 public class RegisterRequest extends AbstractRequest {
 
     private String username;
     private String secret;
 
-    public RegisterRequest(Connection connection, String username,
+    public RegisterRequest(ConnectionListener connection, String username,
             String secret) {
         super(connection);
         this.username = username;

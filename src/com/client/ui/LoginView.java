@@ -1,24 +1,23 @@
 package com.client.ui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 
-public class LoginView extends JFrame implements ActionListener {
+import com.base.BaseFrame;
+import com.protocal.Command;
+
+public class LoginView extends BaseFrame {
 
     public static void main(String[] args) {
 
@@ -31,7 +30,7 @@ public class LoginView extends JFrame implements ActionListener {
         placeComponents(panel);
 
         JLabel label = new JLabel("Connect to server first:Menu->Connect");
-        label.setBorder(BorderFactory.createLineBorder(Color.lightGray));
+
         JToolBar bar = new JToolBar();
         bar.setFloatable(false);
         bar.add(label);
@@ -69,14 +68,19 @@ public class LoginView extends JFrame implements ActionListener {
 
         JButton loginButton = new JButton("login");
         control.ListenLoginButton(loginButton);
-        loginButton.setBounds(101, 230, 80, 25);
+        loginButton.setBounds(50, 230, 80, 25);
 
         panel.add(loginButton);
 
         JButton registerButton = new JButton("register");
         control.ListenregisterButton(registerButton);
-        registerButton.setBounds(218, 230, 80, 25);
+        registerButton.setBounds(160, 230, 80, 25);
         panel.add(registerButton);
+
+        JButton anonymousLogin = new JButton("Login as guest");
+        control.GuestLoginButton(anonymousLogin);
+        anonymousLogin.setBounds(270, 230, 130, 25);
+        panel.add(anonymousLogin);
 
         panel.add(menuBar);
 
@@ -107,6 +111,16 @@ public class LoginView extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void actionSuccess(Command com, String info) {
+
+    }
+
+    @Override
+    public void actionFailed(String info) {
 
     }
 

@@ -1,5 +1,7 @@
 package com.client.core;
 
+import com.client.UserSettings;
+import com.client.core.request.LoginRequest;
 import com.protocal.Message;
 import com.protocal.connection.inter.ConnectionListener;
 import com.protocal.connection.inter.Response;
@@ -19,21 +21,27 @@ public class ClientResponse implements Response {
                 // Close connection when received these message.
                 // Show the info onto GUI
                 // TODO
+                
                 return true;
             case REGISTER_SUCCESS:
-                // login...
+                info = msg.getInfo();
+                // Close connection when received these message.
+                // Show the info onto GUI
                 // TODO
+
                 return true;
             case LOGIN_SUCCESS:
                 info = msg.getInfo();
                 // Show the info onto GUI
                 // TODO
+
                 return false;
             case REDIRECT:
                 // Re-login to the given server.
-                // ClientManger.getInstance().request(
-                // new Socket(msg.getHostnmae(), msg.getPort()),
-                // Command.LOGIN);
+                UserSettings.resetServerInfo(msg.getPort(), msg.getHostnmae());
+                new LoginRequest(ClientManger.getInstance().createConnection(),
+                        UserSettings.getUsername(), UserSettings.getSecret())
+                                .request();
                 return true;
             default:
                 break;

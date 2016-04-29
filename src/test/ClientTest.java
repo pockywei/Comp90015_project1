@@ -10,6 +10,7 @@ import com.protocal.Command;
 import com.protocal.Message;
 import com.protocal.json.JsonBuilder;
 import com.protocal.json.ParserJson;
+import com.server.ServerSettings;
 import com.utils.UtilHelper;
 import com.utils.log.Log;
 
@@ -80,16 +81,18 @@ public class ClientTest {
         // switch (msg.getCommand()) {
         // case LOGIN_SUCCESS:
         // Send an Activity Message
-        json = new JsonBuilder(Message.getActivityMsg(user, secret,
-                Message.getActivity("Hi everyone, this is from Eyebrow."),
-                Command.ACTIVITY_MESSAGE)).getJson();
-
-        log.info("request message: " + json);
-        out.println(json);
-        out.flush();
-
-        back = input.readLine();
-        log.info("back : " + back);
+        
+//        json = new JsonBuilder(Message.getActivityMsg(user, secret,
+//                Message.getActivity("Hi everyone, this is from Eyebrow."),
+//                Command.ACTIVITY_MESSAGE)).getJson();
+//
+//        log.info("request message: " + json);
+//        out.println(json);
+//        out.flush();
+//
+//        back = input.readLine();
+//        log.info("back : " + back);
+        
         //
         // // Listen message
         // while ((back = input.readLine()) != null) {
@@ -110,6 +113,16 @@ public class ClientTest {
         // default:
         // break;
         // }
+        
+        json = new JsonBuilder(Message.getAuthenticateMsg(
+                "sdfsdfs", Command.AUTHENTICATE)).getJson();
+
+        log.info("request message: " + json);
+        out.println(json);
+        out.flush();
+
+        back = input.readLine();
+        log.info("back : " + back);
 
     }
 }

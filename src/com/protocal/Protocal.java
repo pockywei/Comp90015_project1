@@ -20,7 +20,9 @@ public class Protocal {
     public static final String LOGIN_FAIL = "attempt to login with wrong info.";
     public static final String REGISTER_FAIL = "the username is already resgistered with the system.";
     public static final String REGISTER_SUCC = "register success.";
-    public static final String LOGIN_SUCC = "login success.";
+    public static final String LOGIN_SUCC = "logged in as user ";
+    public static final String ERROR_PARSE = "the message must contain non-null key ";
+    public static final String ERROR_LOGIN = "must send a LOGIN message first";
 
     public static final int SOCKET_TIME_OUT_LIMIT = 10 * 1000;
 

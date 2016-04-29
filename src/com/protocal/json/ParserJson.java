@@ -5,6 +5,7 @@ import com.google.gson.JsonParser;
 import com.protocal.Command;
 import com.protocal.Message;
 import com.protocal.Protocal;
+import com.utils.log.exception.JSONPraseException;
 
 public class ParserJson {
 
@@ -18,13 +19,13 @@ public class ParserJson {
         Message msg = null;
         JsonObject root = new JsonParser().parse(json).getAsJsonObject();
         if (!root.isJsonObject() || !root.has(Protocal.COMMAND)) {
-            throw new Exception();
+            throw new JSONPraseException(Protocal.COMMAND);
         }
 
         Command com = Command
                 .getCommand(root.get(Protocal.COMMAND).getAsString());
         if (com == null) {
-            throw new Exception();
+            throw new JSONPraseException(Protocal.COMMAND);
         }
         msg = new Message(com);
         switch (com) {
@@ -51,7 +52,8 @@ public class ParserJson {
             case LOCK_DENIED:
                 if (!root.has(Protocal.USER_NAME)
                         || !root.has(Protocal.SECRET)) {
-                    throw new Exception();
+                    throw new JSONPraseException(
+                            Protocal.USER_NAME + " or " + Protocal.SECRET);
                 }
                 msg.setUsername(root.get(Protocal.USER_NAME).getAsString());
                 msg.setSecret(root.get(Protocal.SECRET).getAsString());
