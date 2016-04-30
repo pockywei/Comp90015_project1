@@ -1,8 +1,8 @@
 package com.protocal;
 
+import com.beans.ServerInfo;
+import com.beans.UserInfo;
 import com.google.gson.JsonObject;
-import com.server.beans.ServerInfo;
-import com.server.beans.UserInfo;
 
 public class Message {
 

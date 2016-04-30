@@ -1,4 +1,4 @@
-package com.server.beans;
+package com.beans;
 
 public class UserInfo implements ServerValue, Comparable<UserInfo> {
     

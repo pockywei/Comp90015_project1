@@ -1,7 +1,7 @@
 package com.server.core;
 
+import com.beans.ServerInfo;
 import com.server.ServerSettings;
-import com.server.beans.ServerInfo;
 import com.utils.log.CrashHandler;
 
 public class ServerManager extends AbstractServer {

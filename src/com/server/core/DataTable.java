@@ -7,9 +7,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.server.beans.ServerInfo;
-import com.server.beans.ServerValue;
-import com.server.beans.UserInfo;
+import com.beans.ServerInfo;
+import com.beans.ServerValue;
+import com.beans.UserInfo;
 
 public class DataTable {
     private final Map<String, ServerValue> userTable = new ConcurrentHashMap<>();

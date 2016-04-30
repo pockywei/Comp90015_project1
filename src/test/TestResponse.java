@@ -3,13 +3,13 @@ package test;
 import java.io.IOException;
 import java.net.Socket;
 
+import com.beans.ServerInfo;
+import com.beans.UserInfo;
 import com.protocal.Command;
 import com.protocal.Message;
 import com.protocal.json.JsonBuilder;
 import com.protocal.json.ParserJson;
 import com.server.ServerSettings;
-import com.server.beans.ServerInfo;
-import com.server.beans.UserInfo;
 import com.server.core.ServerManager;
 
 public class TestResponse  {

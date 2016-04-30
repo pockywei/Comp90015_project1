@@ -1,6 +1,6 @@
 package com.server;
 
-import com.server.beans.ServerInfo;
+import com.beans.ServerInfo;
 import com.server.core.DataTable;
 import com.utils.UtilHelper;
 import com.utils.log.Log;

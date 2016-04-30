@@ -1,7 +1,7 @@
 package com.client;
 
-import com.server.beans.ServerInfo;
-import com.server.beans.UserInfo;
+import com.beans.ServerInfo;
+import com.beans.UserInfo;
 
 public class UserSettings {
     private final static UserInfo user = new UserInfo();

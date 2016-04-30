@@ -7,26 +7,21 @@ import java.util.List;
 
 import com.base.BaseManager;
 import com.protocal.connection.Connection;
+import com.protocal.connection.inter.ConnectionListener;
 import com.protocal.connection.inter.SocketListener;
 import com.server.ServerSettings;
 import com.utils.UtilHelper;
 import com.utils.log.CrashHandler;
 
-import test.TestResponse;
-
 public abstract class AbstractServer extends BaseManager
-        implements SocketListener {
+        implements SocketListener, ConnectionListener {
 
-    /* Outgoing connection */
-//    private List<Request> requests = null;
-    /* Incoming connection */
-    private List<TestResponse> responses = null;
+    private List<Connection> userConnections = new ArrayList<>();
+    private List<Connection> serverConnections = new ArrayList<>();
     private ServerListener listener = null;
 
     public AbstractServer() {
         super();
-//        requests = new ArrayList<>();
-        responses = new ArrayList<>();
         try {
             listener = new ServerListener(this);
         }
@@ -56,46 +51,43 @@ public abstract class AbstractServer extends BaseManager
                 break;
             }
             if (!stop) {
-                log.info("doing Announce");
+                log.info("server doing Announce");
                 serverAnnounce();
             }
         }
-        log.info("closing " + responses.size() + " response connections");
-        clear();
+        log.info("closing user connections: " + userConnections.size()
+                + " server connections: " + serverConnections.size());
+        CrashHandler.getInstance().exit();
         return false;
     }
 
     @Override
-    public void distributSocket(Socket s) throws IOException {
+    public void distributSocket(Socket s) throws Exception {
         log.debug("incomming connection: " + UtilHelper.getSocketAddr(s));
-//        Response response = null;
-//        synchronized (responses) {
-//            response = new Response(s);
-//            responses.add(response);
-//        }
+        new Connection(s, new ServerResponse()).setConnectionListener(this);
     }
 
-//    public Connection request(Socket s, Command com) throws IOException {
-//        log.debug("outgoing connection: " + UtilHelper.getSocketAddr(s));
-//        Request c = null;
-//        synchronized (requests) {
-//            c = new ServerRequest(s, com);
-//            requests.add(c);
-//        }
-//        return c;
-//    }
+    @Override
+    public void close(Connection c) throws Exception {
 
-    public void removeConnection(Connection c) {
-//        if (c instanceof Request) {
-//            synchronized (requests) {
-//                requests.remove(c);
-//            }
-//        }
-//        else {
-//            synchronized (responses) {
-//                responses.remove(c);
-//            }
-//        }
+    }
+
+    @Override
+    public void addConnection(Connection c) {
+        switch (c.getType()) {
+            case USER_CONN:
+                synchronized (userConnections) {
+                    userConnections.add(c);
+                    // add server user load.
+                    
+                }
+                break;
+            case SERVER_CONN:
+                synchronized (serverConnections) {
+                    serverConnections.add(c);
+                }
+                break;
+        }
     }
 
     @Override
@@ -105,19 +97,17 @@ public abstract class AbstractServer extends BaseManager
             listener.stop();
         }
         DataTable.getInstance().clear();
-//        synchronized (requests) {
-//            log.info("closing " + requests.size() + " request connections");
-//            for (Connection c : requests) {
-//                c.close();
-//            }
-//            requests.clear();
-//        }
-//        synchronized (responses) {
-//            log.info("closing " + responses.size() + " response connections");
-//            for (Connection c : responses) {
-//                c.close();
-//            }
-//            responses.clear();
-//        }
+        synchronized (userConnections) {
+            for (Connection c : userConnections) {
+                c.close();
+            }
+            userConnections.clear();
+        }
+        synchronized (serverConnections) {
+            for (Connection c : serverConnections) {
+                c.close();
+            }
+            serverConnections.clear();
+        }
     }
 }

@@ -9,7 +9,7 @@ import com.protocal.connection.inter.Response;
 import com.utils.UtilHelper;
 import com.utils.log.Log;
 
-public final class Connection {
+public final class Connection implements Comparable<Connection> {
     private static final Log log = Log.getInstance();
     private Socket socket = null;
     private WriteTask writer = null;
@@ -38,11 +38,15 @@ public final class Connection {
         return type;
     }
 
+    public String getSocketAddr() {
+        return UtilHelper.getSocketAddr(socket);
+    }
+
     public void close() {
         try {
             // delete from Server connection list.
             if (listener != null) {
-                listener.close();
+                listener.close(this);
                 listener = null;
             }
             if (writer != null) {
@@ -91,5 +95,16 @@ public final class Connection {
         }
         writer.sendMessage(msg);
         return true;
+    }
+
+    @Override
+    public int compareTo(Connection another) {
+        if (another == null) {
+            return -1;
+        }
+        if (!getSocketAddr().equals(another.getSocketAddr())) {
+            return -1;
+        }
+        return 0;
     }
 }
