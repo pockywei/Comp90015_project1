@@ -7,6 +7,7 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 
 import com.base.BaseManager;
+import com.base.BaseRunnable;
 import com.client.UserSettings;
 import com.client.core.inter.FrameUpdateListener;
 import com.client.core.request.ActivityMessage;
@@ -128,29 +129,61 @@ public class ClientManger extends BaseManager {
     }
 
     public void sendLoginRequest() throws Exception {
-        // new a connection.
-        new LoginRequest(createConnection(), UserSettings.getUsername(),
-                UserSettings.getSecret()).request();
+        post(new BaseRunnable() {
+
+            @Override
+            public boolean runTask() throws Exception {
+                // new a connection.
+                new LoginRequest(createConnection(), UserSettings.getUsername(),
+                        UserSettings.getSecret()).request();
+                return true;
+            }
+        });
+
     }
 
-    public void sendRegisterRequest(String username, String secret)
+    public void sendRegisterRequest(final String username, final String secret)
             throws Exception {
-        // new a connnection.
-        new RegisterRequest(createConnection(), username, secret).request();
+        post(new BaseRunnable() {
+
+            @Override
+            public boolean runTask() throws Exception {
+                // new a connnection.
+                new RegisterRequest(createConnection(), username, secret)
+                        .request();
+                return true;
+            }
+        });
     }
 
-    public void sendActivityMessage(String message) throws Exception {
-        new ActivityMessage(getConnection(), UserSettings.getUsername(),
-                UserSettings.getSecret(), message).request();
+    public void sendActivityMessage(final String message) throws Exception {
+        post(new BaseRunnable() {
+
+            @Override
+            public boolean runTask() throws Exception {
+                new ActivityMessage(getConnection(), UserSettings.getUsername(),
+                        UserSettings.getSecret(), message).request();
+                return true;
+            }
+        });
     }
 
     public void sendLogoutRequest() throws Exception {
-        // logout, clear all info.
-        if (new LogoutRequest(getConnection()).request()) {
-            // wait for 1-2s, then close the connection.
-            if (connection != null && !connection.isClosed()) {
-                connection.close();
+        post(new BaseRunnable() {
+
+            @Override
+            public boolean runTask() throws Exception {
+                // logout, clear all info.
+                if (new LogoutRequest(getConnection()).request()) {
+                    // wait for 1-2s, then close the connection, because the
+                    // server may not reply for logout command.
+                    Thread.sleep(1000);
+                    if (connection != null && !connection.isClosed()) {
+                        connection.close();
+                    }
+                }
+                return true;
             }
-        }
+        });
     }
 }
