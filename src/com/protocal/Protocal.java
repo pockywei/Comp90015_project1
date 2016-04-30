@@ -17,13 +17,14 @@ public class Protocal {
     public static final String ACTIVITY_SENDER = "authenticated_user";
 
     public static final String INVALIED_ERROR = "Invalied message or JSON parse error while parsing message.";
-    public static final String AUTH_FAIL = "the supplied secret is incorrect.";
-    public static final String LOGIN_FAIL = "attempt to login with wrong info.";
-    public static final String REGISTER_FAIL = "the username is already resgistered with the system.";
-    public static final String REGISTER_SUCC = "register success.";
-    public static final String LOGIN_SUCC = "logged in as user ";
-    public static final String ERROR_PARSE = "the message must contain non-null key ";
-    public static final String ERROR_LOGIN = "must send a LOGIN message first";
+    public static final String AUTH_FAIL = "the supplied secret is incorrect: %s";
+    public static final String LOGIN_FAIL = "wrong secret for user %s";
+    public static final String REGISTER_FAIL = "the %s is already resgistered with the system.";
+    public static final String REGISTER_FAIL_NO_USER = "user %s is not registered";
+    public static final String REGISTER_SUCC = "register success for %s";
+    public static final String LOGIN_SUCC = "logged in as user %s";
+    public static final String ERROR_PARSE = "the message must contain non-null key %s";
+    public static final String AUTH_LOGIN_FAIL = "must send a LOGIN message first";
 
     public static final String LOCAL_HOSTNAME = "localhost";
     public static final int LOCAL_PORT = 3780;

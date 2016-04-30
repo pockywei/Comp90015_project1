@@ -1,20 +1,26 @@
 package com.server.core.request;
 
+import com.protocal.Command;
 import com.protocal.Message;
 import com.protocal.connection.AbstractRequest;
 import com.protocal.connection.Connection;
 
 public class ActivityBroadCast extends AbstractRequest {
 
-    public ActivityBroadCast(Connection connection) {
+    private String username;
+    private String message;
+
+    public ActivityBroadCast(Connection connection, String username,
+            String message) {
         super(connection);
-        // TODO Auto-generated constructor stub
+        this.username = username;
+        this.message = message;
     }
 
     @Override
     public Message getRequestMessage() {
-        // TODO Auto-generated method stub
-        return null;
+        return Message.getBroadcastMsg(Message.getActivity(message, username),
+                Command.ACTIVITY_BROADCAST);
     }
 
 }

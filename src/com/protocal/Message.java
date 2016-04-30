@@ -127,8 +127,17 @@ public class Message {
                 getLoad());
     }
 
-    public JsonObject getActivityJson() {
+    public JsonObject getActivityMsgJson() {
         JsonObject activity = new JsonObject();
+        activity.addProperty(Protocal.ACTIVITY_MESSAGE,
+                getActivity().toString());
+        return activity;
+    }
+
+    public JsonObject getActivityCastJson() {
+        JsonObject activity = new JsonObject();
+        activity.addProperty(Protocal.ACTIVITY_SENDER,
+                getActivity().getUsername());
         activity.addProperty(Protocal.ACTIVITY_MESSAGE,
                 getActivity().toString());
         return activity;
@@ -212,6 +221,10 @@ public class Message {
     }
 
     public static Activity getActivity(String message) {
-        return new Activity().setMessage(message);
+        return getActivity(message, "");
+    }
+
+    public static Activity getActivity(String message, String username) {
+        return new Activity().setMessage(message).setUsername(username);
     }
 }

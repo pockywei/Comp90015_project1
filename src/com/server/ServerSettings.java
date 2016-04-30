@@ -1,7 +1,7 @@
 package com.server;
 
 import com.beans.ServerInfo;
-import com.server.core.DataTable;
+import com.server.core.LocalStorage;
 import com.utils.UtilHelper;
 import com.utils.log.Log;
 
@@ -26,8 +26,12 @@ public class ServerSettings {
         ServerSettings.remoteInfo.setPort(remotePort);
         ServerSettings.remoteInfo.setHostname(remoteHost);
         ServerSettings.remoteInfo.setSecret(remoteSecret);
-        DataTable.getInstance().add(remoteInfo);
+        LocalStorage.getInstance().addServer(remoteInfo);
         ServerSettings.activityInterval = activityInterval;
+    }
+
+    public static void setLocalLoad(final int load) {
+        localInfo.setLoad(load);
     }
 
     public static int getLocalPort() {
@@ -45,7 +49,7 @@ public class ServerSettings {
     public static int getLocalLoad() {
         return localInfo.getLoad();
     }
-    
+
     public static String getLocalID() {
         return localInfo.getId();
     }

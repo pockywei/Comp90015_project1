@@ -7,6 +7,9 @@ import java.util.Map;
 
 public enum Command {
 
+    /*
+     * Client request
+     */
     LOGIN,
 
     LOGOUT,
@@ -15,6 +18,9 @@ public enum Command {
 
     REGISTER,
 
+    /*
+     * Server request
+     */
     AUTHENTICATE,
 
     SERVER_ANNOUNCE,
@@ -23,19 +29,22 @@ public enum Command {
 
     LOCK_REQUEST,
 
-    INVALID_MESSAGE(Protocal.INVALIED_ERROR),
+    /*
+     * All response
+     */
+    INVALID_MESSAGE,
 
-    AUTHENTICATION_FAIL(Protocal.AUTH_FAIL),
+    AUTHENTICATION_FAIL,
 
-    LOGIN_SUCCESS(Protocal.LOGIN_SUCC),
+    LOGIN_SUCCESS,
 
-    LOGIN_FAILED(Protocal.LOGIN_FAIL),
+    LOGIN_FAILED,
 
     REDIRECT,
 
-    REGISTER_FAILED(Protocal.REGISTER_FAIL),
+    REGISTER_FAILED,
 
-    REGISTER_SUCCESS(Protocal.REGISTER_SUCC),
+    REGISTER_SUCCESS,
 
     LOCK_DENIED,
 
@@ -73,23 +82,6 @@ public enum Command {
         map.put("LOCK_REQUEST", LOCK_REQUEST);
         map.put("LOCK_DENIED", LOCK_DENIED);
         map.put("LOCK_ALLOWED", LOCK_ALLOWED);
-    }
-
-    private String response = "";
-
-    Command() {
-    }
-
-    Command(String response) {
-        this.response = response;
-    }
-
-    public void setResponseInfo(String responseInfo) {
-        this.response = responseInfo;
-    }
-
-    public String getResponse() {
-        return response;
     }
 
     public static boolean isClientRequest(Command com) {

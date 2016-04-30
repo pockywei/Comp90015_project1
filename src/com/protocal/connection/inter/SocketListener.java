@@ -2,8 +2,10 @@ package com.protocal.connection.inter;
 
 import java.net.Socket;
 
+import com.protocal.connection.Connection;
+
 public interface SocketListener {
     
-    public void distributSocket(Socket s) throws Exception;
+    public Connection distributSocket(Socket s) throws Exception;
     
 }

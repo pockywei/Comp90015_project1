@@ -1,6 +1,6 @@
 package com.beans;
 
-public class ServerInfo implements ServerValue {
+public class ServerInfo implements Record, Comparable<ServerInfo> {
 
     private String id = null;
     private int port = 0;
@@ -27,7 +27,7 @@ public class ServerInfo implements ServerValue {
 
     @Override
     public String getKey() {
-        return getSecret();
+        return getHostname() + getPort();
     }
 
     public int getPort() {
@@ -67,12 +67,26 @@ public class ServerInfo implements ServerValue {
     }
 
     public void setId(String id) {
-        this.id = id;
+        // the server id will be updated once only.
+        if (this.id == null) {
+            this.id = id;
+        }
     }
 
     @Override
     public String toString() {
         return String.format(OUTPUT_FORMAT, getHostname(), getPort(),
                 getSecret());
+    }
+
+    @Override
+    public int compareTo(ServerInfo another) {
+        // descending order.
+        return getLoad() - another.getLoad();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return getKey().equals(((Record) o).getKey());
     }
 }

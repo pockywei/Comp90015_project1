@@ -9,7 +9,7 @@ import com.protocal.connection.inter.Response;
 import com.utils.UtilHelper;
 import com.utils.log.Log;
 
-public final class Connection implements Comparable<Connection> {
+public final class Connection {
     private static final Log log = Log.getInstance();
     private Socket socket = null;
     private WriteTask writer = null;
@@ -17,12 +17,14 @@ public final class Connection implements Comparable<Connection> {
     protected ConnectionType type = null;
     private ConnectionListener listener = null;
 
-    public void setConnectionListener(ConnectionListener listener) {
-        this.listener = listener;
+    public Connection(Socket socket, Response response) throws Exception {
+        this(socket, response, null);
     }
 
-    public Connection(Socket socket, Response response) throws Exception {
+    public Connection(Socket socket, Response response,
+            ConnectionListener listener) throws Exception {
         this.socket = socket;
+        this.listener = listener;
         this.reader = new ReadTask(socket, response, this);
         this.writer = new WriteTask(socket, this);
     }
@@ -98,13 +100,11 @@ public final class Connection implements Comparable<Connection> {
     }
 
     @Override
-    public int compareTo(Connection another) {
-        if (another == null) {
-            return -1;
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
         }
-        if (!getSocketAddr().equals(another.getSocketAddr())) {
-            return -1;
-        }
-        return 0;
+        Connection c = (Connection) o;
+        return getSocketAddr().equals(c.getSocketAddr());
     }
 }

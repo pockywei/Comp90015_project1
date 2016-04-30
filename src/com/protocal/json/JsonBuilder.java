@@ -53,10 +53,10 @@ public class JsonBuilder {
             case ACTIVITY_MESSAGE:
                 json.addProperty(Protocal.USER_NAME, msg.getUsername());
                 json.addProperty(Protocal.SECRET, msg.getSecret());
-                json.add(Protocal.ACTIVITY, msg.getActivityJson());
+                json.add(Protocal.ACTIVITY, msg.getActivityMsgJson());
                 break;
             case ACTIVITY_BROADCAST:
-                json.add(Protocal.ACTIVITY, msg.getActivityJson());
+                json.add(Protocal.ACTIVITY, msg.getActivityCastJson());
                 break;
             case LOCK_ALLOWED:
                 json.addProperty(Protocal.USER_NAME, msg.getUsername());

@@ -62,14 +62,28 @@ public abstract class AbstractServer extends BaseManager
     }
 
     @Override
-    public void distributSocket(Socket s) throws Exception {
+    public Connection distributSocket(Socket s) throws Exception {
         log.debug("incomming connection: " + UtilHelper.getSocketAddr(s));
-        new Connection(s, new ServerResponse()).setConnectionListener(this);
+        Connection c = new Connection(s, new ServerResponse(), this);
+        return c;
     }
 
     @Override
     public void close(Connection c) throws Exception {
-
+        switch (c.getType()) {
+            case USER_CONN:
+                synchronized (userConnections) {
+                    userConnections.remove(c);
+                    // update server user load.
+                    ServerSettings.setLocalLoad(userConnections.size());
+                }
+                break;
+            case SERVER_CONN:
+                synchronized (serverConnections) {
+                    serverConnections.remove(c);
+                }
+                break;
+        }
     }
 
     @Override
@@ -79,7 +93,7 @@ public abstract class AbstractServer extends BaseManager
                 synchronized (userConnections) {
                     userConnections.add(c);
                     // add server user load.
-                    
+                    ServerSettings.setLocalLoad(userConnections.size());
                 }
                 break;
             case SERVER_CONN:
@@ -90,13 +104,21 @@ public abstract class AbstractServer extends BaseManager
         }
     }
 
+    public final List<Connection> getLoggedUserList() {
+        return userConnections;
+    }
+
+    public final List<Connection> getAuthentiedServers() {
+        return serverConnections;
+    }
+
     @Override
     public void clear() {
         stop();
         if (listener != null) {
             listener.stop();
         }
-        DataTable.getInstance().clear();
+        LocalStorage.getInstance().clear();
         synchronized (userConnections) {
             for (Connection c : userConnections) {
                 c.close();

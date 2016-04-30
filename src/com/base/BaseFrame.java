@@ -15,7 +15,7 @@ public abstract class BaseFrame extends JFrame
         implements FrameUpdateListener, ActionListener {
 
     private static final long serialVersionUID = 1L;
-    private static final String TITLE = "ActivityStreamer Text I/O";
+    private static final String TITLE = "ActivityStreamer Text I/O by Eyebrow";
     protected static final Log log = Log.getInstance();
 
     public abstract void initView();

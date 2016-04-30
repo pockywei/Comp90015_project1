@@ -1,5 +1,7 @@
 package com.beans;
 
-public interface ServerValue {
+public interface Record {
+
     public String getKey();
+
 }
