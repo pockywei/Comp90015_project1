@@ -148,7 +148,7 @@ public class ClientManger extends BaseManager {
         // logout, clear all info.
         if (new LogoutRequest(getConnection()).request()) {
             // wait for 1-2s, then close the connection.
-            if (connection != null) {
+            if (connection != null && !connection.isClosed()) {
                 connection.close();
             }
         }

@@ -4,7 +4,6 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 import com.base.EmptyRunnable;
-import com.protocal.connection.inter.ConnectionListener;
 import com.utils.UtilHelper;
 
 public class WriteTask extends AbstractSocketTask {
@@ -12,9 +11,9 @@ public class WriteTask extends AbstractSocketTask {
     private PrintWriter outwriter = null;
     private String request = null;
 
-    public WriteTask(Socket socket, ConnectionListener connectionListener)
+    public WriteTask(Socket socket, Connection connection)
             throws Exception {
-        super(socket, connectionListener);
+        super(socket, connection);
         this.outwriter = new PrintWriter(getOutputStream(), true);
         // start with a empty runnable because the write task will not handle
         // the first runnable.
@@ -31,8 +30,8 @@ public class WriteTask extends AbstractSocketTask {
             }
             catch (Exception e) {
                 log.error("write exception, closing request. " + e);
-                if (connectionListener != null) {
-                    connectionListener.close();
+                if (connection != null) {
+                    connection.close();
                 }
             }
         }

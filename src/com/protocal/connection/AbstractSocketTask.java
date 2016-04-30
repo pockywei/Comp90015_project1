@@ -5,18 +5,17 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 import com.base.BaseRunnable;
-import com.protocal.connection.inter.ConnectionListener;
 import com.utils.UtilHelper;
 
 public abstract class AbstractSocketTask extends BaseRunnable {
 
     private Socket socket;
-    protected ConnectionListener connectionListener = null;
+    protected Connection connection = null;
 
     public AbstractSocketTask(Socket socket,
-            ConnectionListener connectionListener) throws Exception {
+            Connection connection) throws Exception {
         this.socket = socket;
-        this.connectionListener = connectionListener;
+        this.connection = connection;
     }
 
     protected OutputStream getOutputStream() throws Exception {
@@ -35,6 +34,6 @@ public abstract class AbstractSocketTask extends BaseRunnable {
     }
 
     public void close() throws Exception {
-        connectionListener = null;
+        connection = null;
     }
 }

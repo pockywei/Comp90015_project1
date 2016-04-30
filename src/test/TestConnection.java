@@ -3,7 +3,6 @@ package test;
 import java.net.Socket;
 
 import com.protocal.connection.Connection;
-import com.protocal.connection.inter.ConnectionListener;
 import com.protocal.connection.inter.Response;
 
 public class TestConnection {
@@ -23,7 +22,7 @@ public class TestConnection {
 class iResponse implements Response {
 
     @Override
-    public boolean process(String json, ConnectionListener connection)
+    public boolean process(String json, Connection connection)
             throws Exception {
         System.out.println(json);
         if (json.equals("get HI 6")) {

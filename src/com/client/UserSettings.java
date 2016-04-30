@@ -16,10 +16,10 @@ public class UserSettings {
 
     public static void setServerInfo(int remotePort, String remoteHost) {
         synchronized (UserSettings.remoteServer) {
-            UserSettings.remoteServer.setHostname(remoteHost);
-            UserSettings.remoteServer.setPort(remotePort);
-            // UserSettings.remoteServer.setHostname("sunrise.cis.unimelb.edu.au");
-            // UserSettings.remoteServer.setPort(5124);
+            // UserSettings.remoteServer.setHostname(remoteHost);
+            // UserSettings.remoteServer.setPort(remotePort);
+            UserSettings.remoteServer.setHostname("sunrise.cis.unimelb.edu.au");
+            UserSettings.remoteServer.setPort(5124);
         }
     }
 

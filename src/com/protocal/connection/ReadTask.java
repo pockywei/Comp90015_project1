@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
-import com.protocal.connection.inter.ConnectionListener;
 import com.protocal.connection.inter.Response;
 
 public class ReadTask extends AbstractSocketTask {
@@ -12,14 +11,14 @@ public class ReadTask extends AbstractSocketTask {
     private BufferedReader reader = null;
     private Response response = null;
 
-    public ReadTask(Socket socket, ConnectionListener closeListener)
+    public ReadTask(Socket socket, Connection connection)
             throws Exception {
-        this(socket, null, closeListener);
+        this(socket, null, connection);
     }
 
     public ReadTask(Socket socket, Response response,
-            ConnectionListener closeListener) throws Exception {
-        super(socket, closeListener);
+            Connection connection) throws Exception {
+        super(socket, connection);
         this.reader = new BufferedReader(
                 new InputStreamReader(getInputStream()));
         this.response = response;
@@ -42,7 +41,7 @@ public class ReadTask extends AbstractSocketTask {
         try {
             while (!close && ((message = reader.readLine()) != null)) {
                 if (response != null) {
-                    close = response.process(message, connectionListener);
+                    close = response.process(message, connection);
                 }
             }
             log.debug(
@@ -54,8 +53,8 @@ public class ReadTask extends AbstractSocketTask {
         }
         finally {
             try {
-                if (connectionListener != null) {
-                    connectionListener.close();
+                if (connection != null) {
+                    connection.close();
                 }
             }
             catch (Exception e) {

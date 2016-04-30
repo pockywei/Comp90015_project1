@@ -2,7 +2,7 @@ package com.client.core;
 
 import com.client.UserSettings;
 import com.protocal.Message;
-import com.protocal.connection.inter.ConnectionListener;
+import com.protocal.connection.Connection;
 import com.protocal.connection.inter.Response;
 import com.protocal.json.ParserJson;
 import com.utils.log.Log;
@@ -12,7 +12,7 @@ public class ClientResponse implements Response {
     private static final Log log = Log.getInstance();
 
     @Override
-    public boolean process(String json, ConnectionListener connection)
+    public boolean process(String json, Connection connection)
             throws Exception {
         Message msg = new ParserJson(json).getMsg();
         if (msg == null) {

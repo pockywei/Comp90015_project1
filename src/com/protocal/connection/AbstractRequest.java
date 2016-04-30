@@ -1,7 +1,6 @@
 package com.protocal.connection;
 
 import com.protocal.Message;
-import com.protocal.connection.inter.ConnectionListener;
 import com.protocal.json.JsonBuilder;
 import com.utils.UtilHelper;
 import com.utils.log.Log;
@@ -9,9 +8,9 @@ import com.utils.log.Log;
 public abstract class AbstractRequest {
 
     protected static final Log log = Log.getInstance();
-    private ConnectionListener connection = null;
+    private Connection connection = null;
 
-    public AbstractRequest(ConnectionListener connection) {
+    public AbstractRequest(Connection connection) {
         this.connection = connection;
     }
 

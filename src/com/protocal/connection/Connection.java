@@ -9,12 +9,17 @@ import com.protocal.connection.inter.Response;
 import com.utils.UtilHelper;
 import com.utils.log.Log;
 
-public class Connection implements ConnectionListener {
+public final class Connection {
     private static final Log log = Log.getInstance();
     private Socket socket = null;
     private WriteTask writer = null;
     private ReadTask reader = null;
     protected ConnectionType type = null;
+    private ConnectionListener listener = null;
+
+    public void setConnectionListener(ConnectionListener listener) {
+        this.listener = listener;
+    }
 
     public Connection(Socket socket, Response response) throws Exception {
         this.socket = socket;
@@ -33,11 +38,13 @@ public class Connection implements ConnectionListener {
         return type;
     }
 
-    @Override
     public void close() {
         try {
             // delete from Server connection list.
-            // TODO
+            if (listener != null) {
+                listener.close();
+                listener = null;
+            }
             if (writer != null) {
                 writer.close();
             }
@@ -60,17 +67,24 @@ public class Connection implements ConnectionListener {
         }
     }
 
-    @Override
     public void setConnectionType(ConnectionType type) {
         if (this.type == null) {
             this.type = type;
             // add the connection to the ServerImpl by different type.
-            // TODO
-
+            if (listener != null) {
+                listener.addConnection(this);
+            }
         }
     }
 
-    @Override
+    /**
+     * Send message
+     * 
+     * @param com
+     * @param activity
+     * @return true: send success; false: send failed as connection has been
+     *         closed.
+     */
     public boolean sendMessage(String msg) {
         if (isClosed() || UtilHelper.isEmptyStr(msg) || writer == null) {
             return false;

@@ -3,7 +3,7 @@ package com.client.core.request;
 import com.protocal.Command;
 import com.protocal.Message;
 import com.protocal.connection.AbstractRequest;
-import com.protocal.connection.inter.ConnectionListener;
+import com.protocal.connection.Connection;
 
 public class ActivityMessage extends AbstractRequest {
 
@@ -11,7 +11,7 @@ public class ActivityMessage extends AbstractRequest {
     private String secret;
     private String message;
 
-    public ActivityMessage(ConnectionListener connection, String username,
+    public ActivityMessage(Connection connection, String username,
             String secret, String message) {
         super(connection);
         this.username = username;

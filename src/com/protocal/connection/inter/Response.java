@@ -1,5 +1,7 @@
 package com.protocal.connection.inter;
 
+import com.protocal.connection.Connection;
+
 public interface Response {
 
     /**
@@ -10,6 +12,6 @@ public interface Response {
      * @return true: close connection; false: not
      * @throws Exception
      */
-    public boolean process(String json, ConnectionListener connection)
+    public boolean process(String json, Connection connection)
             throws Exception;
 }
