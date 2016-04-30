@@ -54,6 +54,12 @@ public class MessageFrame extends BaseFrame {
         outputPanel.setBorder(lineBorder);
 
         inputText = new JTextArea();
+        
+        
+        
+        inputText.setLineWrap(true);
+        inputText.setWrapStyleWord(true);
+
         JScrollPane scrollPane = new JScrollPane(inputText);
 
         inputPanel.add(scrollPane);
@@ -71,6 +77,9 @@ public class MessageFrame extends BaseFrame {
         logoutButton.addActionListener(this);
 
         outputText = new JTextArea();
+        outputText.setEditable(false);  
+        outputText.setLineWrap(true);
+        outputText.setWrapStyleWord(true);
         JScrollPane scrollPane2 = new JScrollPane(outputText);
         outputPanel.add(scrollPane2, BorderLayout.CENTER);
 
@@ -121,6 +130,8 @@ public class MessageFrame extends BaseFrame {
     }
 
     private void receiveMessage(String message) {
+    	JPanel outputpanel = new JPanel();
+    	
         outputText.append(message + FileUtils.NEW_LINE);
     }
 
