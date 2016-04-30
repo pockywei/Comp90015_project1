@@ -5,7 +5,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import com.utils.log.Log;
 
 public abstract class BaseRunnable implements Runnable {
-    
+
     protected static final Log log = Log.getInstance();
     protected boolean stop = true;
     private LinkedBlockingQueue<BaseRunnable> queue = new LinkedBlockingQueue<>();
@@ -47,12 +47,17 @@ public abstract class BaseRunnable implements Runnable {
         if (!stop) {
             stop = true;
             post(new StopRunnable());
-            log.debug("Task has been stopped.");
+            log.debug(this.getClass().getSimpleName()
+                    + " task has been stopped.");
         }
     }
 
     public void start() {
-        post(this);
+        start(this);
+    }
+
+    protected void start(BaseRunnable task) {
+        post(task);
         // Starting a thread or adding this runnable into a thread-pool.
         new Thread(this).start();
     }

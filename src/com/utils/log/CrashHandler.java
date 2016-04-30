@@ -58,13 +58,15 @@ public class CrashHandler implements UncaughtExceptionHandler {
             }
             managerList.clear();
         }
+        log.debug(String.format("the system has been terminated by [%s]",
+                arg == 0 ? "Normal State" : "Error State"));
         System.exit(arg);
     }
 
     public void exit() {
         exit(0);
     }
-    
+
     public void errorExit() {
         exit(-1);
     }

@@ -45,7 +45,8 @@ public class ReadTask extends AbstractSocketTask {
                     close = response.process(message, connectionListener);
                 }
             }
-            log.debug("connection closed to " + getSocketAddr());
+            log.debug(
+                    "connection closed to " + getSocketAddr() + " by client.");
         }
         catch (Exception e) {
             log.error("connection " + getSocketAddr()

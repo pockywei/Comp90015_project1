@@ -13,7 +13,7 @@ public class InterfaceTest {
     public static void main(String[] args) throws Exception {
         Socket s = new Socket("sunrise.cis.unimelb.edu.au", 5123);
         Connection c = new Connection(s, new SimpleResponse());
-        if (new ActivityMessage(c, Protocal.ANONYMOUS, "", "Hi all.")
+        if (new ActivityMessage(c, "anonymous", "", "Hi all.")
                 .request()) {
             System.out.println("success");
         }

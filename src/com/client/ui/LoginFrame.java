@@ -9,6 +9,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
@@ -21,10 +22,7 @@ public class LoginFrame extends BaseFrame {
 
     private static final long serialVersionUID = 1L;
 
-    public LoginFrame() {
-        initView();
-    }
-    
+    @Override
     public void initView() {
         setSize(440, 330);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -40,15 +38,9 @@ public class LoginFrame extends BaseFrame {
         bar.add(label);
 
         add(bar, BorderLayout.SOUTH);
-        setVisible(true);
     }
 
-    public static void main(String[] args) {
-        LoginFrame frame = new LoginFrame();
-
-    }
-
-    private static void placeComponents(JPanel panel) {
+    private void placeComponents(JPanel panel) {
         ClientActionController control = new ClientActionController();
 
         panel.setLayout(null);
@@ -74,18 +66,18 @@ public class LoginFrame extends BaseFrame {
         panel.add(passwordText);
 
         JButton loginButton = new JButton("login");
-        control.ListenLoginButton(loginButton);
+        control.listenLoginButton(loginButton, userText, passwordText);
         loginButton.setBounds(50, 230, 80, 25);
 
         panel.add(loginButton);
 
         JButton registerButton = new JButton("register");
-        control.ListenregisterButton(registerButton);
+        control.listenRegisterButton(registerButton, this);
         registerButton.setBounds(160, 230, 80, 25);
         panel.add(registerButton);
 
         JButton anonymousLogin = new JButton("Login as guest");
-        control.GuestLoginButton(anonymousLogin);
+        control.listenGuestLoginButton(anonymousLogin, this);
         anonymousLogin.setBounds(270, 230, 130, 25);
         panel.add(anonymousLogin);
 
@@ -94,7 +86,6 @@ public class LoginFrame extends BaseFrame {
         JMenu menu;
         JMenu help;
         JMenuItem Connect;
-        JMenuItem Disconnect;
         menu = new JMenu("Menu");
 
         help = new JMenu("help");
@@ -105,30 +96,30 @@ public class LoginFrame extends BaseFrame {
         help.add(about);
         Connect = new JMenuItem("Connect");
         control.listenConnect(Connect);
-        Disconnect = new JMenuItem("Disconnect");
-        control.listenDisConnect(Disconnect);
-
         menu.add(Connect);
-
-        menu.addSeparator();
-        menu.add(Disconnect);
-
     }
 
     @Override
     public void actionSuccess(Command com, String info) {
-
+        switch (com) {
+            case REGISTER_SUCCESS:
+                JOptionPane.showMessageDialog(null, info);
+                break;
+            case LOGIN_SUCCESS:
+                nextFrame(MessageFrame.class);
+                break;
+            default:
+                break;
+        }
     }
 
     @Override
     public void actionFailed(String info) {
-
+        JOptionPane.showMessageDialog(null, info);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // TODO Auto-generated method stub
-
+        // do nothing...
     }
-
 }

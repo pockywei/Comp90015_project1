@@ -1,8 +1,6 @@
 package com.client.core;
 
 import com.client.UserSettings;
-import com.client.core.inter.FrameUpdateListener;
-import com.client.core.request.LoginRequest;
 import com.protocal.Message;
 import com.protocal.connection.inter.ConnectionListener;
 import com.protocal.connection.inter.Response;
@@ -17,33 +15,36 @@ public class ClientResponse implements Response {
     public boolean process(String json, ConnectionListener connection)
             throws Exception {
         Message msg = new ParserJson(json).getMsg();
+        if (msg == null) {
+            log.error("received a empty response from the server...");
+            return false;
+        }
+        String info = msg.getInfo();
+        log.debug("received from the server " + info + " " + msg.getCommand());
         switch (msg.getCommand()) {
+            case AUTHENTICATION_FAIL:
             case INVALID_MESSAGE:
             case LOGIN_FAILED:
             case REGISTER_FAILED:
-                String info = msg.getInfo();
-                log.debug(info + " " + msg.getCommand());
                 ClientManger.getInstance().notifyFrameFailed(info);
                 return true;
             case REGISTER_SUCCESS:
-                info = msg.getInfo();
-                log.debug(info + " " + msg.getCommand());
                 ClientManger.getInstance().notifyFrameSuccess(msg.getCommand(),
                         info);
                 return true;
             case LOGIN_SUCCESS:
-                info = msg.getInfo();
-                log.debug(info + " " + msg.getCommand());
                 ClientManger.getInstance().notifyFrameSuccess(msg.getCommand(),
                         info);
                 return false;
             case REDIRECT:
                 // Re-login to the given server.
-                UserSettings.resetServerInfo(msg.getPort(), msg.getHostnmae());
-                new LoginRequest(ClientManger.getInstance().createConnection(),
-                        UserSettings.getUsername(), UserSettings.getSecret())
-                                .request();
+                UserSettings.setServerInfo(msg.getPort(), msg.getHostnmae());
+                ClientManger.getInstance().sendLoginRequest();
                 return true;
+            case ACTIVITY_BROADCAST:
+                ClientManger.getInstance().notifyFrameSuccess(msg.getCommand(),
+                        msg.getActivity().toString());
+                return false;
             default:
                 break;
         }

@@ -3,8 +3,8 @@ package com.server.beans;
 public class ServerInfo implements ServerValue {
 
     private String id = null;
-    private int port = 3780;
-    private String hostname = "localhost";
+    private int port = 0;
+    private String hostname = null;
     private String secret = null;
     private static final String OUTPUT_FORMAT = "IP:<%s:%d> secret:%s";
     private int load = 0;
@@ -24,7 +24,7 @@ public class ServerInfo implements ServerValue {
         this(id, port, hostname, secret);
         this.load = load;
     }
-    
+
     @Override
     public String getKey() {
         return getSecret();
@@ -61,7 +61,7 @@ public class ServerInfo implements ServerValue {
     public void setLoad(int load) {
         this.load = load;
     }
-    
+
     public String getId() {
         return id;
     }

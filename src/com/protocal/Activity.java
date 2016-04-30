@@ -1,7 +1,9 @@
 package com.protocal;
 
-public class Activity  {
+public class Activity {
+    
     private String message;
+    private String sender;
 
     public String getMessage() {
         return message;

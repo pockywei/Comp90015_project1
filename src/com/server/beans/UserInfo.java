@@ -1,9 +1,13 @@
 package com.server.beans;
 
 public class UserInfo implements ServerValue, Comparable<UserInfo> {
+    
     private String username;
     private String secret;
 
+    public UserInfo() {
+    }
+    
     public UserInfo(String username, String secret) {
         this.username = username;
         this.secret = secret;
@@ -15,6 +19,14 @@ public class UserInfo implements ServerValue, Comparable<UserInfo> {
 
     public String getSecret() {
         return secret;
+    }
+    
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setSecret(String secret) {
+        this.secret = secret;
     }
 
     @Override

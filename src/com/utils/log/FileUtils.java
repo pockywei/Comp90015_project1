@@ -29,7 +29,7 @@ public class FileUtils {
      * @param text
      * @param path
      */
-    public void write(String text, String path) {
+    public synchronized void write(String text, String path) {
         BufferedWriter bw = null;
         try {
             bw = new BufferedWriter(new OutputStreamWriter(

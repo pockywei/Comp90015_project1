@@ -18,8 +18,12 @@ public abstract class BaseFrame extends JFrame
     private static final String TITLE = "ActivityStreamer Text I/O";
     protected static final Log log = Log.getInstance();
 
+    public abstract void initView();
+
     public BaseFrame() {
         setTitle(TITLE);
+        initView();
+        setVisible(true);
         ClientManger.getInstance().addUIListener(this);
         this.addWindowListener(new WindowAdapter() {
             @Override
@@ -35,4 +39,20 @@ public abstract class BaseFrame extends JFrame
         ClientManger.getInstance().removeUIListener(this);
     }
 
+    public void nextFrame(Class<? extends BaseFrame> frame) {
+        close();
+        try {
+            frame.newInstance();
+        }
+        catch (Exception e) {
+            log.error("start frame failed from " + this.getName() + " to "
+                    + frame.getName());
+            CrashHandler.getInstance().errorExit();
+        }
+    }
+
+    public void close() {
+        setVisible(false);
+        dispose();
+    }
 }

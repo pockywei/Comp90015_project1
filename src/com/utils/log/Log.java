@@ -46,7 +46,7 @@ public final class Log {
         output(msg, LogOption.DEBUG);
     }
 
-    private synchronized void output(String msg, LogOption op) {
+    private void output(String msg, LogOption op) {
         String output = format(msg, op);
         switch (type) {
             case SYSTEM_OUT:

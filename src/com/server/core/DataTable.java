@@ -12,8 +12,8 @@ import com.server.beans.ServerValue;
 import com.server.beans.UserInfo;
 
 public class DataTable {
-    private Map<String, ServerValue> userTable = new ConcurrentHashMap<>();
-    private Map<String, ServerValue> serverTable = new ConcurrentHashMap<>();
+    private final Map<String, ServerValue> userTable = new ConcurrentHashMap<>();
+    private final Map<String, ServerValue> serverTable = new ConcurrentHashMap<>();
     private static DataTable instance = null;
 
     public synchronized static DataTable getInstance() {
@@ -22,7 +22,7 @@ public class DataTable {
         }
         return instance;
     }
-    
+
     public boolean add(ServerValue value) {
         if (value == null) {
             return false;
@@ -46,7 +46,7 @@ public class DataTable {
     public int getUserSize() {
         return userTable.size();
     }
-    
+
     public void clear() {
         userTable.clear();
         serverTable.clear();
@@ -59,7 +59,7 @@ public class DataTable {
     public List<ServerInfo> getRemoteServers() {
         return new ConverMapToList<ServerInfo>().toList(serverTable);
     }
-    
+
     private static class ConverMapToList<E> {
         @SuppressWarnings("unchecked")
         public List<E> toList(Map<String, ServerValue> map) {

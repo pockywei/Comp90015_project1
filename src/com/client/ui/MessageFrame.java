@@ -9,67 +9,66 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.border.Border;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
 import com.base.BaseFrame;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
+import com.client.core.ClientManger;
 import com.protocal.Command;
+import com.utils.UtilHelper;
+import com.utils.log.FileUtils;
 
 public class MessageFrame extends BaseFrame {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger log = LogManager.getLogger();
     private JTextArea inputText;
     private JTextArea outputText;
     private JButton sendButton;
-    private JButton disconnectButton;
-    private JSONParser parser = new JSONParser();
+    private JButton logoutButton;
+    private static final int WINDOW_WIDTH = 550;
+    private static final int WINDOW_HEIGHT = 700;
+    private static final int INPUT_WIDTH = 550;
+    private static final int INPUT_HEIGHT = 80;
 
-    public MessageFrame() {
+    @Override
+    public void initView() {
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
 
         JPanel inputPanel = new JPanel();
         JPanel outputPanel = new JPanel();
         inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.PAGE_AXIS));
-
         outputPanel.setLayout(new BorderLayout());
+
         Border lineBorder = BorderFactory.createTitledBorder(
                 BorderFactory.createLineBorder(Color.lightGray),
-                "JSON input, to send to server");
+                "Send Messge:");
         inputPanel.setBorder(lineBorder);
+
         lineBorder = BorderFactory.createTitledBorder(
                 BorderFactory.createLineBorder(Color.lightGray),
-                "JSON output, received from server");
-        outputPanel.setName("Text outputs");
+                "Received from server");
+        outputPanel.setBorder(lineBorder);
 
         inputText = new JTextArea();
         JScrollPane scrollPane = new JScrollPane(inputText);
 
         inputPanel.add(scrollPane);
-        scrollPane.setPreferredSize(new Dimension(300, 40));
+        inputPanel.setSize(INPUT_WIDTH, INPUT_HEIGHT);
+        scrollPane.setPreferredSize(new Dimension(INPUT_WIDTH, INPUT_HEIGHT));
 
         JPanel buttonGroup = new JPanel();
         sendButton = new JButton("Send");
-        disconnectButton = new JButton("Disconnect");
+        logoutButton = new JButton("LogOut");
         buttonGroup.add(sendButton);
-        buttonGroup.add(disconnectButton);
+        buttonGroup.add(logoutButton);
 
         inputPanel.add(buttonGroup);
         sendButton.addActionListener(this);
-        disconnectButton.addActionListener(this);
+        logoutButton.addActionListener(this);
 
         outputText = new JTextArea();
         JScrollPane scrollPane2 = new JScrollPane(outputText);
@@ -81,21 +80,8 @@ public class MessageFrame extends BaseFrame {
         add(mainPanel);
 
         setLocationRelativeTo(null);
-        setSize(300, 888);
+        setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setVisible(true);
-    }
-
-    public void setOutputText(final JSONObject obj) {
-
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        JsonParser jp = new JsonParser();
-        JsonElement je = jp.parse(obj.toJSONString());
-        String prettyJsonString = gson.toJson(je);
-        outputText.setText(prettyJsonString);
-        outputText.revalidate();
-        outputText.repaint();
-
     }
 
     @Override
@@ -104,34 +90,54 @@ public class MessageFrame extends BaseFrame {
         if (e.getSource() == sendButton) {
             String msg = inputText.getText().trim().replaceAll("\r", "")
                     .replaceAll("\n", "").replaceAll("\t", "");
-            JSONObject obj;
+            if (UtilHelper.isEmptyStr(msg)) {
+                return;
+            }
+            sendMessage(msg);
+        }
+        else if (e.getSource() == logoutButton) {
             try {
-                obj = (JSONObject) parser.parse(msg);
-                // ClientSolution.getInstance().sendActivityObject(obj);
+                ClientManger.getInstance().sendLogoutRequest();
+                nextFrame(LoginFrame.class);
             }
-            catch (ParseException e1) {
-                log.error(
-                        "invalid JSON object entered into input text field, data not sent");
+            catch (Exception e1) {
+                log.error("logout request send failed by the exception " + e1);
+                JOptionPane.showMessageDialog(null,
+                        "logout request failed, please check the remote info or network.");
             }
-
         }
-        else if (e.getSource() == disconnectButton) {
-            // ClientSolution.getInstance().disconnect();
-        }
-
     }
 
-    public static void main(String[] args) {
-        MessageFrame frame = new MessageFrame();
+    private void sendMessage(String message) {
+        try {
+            ClientManger.getInstance().sendActivityMessage(message);
+            inputText.setText("");
+        }
+        catch (Exception e1) {
+            log.error("Activity request send failed by the exception " + e1);
+            JOptionPane.showMessageDialog(null,
+                    "Activity message request failed, please check the remote info or network.");
+        }
+    }
+
+    private void receiveMessage(String message) {
+        outputText.append(message + FileUtils.NEW_LINE);
     }
 
     @Override
     public void actionSuccess(Command com, String info) {
-
+        switch (com) {
+            case ACTIVITY_BROADCAST:
+                // update the received message to frame.
+                receiveMessage(info);
+                break;
+            default:
+                break;
+        }
     }
 
     @Override
     public void actionFailed(String info) {
-
+        JOptionPane.showMessageDialog(null, info);
     }
 }

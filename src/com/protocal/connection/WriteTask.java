@@ -3,6 +3,7 @@ package com.protocal.connection;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import com.base.EmptyRunnable;
 import com.protocal.connection.inter.ConnectionListener;
 import com.utils.UtilHelper;
 
@@ -11,11 +12,13 @@ public class WriteTask extends AbstractSocketTask {
     private PrintWriter outwriter = null;
     private String request = null;
 
-    public WriteTask(Socket socket, ConnectionListener closeListener)
+    public WriteTask(Socket socket, ConnectionListener connectionListener)
             throws Exception {
-        super(socket, closeListener);
+        super(socket, connectionListener);
         this.outwriter = new PrintWriter(getOutputStream(), true);
-        start();
+        // start with a empty runnable because the write task will not handle
+        // the first runnable.
+        start(new EmptyRunnable());
     }
 
     @Override
