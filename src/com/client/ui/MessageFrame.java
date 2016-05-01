@@ -159,7 +159,7 @@ public class MessageFrame extends BaseFrame {
     }
 
     @Override
-    public void actionFailed(String info) {
+    public void actionFailed(Command com, String info) {
         JOptionPane.showMessageDialog(null, info);
     }
 }

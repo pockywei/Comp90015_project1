@@ -48,7 +48,12 @@ public enum Command {
 
     LOCK_DENIED,
 
-    LOCK_ALLOWED;
+    LOCK_ALLOWED,
+    
+    /*
+     * UI action
+     */
+    CONNECTION_ERROR;
 
     private static final List<Command> USER_REQUEST = new ArrayList<>();
     private static final List<Command> SERVER_REQUEST = new ArrayList<>();

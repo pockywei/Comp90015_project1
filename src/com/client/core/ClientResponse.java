@@ -26,7 +26,8 @@ public class ClientResponse implements Response {
             case INVALID_MESSAGE:
             case LOGIN_FAILED:
             case REGISTER_FAILED:
-                ClientManger.getInstance().notifyFrameFailed(info);
+                ClientManger.getInstance().notifyFrameFailed(msg.getCommand(),
+                        info);
                 return true;
             case REGISTER_SUCCESS:
                 ClientManger.getInstance().notifyFrameSuccess(msg.getCommand(),

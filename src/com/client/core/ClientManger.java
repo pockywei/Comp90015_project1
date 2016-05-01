@@ -15,6 +15,7 @@ import com.client.core.request.LoginRequest;
 import com.client.core.request.LogoutRequest;
 import com.client.core.request.RegisterRequest;
 import com.protocal.Command;
+import com.protocal.Protocal;
 import com.protocal.connection.Connection;
 
 public class ClientManger extends BaseManager {
@@ -69,17 +70,25 @@ public class ClientManger extends BaseManager {
         return true;
     }
 
-    private Connection createConnection() throws Exception {
-        if (connection != null) {
-            connection.close();
+    private Connection createConnection() {
+        try {
+            if (connection != null) {
+                connection.close();
+            }
+            return connection = new Connection(
+                    new Socket(UserSettings.getRemoteHost(),
+                            UserSettings.getRemotePort()),
+                    new ClientResponse());
         }
-        return connection = new Connection(
-                new Socket(UserSettings.getRemoteHost(),
-                        UserSettings.getRemotePort()),
-                new ClientResponse());
+        catch (Exception e) {
+            log.error("connection create failed " + e);
+            notifyFrameFailed(Command.CONNECTION_ERROR,
+                    Protocal.CONNECTION_FAIL);
+        }
+        return null;
     }
 
-    public Connection getConnection() throws Exception {
+    public Connection getConnection() {
         if (connection == null || connection.isClosed()) {
             if (!stop) {
                 return createConnection();
@@ -114,14 +123,14 @@ public class ClientManger extends BaseManager {
      * 
      * @param info
      */
-    public void notifyFrameFailed(final String info) {
+    public void notifyFrameFailed(final Command com, final String info) {
         synchronized (frameList) {
             for (final FrameUpdateListener frame : frameList) {
                 SwingUtilities.invokeLater(new Runnable() {
 
                     @Override
                     public void run() {
-                        frame.actionFailed(info);
+                        frame.actionFailed(com, info);
                     }
                 });
             }

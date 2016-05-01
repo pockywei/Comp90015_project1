@@ -27,6 +27,7 @@ public class Protocal {
     public static final String LOGIN_SUCC = "logged in as user %s";
     public static final String ERROR_PARSE = "the message must contain non-null key %s";
     public static final String AUTH_LOGIN_FAIL = "must send a LOGIN message first";
+    public static final String CONNECTION_FAIL = "connection error, please check remote info or network.";
 
     public static final String LOCAL_HOSTNAME = "localhost";
     public static final int LOCAL_PORT = 3780;

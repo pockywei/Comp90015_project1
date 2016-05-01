@@ -6,5 +6,5 @@ public interface FrameUpdateListener {
 
     public void actionSuccess(Command com, String info);
 
-    public void actionFailed(String info);
+    public void actionFailed(Command com, String info);
 }
