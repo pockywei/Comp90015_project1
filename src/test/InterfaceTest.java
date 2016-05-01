@@ -3,9 +3,7 @@ package test;
 import java.net.Socket;
 
 import com.client.core.request.ActivityMessage;
-import com.protocal.Protocal;
 import com.protocal.connection.Connection;
-import com.protocal.connection.inter.ConnectionListener;
 import com.protocal.connection.inter.Response;
 
 public class InterfaceTest {

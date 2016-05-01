@@ -52,7 +52,7 @@ public class ServerResponse extends AbstractResponse {
                 return new AnnounceResponse(msg.toServerInfo()).process(json,
                         connection);
             case ACTIVITY_BROADCAST:
-                return new BroadcastResponse(msg.toUserInfo(),
+                return new BroadcastResponse(msg.getActivity().getUsername(),
                         msg.getActivity().getMessage()).process(json,
                                 connection);
             case LOCK_ALLOWED:

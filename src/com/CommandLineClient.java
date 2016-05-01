@@ -7,7 +7,6 @@ import org.apache.commons.cli.ParseException;
 
 import com.base.BaseSubject;
 import com.client.UserSettings;
-import com.client.ui.LoginFrame;
 
 public class CommandLineClient extends BaseSubject {
 

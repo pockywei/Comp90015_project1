@@ -26,9 +26,19 @@ public class RegisterResponse extends AbstractResponse {
             connection.waitCount = ServerManager.getInstance().sendLockRequest(
                     connection, register.getUsername(), register.getSecret());
 
-            // keep the register connection until all servers reply lock
-            // allowed.
-            ServerManager.getInstance().addRegisterConnection(connection);
+            if (connection.waitCount == 0) {
+                LocalStorage.getInstance().addUser(register);
+                connection.sendMessage(responseMsg(Command.REGISTER_SUCCESS,
+                        String.format(Protocal.REGISTER_SUCC,
+                                register.getUsername())));
+                log.info("respnose message register success. "
+                        + register.getUsername());
+            }
+            else {
+                // keep the register connection until all servers reply lock
+                // allowed.
+                ServerManager.getInstance().addRegisterConnection(connection);
+            }
             return false;
         }
         // the user has registered on the system.
