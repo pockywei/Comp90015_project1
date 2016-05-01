@@ -141,7 +141,7 @@ public class ParserJson {
                 }
                 msg.setUsername(root.get(Protocal.USER_NAME).getAsString());
                 msg.setSecret(root.get(Protocal.SECRET).getAsString());
-                msg.setSecret(root.get(Protocal.SERVER).getAsString());
+                msg.setId(root.get(Protocal.SERVER).getAsString());
                 break;
             default:
                 break;

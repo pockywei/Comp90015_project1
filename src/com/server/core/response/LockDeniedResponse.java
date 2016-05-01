@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.beans.UserInfo;
 import com.protocal.Command;
+import com.protocal.Protocal;
 import com.protocal.connection.Connection;
 import com.server.core.LocalStorage;
 import com.server.core.ServerManager;
@@ -24,6 +25,15 @@ public class LockDeniedResponse extends AbstractResponse {
         LocalStorage.getInstance().removeUser(user);
         log.info("respnose message lock denied, remove the user "
                 + user.getUsername());
+        Connection register = ServerManager.getInstance()
+                .getRegisterConnection(user);
+        if (register != null) {
+            register.sendMessage(responseMsg(Command.REGISTER_FAILED,
+                    String.format(Protocal.REGISTER_FAIL, user.getUsername())));
+            ServerManager.getInstance().removeRegisterConnection(register);
+            log.info("respnose message register failed. " + user.getUsername());
+            return false;
+        }
 
         // broadcast lock denied message to other servers.
         final List<Connection> servers = ServerManager.getInstance()
@@ -31,8 +41,7 @@ public class LockDeniedResponse extends AbstractResponse {
         synchronized (servers) {
             for (Connection c : servers) {
                 if (!c.equals(connection)) {
-                    connection.sendMessage(
-                            responseMsg(Command.LOCK_DENIED, user));
+                    c.sendMessage(responseMsg(Command.LOCK_DENIED, user));
                 }
             }
         }

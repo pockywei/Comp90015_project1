@@ -22,6 +22,7 @@ public class RegisterResponse extends AbstractResponse {
         if (!LocalStorage.getInstance().hasUser(register)) {
             // local storage does not have the register user, sending
             // lock request to other servers.
+            connection.setConnectionInfo(register);
             connection.waitCount = ServerManager.getInstance().sendLockRequest(
                     connection, register.getUsername(), register.getSecret());
 

@@ -106,7 +106,7 @@ public class ServerManager extends AbstractServer {
                 }
             }
         }
-        return connections.size() - 1;
+        return connections.size();
     }
 
     /**

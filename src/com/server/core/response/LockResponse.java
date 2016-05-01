@@ -29,10 +29,8 @@ public class LockResponse extends AbstractResponse {
                     .getAuthentiedServers();
             synchronized (servers) {
                 for (Connection c : servers) {
-                    if (!c.equals(connection)) {
-                        connection.sendMessage(responseMsg(Command.LOCK_ALLOWED,
-                                user, ServerSettings.getLocalInfo()));
-                    }
+                    c.sendMessage(responseMsg(Command.LOCK_ALLOWED, user,
+                            ServerSettings.getLocalInfo()));
                 }
             }
             log.info("respnose message lock allow. " + user.getUsername());
@@ -43,10 +41,7 @@ public class LockResponse extends AbstractResponse {
                     .getAuthentiedServers();
             synchronized (servers) {
                 for (Connection c : servers) {
-                    if (!c.equals(connection)) {
-                        connection.sendMessage(
-                                responseMsg(Command.LOCK_DENIED, user));
-                    }
+                    c.sendMessage(responseMsg(Command.LOCK_DENIED, user));
                 }
             }
             log.info("respnose message lock denied. " + user.getUsername());
