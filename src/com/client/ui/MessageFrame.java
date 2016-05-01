@@ -2,9 +2,7 @@ package com.client.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.ComponentOrientation;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 
 import javax.swing.BorderFactory;
@@ -20,6 +18,7 @@ import javax.swing.border.Border;
 import com.base.BaseFrame;
 import com.client.core.ClientManger;
 import com.protocal.Command;
+import com.protocal.Protocal;
 import com.utils.UtilHelper;
 import com.utils.log.FileUtils;
 
@@ -30,22 +29,24 @@ public class MessageFrame extends BaseFrame {
     private JTextArea outputText;
     private JButton sendButton;
     private JButton logoutButton;
-    private JScrollPane scrollPane;
-    private JScrollPane scrollPane2;
+    private JScrollPane outputScroll;
     private static final int WINDOW_WIDTH = 550;
     private static final int WINDOW_HEIGHT = 700;
     private static final int INPUT_WIDTH = 550;
     private static final int INPUT_HEIGHT = 80;
-    private String star ="=";
+    private static final String STAR = "=";
+    private static final int SPLIT_LINE = 50;
+
     @Override
     public void initView() {
+        setLocation(400, 200);
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
 
         JPanel inputPanel = new JPanel();
         JPanel outputPanel = new JPanel();
         inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.PAGE_AXIS));
-        
+
         outputPanel.setLayout(new BorderLayout());
 
         Border lineBorder = BorderFactory.createTitledBorder(
@@ -59,9 +60,7 @@ public class MessageFrame extends BaseFrame {
         outputPanel.setBorder(lineBorder);
 
         inputText = new JTextArea();
-        
-        
-        
+
         inputText.setLineWrap(true);
         inputText.setWrapStyleWord(true);
 
@@ -82,12 +81,12 @@ public class MessageFrame extends BaseFrame {
         logoutButton.addActionListener(this);
 
         outputText = new JTextArea();
-        outputText.setEditable(false);  
+        outputText.setEditable(false);
         outputText.setLineWrap(true);
         outputText.setWrapStyleWord(true);
-        JScrollPane scrollPane2 = new JScrollPane(outputText);
-        outputPanel.add(scrollPane2, BorderLayout.CENTER);
-        
+        outputScroll = new JScrollPane(outputText);
+        outputPanel.add(outputScroll, BorderLayout.CENTER);
+
         mainPanel.add(outputPanel);
         mainPanel.add(inputPanel);
 
@@ -126,12 +125,10 @@ public class MessageFrame extends BaseFrame {
         try {
             ClientManger.getInstance().sendActivityMessage(message);
             inputText.setText("");
-            //outputText.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-            
-            
-            outputText.append("Me: "+message+FileUtils.NEW_LINE);
+            outputText.append(String.format(Protocal.SEND_MESSAGE,
+                    Protocal.SEND_BY_ME, message) + FileUtils.NEW_LINE);
             outputText.append(FileUtils.NEW_LINE);
-            
+            outputText.setSelectionStart(outputText.getText().length());
         }
         catch (Exception e1) {
             log.error("Activity request send failed by the exception " + e1);
@@ -141,18 +138,13 @@ public class MessageFrame extends BaseFrame {
     }
 
     private void receiveMessage(String message) {
-    	//JPanel outputpanel = new JPanel();
-    	//outputText.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
-    	
-        outputText.append("Server: "+message + FileUtils.NEW_LINE);
-        
-        for(int i=0;i<=message.length();i++)
-        {
-        	
-        	outputText.append(star);
+        outputText.append(message + FileUtils.NEW_LINE);
+        StringBuilder splitLine = new StringBuilder();
+        for (int i = 0; i < SPLIT_LINE; i++) {
+            splitLine.append(STAR);
         }
-        
-        outputText.append(FileUtils.NEW_LINE);
+        outputText.append(splitLine.toString() + FileUtils.NEW_LINE);
+        outputText.setSelectionStart(outputText.getText().length());
     }
 
     @Override

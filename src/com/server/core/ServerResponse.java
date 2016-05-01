@@ -1,5 +1,7 @@
 package com.server.core;
 
+import java.util.List;
+
 import com.beans.ServerInfo;
 import com.beans.UserInfo;
 import com.protocal.Command;
@@ -27,10 +29,20 @@ public class ServerResponse implements Response {
             return true;
         }
 
+        if (msg.getCommand() == null) {
+            connection.sendMessage(responseMsg(Command.INVALID_MESSAGE,
+                    String.format(Protocal.ERROR_PARSE, Protocal.COMMAND)));
+            log.error("respnose message no command. close connection.");
+            return true;
+        }
+
         switch (msg.getCommand()) {
+            /*
+             * response to the server side.
+             */
             case LOCK_REQUEST:
                 // TODO
-
+                return false;
             case AUTHENTICATE:
                 String secret = msg.getSecret();
                 // secret doesn't match, response error and close connection.
@@ -49,17 +61,59 @@ public class ServerResponse implements Response {
                 String id = msg.getId();
 
                 // if succeed, reply nothing and keep the connection alive.
+
                 return false;
             case ACTIVITY_BROADCAST:
 
+                return false;
+            /*
+             * response to the client side.
+             */
             case REGISTER:
+                UserInfo register = msg.toUserInfo();
+                // check local storage
+                if (LocalStorage.getInstance().addUser(register)) {
+                    // local storage does not have the register user, sending
+                    // lock request to other servers.
 
+                    // wait for a while to collect the lock allowed message or
+                    // lock denied message.
+                    Thread.sleep(Protocal.WAIT_FOR_LOCK_RESPONSE);
+
+                    // gather lock allowed messages
+
+                    // if all lock allowed, register success.
+                    if (true) {
+                        connection.sendMessage(
+                                responseMsg(Command.REGISTER_SUCCESS,
+                                        String.format(Protocal.REGISTER_SUCC,
+                                                register.getUsername())));
+                        log.error("respnose message register success. "
+                                + register.getUsername());
+                        return true;
+                    }
+                }
+                // the user has registered on the system.
+                connection.sendMessage(responseMsg(Command.REGISTER_FAILED,
+                        String.format(Protocal.REGISTER_FAIL,
+                                register.getUsername())));
+                log.error(
+                        "respnose message the user has registered on the system. "
+                                + register.getUsername());
+                return true;
             case LOGIN:
+                UserInfo loginUser = msg.toUserInfo();
+                if (!LocalStorage.getInstance().addUser(loginUser)) {
+                    
+                }
 
+                return false;
             case LOGOUT:
 
+                return true;
             case ACTIVITY_MESSAGE:
 
+                return false;
             default:
                 break;
         }

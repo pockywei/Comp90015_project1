@@ -25,6 +25,6 @@ public class Activity {
 
     @Override
     public String toString() {
-        return message;
+        return String.format(Protocal.SEND_MESSAGE, username, message);
     }
 }

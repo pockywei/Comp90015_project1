@@ -3,21 +3,17 @@ package com.utils;
 import java.math.BigInteger;
 import java.net.Socket;
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.UUID;
 
-import com.beans.Record;
+import com.protocal.Protocal;
 
 public class UtilHelper {
 
     private static SecureRandom random = new SecureRandom();
 
     public static String getSocketAddr(Socket socket) {
-        return socket.getInetAddress() + ":" + socket.getPort();
+        return String.format(Protocal.SOCKET_ADDRESS, socket.getInetAddress(),
+                socket.getPort());
     }
 
     public static String getSecret() {

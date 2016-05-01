@@ -33,7 +33,7 @@ public abstract class AbstractServer extends BaseManager
         start();
     }
 
-    public abstract void serverAnnounce();
+    public abstract void serverAnnounce(Connection from);
 
     public abstract void initServer();
 
@@ -52,7 +52,7 @@ public abstract class AbstractServer extends BaseManager
             }
             if (!stop) {
                 log.info("server doing Announce");
-                serverAnnounce();
+                serverAnnounce(null);
             }
         }
         log.info("closing user connections: " + userConnections.size()
@@ -86,6 +86,10 @@ public abstract class AbstractServer extends BaseManager
         }
     }
 
+    /**
+     * The added connection has been authenticated.
+     * 
+     */
     @Override
     public void addConnection(Connection c) {
         switch (c.getType()) {

@@ -29,6 +29,10 @@ public class Protocal {
     public static final String LOCAL_HOSTNAME = "localhost";
     public static final int LOCAL_PORT = 3780;
     public static final int SOCKET_TIME_OUT_LIMIT = 10 * 1000;
+    public static final int WAIT_FOR_LOCK_RESPONSE = 1000;
+    public static final String SEND_MESSAGE = "%s > %s";
+    public static final String SEND_BY_ME = "Me";
+    public static final String SOCKET_ADDRESS = "%s:%d";
 
     public static boolean isRedirect(int localLoad, int remoteLoad) {
         return (localLoad - remoteLoad) >= 2;

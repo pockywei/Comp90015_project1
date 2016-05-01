@@ -3,6 +3,7 @@ package com.protocal.connection;
 import java.io.IOException;
 import java.net.Socket;
 
+import com.beans.Record;
 import com.protocal.connection.inter.ConnectionListener;
 import com.protocal.connection.inter.ConnectionType;
 import com.protocal.connection.inter.Response;
@@ -14,8 +15,9 @@ public final class Connection {
     private Socket socket = null;
     private WriteTask writer = null;
     private ReadTask reader = null;
-    protected ConnectionType type = null;
+    private ConnectionType type = null;
     private ConnectionListener listener = null;
+    private Record connectionInfo = null;
 
     public Connection(Socket socket, Response response) throws Exception {
         this(socket, response, null);
@@ -73,14 +75,26 @@ public final class Connection {
         }
     }
 
-    public void setConnectionType(ConnectionType type) {
+    /**
+     * Classify different connection type after the authentication for both
+     * server and client.
+     * 
+     * @param type
+     */
+    public void classifyConnectionType(ConnectionType type,
+            Record connectionInfo) {
         if (this.type == null) {
             this.type = type;
+            this.connectionInfo = connectionInfo;
             // add the connection to the ServerImpl by different type.
             if (listener != null) {
                 listener.addConnection(this);
             }
         }
+    }
+
+    public final Record getConnectionInfo() {
+        return connectionInfo;
     }
 
     /**
@@ -101,10 +115,10 @@ public final class Connection {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null) {
+        if (o == null || connectionInfo == null) {
             return false;
         }
         Connection c = (Connection) o;
-        return getSocketAddr().equals(c.getSocketAddr());
+        return connectionInfo.getKey().equals(c.getConnectionInfo().getKey());
     }
 }

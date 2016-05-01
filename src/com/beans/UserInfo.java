@@ -2,8 +2,8 @@ package com.beans;
 
 public class UserInfo implements Record {
 
-    private String username;
-    private String secret;
+    private String username = "";
+    private String secret = "";
 
     public UserInfo() {
     }

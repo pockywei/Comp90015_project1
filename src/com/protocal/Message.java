@@ -113,7 +113,7 @@ public class Message {
 
     private String toActivity() {
         if (activity == null) {
-            return null;
+            return "";
         }
         return activity.toString();
     }
@@ -130,7 +130,7 @@ public class Message {
     public JsonObject getActivityMsgJson() {
         JsonObject activity = new JsonObject();
         activity.addProperty(Protocal.ACTIVITY_MESSAGE,
-                getActivity().toString());
+                getActivity().getMessage());
         return activity;
     }
 
@@ -139,7 +139,7 @@ public class Message {
         activity.addProperty(Protocal.ACTIVITY_SENDER,
                 getActivity().getUsername());
         activity.addProperty(Protocal.ACTIVITY_MESSAGE,
-                getActivity().toString());
+                getActivity().getMessage());
         return activity;
     }
 
@@ -220,10 +220,23 @@ public class Message {
         return msg;
     }
 
+    /**
+     * Build send activity message
+     * 
+     * @param message
+     * @return
+     */
     public static Activity getActivity(String message) {
-        return getActivity(message, "");
+        return getActivity(message, Protocal.SEND_BY_ME);
     }
 
+    /**
+     * Build receive activity message
+     * 
+     * @param message
+     * @param username
+     * @return
+     */
     public static Activity getActivity(String message, String username) {
         return new Activity().setMessage(message).setUsername(username);
     }

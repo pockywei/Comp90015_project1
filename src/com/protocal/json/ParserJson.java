@@ -2,6 +2,7 @@ package com.protocal.json;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.protocal.Activity;
 import com.protocal.Command;
 import com.protocal.Message;
 import com.protocal.Protocal;
@@ -94,6 +95,8 @@ public class ParserJson {
                 if (!activity.isJsonObject()) {
                     throw new Exception();
                 }
+                // The whole activity JSON will be treated as a String as the
+                // structure is unpredictable.
                 msg.setActivity(Message.getActivity(activity.toString()));
                 break;
             case ACTIVITY_BROADCAST:
@@ -105,7 +108,20 @@ public class ParserJson {
                 if (!activity.isJsonObject()) {
                     throw new Exception();
                 }
-                msg.setActivity(Message.getActivity(activity.toString()));
+                Activity broadcast = null;
+                if (activity.has(Protocal.ACTIVITY_MESSAGE)) {
+                    broadcast = Message.getActivity(activity
+                            .get(Protocal.ACTIVITY_MESSAGE).getAsString());
+                }
+                else {
+                    broadcast = Message.getActivity(activity.toString());
+                }
+
+                if (activity.has(Protocal.ACTIVITY_SENDER)) {
+                    broadcast.setUsername(activity.get(Protocal.ACTIVITY_SENDER)
+                            .getAsString());
+                }
+                msg.setActivity(broadcast);
                 break;
             case LOCK_ALLOWED:
                 if (!root.has(Protocal.USER_NAME) || !root.has(Protocal.SECRET)

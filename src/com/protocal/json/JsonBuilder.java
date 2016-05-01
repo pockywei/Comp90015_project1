@@ -1,7 +1,6 @@
 package com.protocal.json;
 
 import com.google.gson.JsonObject;
-import com.protocal.Command;
 import com.protocal.Message;
 import com.protocal.Protocal;
 

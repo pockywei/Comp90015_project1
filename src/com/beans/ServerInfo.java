@@ -1,11 +1,13 @@
 package com.beans;
 
+import com.protocal.Protocal;
+
 public class ServerInfo implements Record, Comparable<ServerInfo> {
 
-    private String id = null;
+    private String id = "";
     private int port = 0;
-    private String hostname = null;
-    private String secret = null;
+    private String hostname = "";
+    private String secret = "";
     private static final String OUTPUT_FORMAT = "IP:<%s:%d> secret:%s";
     private int load = 0;
 
@@ -27,7 +29,7 @@ public class ServerInfo implements Record, Comparable<ServerInfo> {
 
     @Override
     public String getKey() {
-        return getHostname() + getPort();
+        return String.format(Protocal.SOCKET_ADDRESS, getHostname(), getPort());
     }
 
     public int getPort() {
