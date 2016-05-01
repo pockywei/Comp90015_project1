@@ -39,7 +39,6 @@ public class MessageFrame extends BaseFrame {
 
     @Override
     public void initView() {
-        setLocation(400, 200);
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
 

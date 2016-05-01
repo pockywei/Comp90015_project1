@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.base.BaseManager;
+import com.beans.ServerInfo;
 import com.protocal.connection.Connection;
 import com.protocal.connection.inter.ConnectionListener;
 import com.protocal.connection.inter.SocketListener;
@@ -33,9 +34,29 @@ public abstract class AbstractServer extends BaseManager
         start();
     }
 
-    public abstract void serverAnnounce(Connection from);
+    public void initServer() {
+        try {
+            sendAuthenticate();
+        }
+        catch (Exception e) {
+            log.error("failed to make connection to "
+                    + ServerSettings.getRemoteHost() + ":"
+                    + ServerSettings.getRemotePort() + " :" + e);
+            CrashHandler.getInstance().errorExit();
+        }
+    }
 
-    public abstract void initServer();
+    public abstract void sendAnnounce(Connection from);
+
+    public abstract int sendLockRequest(final Connection from,
+            final String username, final String secret);
+
+    public abstract ServerInfo redirect();
+
+    public abstract void sendAuthenticate() throws Exception;
+
+    public abstract void sendActivityBroadcast(final Connection from,
+            final String username, final String message);
 
     @Override
     public boolean runTask() throws Exception {
@@ -52,7 +73,7 @@ public abstract class AbstractServer extends BaseManager
             }
             if (!stop) {
                 log.info("server doing Announce");
-                serverAnnounce(null);
+                sendAnnounce(null);
             }
         }
         log.info("closing user connections: " + userConnections.size()
@@ -69,20 +90,23 @@ public abstract class AbstractServer extends BaseManager
     }
 
     @Override
-    public void close(Connection c) throws Exception {
-        switch (c.getType()) {
-            case USER_CONN:
-                synchronized (userConnections) {
-                    userConnections.remove(c);
-                    // update server user load.
-                    ServerSettings.setLocalLoad(userConnections.size());
-                }
-                break;
-            case SERVER_CONN:
-                synchronized (serverConnections) {
-                    serverConnections.remove(c);
-                }
-                break;
+    public void closeConnection(Connection c) throws Exception {
+        if (c != null && c.getType() != null) {
+            switch (c.getType()) {
+                case USER_CONN:
+                    synchronized (userConnections) {
+                        userConnections.remove(c);
+                        // update server user load.
+                        ServerSettings.setLocalLoad(userConnections.size());
+                    }
+                    break;
+                case SERVER_CONN:
+                    // remove connection.
+                    synchronized (serverConnections) {
+                        serverConnections.remove(c);
+                    }
+                    break;
+            }
         }
     }
 
@@ -105,6 +129,12 @@ public abstract class AbstractServer extends BaseManager
                     serverConnections.add(c);
                 }
                 break;
+        }
+    }
+
+    public void updateServerInfo(final ServerInfo update, Connection c) {
+        synchronized (c) {
+            c.setConnectionInfo(update);
         }
     }
 

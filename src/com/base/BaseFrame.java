@@ -1,5 +1,7 @@
 package com.base;
 
+import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -22,7 +24,14 @@ public abstract class BaseFrame extends JFrame
 
     public BaseFrame() {
         setTitle(TITLE);
+        // Initialize views.
         initView();
+        // set the frame to the center of the current srceen.
+        Dimension dim = getToolkit().getScreenSize();
+        Rectangle abounds = getBounds();
+        setLocation((dim.width - abounds.width) / 2,
+                (dim.height - abounds.height) / 2);
+
         setVisible(true);
         ClientManger.getInstance().addUIListener(this);
         this.addWindowListener(new WindowAdapter() {

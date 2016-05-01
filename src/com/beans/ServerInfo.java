@@ -1,6 +1,7 @@
 package com.beans;
 
 import com.protocal.Protocal;
+import com.utils.UtilHelper;
 
 public class ServerInfo implements Record, Comparable<ServerInfo> {
 
@@ -36,16 +37,18 @@ public class ServerInfo implements Record, Comparable<ServerInfo> {
         return port;
     }
 
-    public void setPort(int localPort) {
+    public ServerInfo setPort(int localPort) {
         this.port = localPort;
+        return this;
     }
 
     public String getHostname() {
         return hostname;
     }
 
-    public void setHostname(String localHostname) {
+    public ServerInfo setHostname(String localHostname) {
         this.hostname = localHostname;
+        return this;
     }
 
     public String getSecret() {
@@ -70,7 +73,7 @@ public class ServerInfo implements Record, Comparable<ServerInfo> {
 
     public void setId(String id) {
         // the server id will be updated once only.
-        if (this.id == null) {
+        if (UtilHelper.isEmptyStr(this.id)) {
             this.id = id;
         }
     }

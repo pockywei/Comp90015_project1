@@ -18,6 +18,7 @@ public final class Connection {
     private ConnectionType type = null;
     private ConnectionListener listener = null;
     private Record connectionInfo = null;
+    public volatile int waitCount = 0;
 
     public Connection(Socket socket, Response response) throws Exception {
         this(socket, response, null);
@@ -50,7 +51,7 @@ public final class Connection {
         try {
             // delete from Server connection list.
             if (listener != null) {
-                listener.close(this);
+                listener.closeConnection(this);
                 listener = null;
             }
             if (writer != null) {
@@ -85,7 +86,7 @@ public final class Connection {
             Record connectionInfo) {
         if (this.type == null) {
             this.type = type;
-            this.connectionInfo = connectionInfo;
+            setConnectionInfo(connectionInfo);
             // add the connection to the ServerImpl by different type.
             if (listener != null) {
                 listener.addConnection(this);
@@ -95,6 +96,10 @@ public final class Connection {
 
     public final Record getConnectionInfo() {
         return connectionInfo;
+    }
+
+    public void setConnectionInfo(Record connectionInfo) {
+        this.connectionInfo = connectionInfo;
     }
 
     /**

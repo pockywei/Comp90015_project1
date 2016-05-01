@@ -1,23 +1,25 @@
 package com.server.core;
 
 import java.net.Socket;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.beans.ServerInfo;
+import com.beans.UserInfo;
 import com.protocal.Protocal;
 import com.protocal.connection.Connection;
+import com.protocal.connection.inter.ConnectionType;
 import com.server.ServerSettings;
 import com.server.core.request.ActivityBroadCast;
 import com.server.core.request.AnnounceRequest;
 import com.server.core.request.AuthenticateRequest;
 import com.server.core.request.LockRequest;
 import com.utils.UtilHelper;
-import com.utils.log.CrashHandler;
 
 public class ServerManager extends AbstractServer {
 
     private static ServerManager instance = null;
+    private List<Connection> registerList = new ArrayList<>();
 
     public synchronized static ServerManager getInstance() {
         if (instance == null) {
@@ -27,29 +29,39 @@ public class ServerManager extends AbstractServer {
     }
 
     @Override
-    public void initServer() {
-        try {
-            sendAuthenticate();
+    public void sendAuthenticate() throws Exception {
+        // no remote server info. start as a root server.
+        if (UtilHelper.isEmptyStr(ServerSettings.getRemoteHost())
+                || ServerSettings.getRemotePort() == 0
+                || UtilHelper.isEmptyStr(ServerSettings.getRemoteSecret())) {
+            log.info("the current server will start alone, here by the secret: "
+                    + ServerSettings.getLocalSecret());
         }
-        catch (Exception e) {
-            log.error("failed to make connection to "
-                    + ServerSettings.getRemoteHost() + ":"
-                    + ServerSettings.getRemotePort() + " :" + e);
-            CrashHandler.getInstance().errorExit();
+        else {
+            log.info("sending an authenticate to remote server");
+            Connection c = distributSocket(
+                    new Socket(ServerSettings.getRemoteHost(),
+                            ServerSettings.getRemotePort()));
+            // create a new connection to remote server.
+            if (new AuthenticateRequest(c).request()) {
+                c.classifyConnectionType(ConnectionType.SERVER_CONN,
+                        new ServerInfo()
+                                .setHostname(ServerSettings.getRemoteHost())
+                                .setPort(ServerSettings.getRemotePort()));
+            }
         }
     }
 
+    @Override
     public ServerInfo redirect() {
         // Find which server should be connected to.
-        List<ServerInfo> serverInfos = LocalStorage.getInstance()
-                .getAdjacentServers();
-        synchronized (serverInfos) {
-            // Ascending order.
-            Collections.sort(serverInfos);
-            for (ServerInfo s : serverInfos) {
+        List<Connection> connections = getAuthentiedServers();
+        synchronized (connections) {
+            for (Connection c : connections) {
+                ServerInfo serverInfo = (ServerInfo) c.getConnectionInfo();
                 if (Protocal.isRedirect(ServerSettings.getLocalLoad(),
-                        s.getLoad())) {
-                    return s;
+                        serverInfo.getLoad())) {
+                    return serverInfo;
                 }
             }
         }
@@ -61,7 +73,7 @@ public class ServerManager extends AbstractServer {
      * 
      */
     @Override
-    public void serverAnnounce(final Connection from) {
+    public void sendAnnounce(final Connection from) {
         log.info("broadcast a serverAnnounce to adjacent servers");
         List<Connection> connections = getAuthentiedServers();
         synchronized (connections) {
@@ -81,7 +93,8 @@ public class ServerManager extends AbstractServer {
      * @param username
      * @param secret
      */
-    public void sendLockRequest(final Connection from, final String username,
+    @Override
+    public int sendLockRequest(final Connection from, final String username,
             final String secret) {
         log.info("broadcast a LockRequest to adjacent servers");
         List<Connection> connections = getAuthentiedServers();
@@ -93,6 +106,7 @@ public class ServerManager extends AbstractServer {
                 }
             }
         }
+        return connections.size() - 1;
     }
 
     /**
@@ -102,6 +116,7 @@ public class ServerManager extends AbstractServer {
      * @param username
      * @param message
      */
+    @Override
     public void sendActivityBroadcast(final Connection from,
             final String username, final String message) {
         log.info(
@@ -123,18 +138,62 @@ public class ServerManager extends AbstractServer {
         }
     }
 
-    public void sendAuthenticate() throws Exception {
-        // no remote server info. start as a root server.
-        if (UtilHelper.isEmptyStr(ServerSettings.getRemoteHost())
-                || ServerSettings.getRemotePort() == 0) {
-            log.info("no remote server info, starting as a root server");
+    /**
+     * true: the user is logged false: the user should be authenticated.
+     * 
+     * @param user
+     * @return
+     */
+    public boolean isUserLogged(final UserInfo user) {
+        final List<Connection> loggedUsers = getLoggedUserList();
+        synchronized (loggedUsers) {
+            for (Connection c : loggedUsers) {
+                if (user.getKey().equals(c.getConnectionInfo().getKey())) {
+                    return true;
+                }
+            }
         }
-        else {
-            log.info("sending an authenticate to remote server");
-            Connection c = distributSocket(
-                    new Socket(ServerSettings.getRemoteHost(),
-                            ServerSettings.getRemotePort()));
-            new AuthenticateRequest(c).request();
+        return false;
+    }
+
+    /**
+     * true: the server has been authenticated; false: not
+     * 
+     * @param server
+     * @return
+     */
+    public boolean hasServer(final ServerInfo server) {
+        final List<Connection> servers = getAuthentiedServers();
+        synchronized (server) {
+            for (Connection c : servers) {
+                if (server.getKey().equals(c.getConnectionInfo().getKey())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public Connection getRegisterConnection(UserInfo user) {
+        synchronized (registerList) {
+            for (Connection c : registerList) {
+                if (user.getKey().equals(c.getConnectionInfo().getKey())) {
+                    return c;
+                }
+            }
+        }
+        return null;
+    }
+
+    public void addRegisterConnection(Connection registerCon) {
+        synchronized (registerList) {
+            registerList.add(registerCon);
+        }
+    }
+
+    public void removeRegisterConnection(Connection c) {
+        synchronized (registerList) {
+            registerList.remove(c);
         }
     }
 }

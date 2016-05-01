@@ -88,6 +88,12 @@ public class ClientActionController {
         login_button.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent event) {
+                if (UtilHelper.isEmptyStr(UserSettings.getRemoteHost())
+                        || UserSettings.getRemotePort() == 0) {
+                    JOptionPane.showMessageDialog(null,
+                            "Please set up the remote info first.");
+                    return;
+                }
                 String user = username.getText().trim();
                 String secret = new String(password.getPassword());
                 if (!UtilHelper.isEmptyStr(user)
@@ -124,10 +130,18 @@ public class ClientActionController {
                             "Please set up the remote info first.");
                     return;
                 }
-
-                // the current user is anonymous, turn to the message frame.
-                UserSettings.setUser(Protocal.ANONYMOUS, "");
-                frame.nextFrame(MessageFrame.class);
+                try {
+                    // the current user is anonymous, turn to the message frame.
+                    UserSettings.setUser(Protocal.ANONYMOUS, "");
+                    ClientManger.getInstance().sendLoginRequest();
+                    return;
+                }
+                catch (Exception e) {
+                    log.error(
+                            "login request send failed by the exception " + e);
+                    JOptionPane.showMessageDialog(null,
+                            "login request failed, please check the remote info.");
+                }
             }
         });
     }
@@ -138,6 +152,12 @@ public class ClientActionController {
         register_Button.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent event) {
+                if (UtilHelper.isEmptyStr(UserSettings.getRemoteHost())
+                        || UserSettings.getRemotePort() == 0) {
+                    JOptionPane.showMessageDialog(null,
+                            "Please set up the remote info first.");
+                    return;
+                }
                 new RegisterDialog(frame);
             }
         });

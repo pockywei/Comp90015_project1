@@ -4,8 +4,11 @@ import com.beans.ServerInfo;
 import com.beans.UserInfo;
 
 public class UserSettings {
+
     private final static UserInfo user = new UserInfo();
-    private final static ServerInfo remoteServer = new ServerInfo();
+    // default Aaron's remote server.
+    private final static ServerInfo remoteServer = new ServerInfo()
+            .setHostname("sunrise.cis.unimelb.edu.au").setPort(5124);
 
     public static void setUser(String username, String secret) {
         synchronized (UserSettings.user) {
@@ -16,10 +19,8 @@ public class UserSettings {
 
     public static void setServerInfo(int remotePort, String remoteHost) {
         synchronized (UserSettings.remoteServer) {
-            // UserSettings.remoteServer.setHostname(remoteHost);
-            // UserSettings.remoteServer.setPort(remotePort);
-            UserSettings.remoteServer.setHostname("sunrise.cis.unimelb.edu.au");
-            UserSettings.remoteServer.setPort(5124);
+            UserSettings.remoteServer.setHostname(remoteHost);
+            UserSettings.remoteServer.setPort(remotePort);
         }
     }
 

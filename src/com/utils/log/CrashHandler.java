@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.base.BaseManager;
+import com.base.BaseRunnable;
 
 public class CrashHandler implements UncaughtExceptionHandler {
     private static final Log log = Log.getInstance();
@@ -49,18 +50,31 @@ public class CrashHandler implements UncaughtExceptionHandler {
         exit(-1);
     }
 
-    private void exit(int arg) {
-        isExit = true;
-        // Received Exception, clear all system resource.
-        synchronized (managerList) {
-            for (BaseManager ba : managerList) {
-                ba.clear();
+    /**
+     * System Exit Task.
+     * 
+     * @param arg
+     */
+    private void exit(final int arg) {
+        new BaseRunnable() {
+
+            @Override
+            public boolean runTask() throws Exception {
+                isExit = true;
+                // Received Exception, clear all system resource.
+                synchronized (managerList) {
+                    for (BaseManager ba : managerList) {
+                        ba.clear();
+                    }
+                    managerList.clear();
+                }
+                log.debug(
+                        String.format("the system has been terminated by [%s]",
+                                arg == 0 ? "Normal State" : "Error State"));
+                System.exit(arg);
+                return false;
             }
-            managerList.clear();
-        }
-        log.debug(String.format("the system has been terminated by [%s]",
-                arg == 0 ? "Normal State" : "Error State"));
-        System.exit(arg);
+        }.start();
     }
 
     public void exit() {

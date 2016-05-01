@@ -20,6 +20,8 @@ public class Protocal {
     public static final String AUTH_FAIL = "the supplied secret is incorrect: %s";
     public static final String LOGIN_FAIL = "wrong secret for user %s";
     public static final String REGISTER_FAIL = "the %s is already resgistered with the system.";
+    public static final String HAS_AUTH = "the server has been successfully authenticated.";
+    public static final String HAS_NOE_AUTH = "the server has not been authenticated.";
     public static final String REGISTER_FAIL_NO_USER = "user %s is not registered";
     public static final String REGISTER_SUCC = "register success for %s";
     public static final String LOGIN_SUCC = "logged in as user %s";

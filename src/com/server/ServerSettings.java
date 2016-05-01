@@ -26,8 +26,6 @@ public class ServerSettings {
         ServerSettings.remoteInfo.setPort(remotePort);
         ServerSettings.remoteInfo.setHostname(remoteHost);
         ServerSettings.remoteInfo.setSecret(remoteSecret);
-        // add the root remote server.
-        LocalStorage.getInstance().addServer(remoteInfo);
         ServerSettings.activityInterval = activityInterval;
     }
 
@@ -53,6 +51,10 @@ public class ServerSettings {
 
     public static String getLocalID() {
         return localInfo.getId();
+    }
+
+    public static ServerInfo getLocalInfo() {
+        return localInfo;
     }
 
     public static int getRemotePort() {

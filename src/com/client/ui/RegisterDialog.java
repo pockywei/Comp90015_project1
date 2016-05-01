@@ -32,6 +32,7 @@ public class RegisterDialog extends JDialog {
         super(parent, true);
         setTitle("Register");
         setSize(340, 180);
+        setLocationRelativeTo(parent);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         JPanel panel = new JPanel();
@@ -112,7 +113,7 @@ public class RegisterDialog extends JDialog {
             }
         }
     };
-    
+
     public void close() {
         setVisible(false);
         dispose();

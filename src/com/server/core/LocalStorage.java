@@ -3,16 +3,12 @@ package com.server.core;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.rmi.CORBA.Util;
-
-import com.beans.ServerInfo;
 import com.beans.UserInfo;
 import com.protocal.Protocal;
 import com.utils.UtilHelper;
 
 public class LocalStorage {
     private final List<UserInfo> userTable = new ArrayList<>();
-    private final List<ServerInfo> serverTable = new ArrayList<>();
     private static LocalStorage instance = null;
 
     public synchronized static LocalStorage getInstance() {
@@ -23,7 +19,7 @@ public class LocalStorage {
     }
 
     /**
-     * true: not register on local false: has registered on local
+     * true: add success false: add failed
      * 
      * @param user
      * @return
@@ -59,47 +55,44 @@ public class LocalStorage {
     }
 
     /**
-     * true: the server has been authenticated
+     * true: login success false: secret does not match.
      * 
-     * @param sever
+     * @param user
      * @return
      */
-    public boolean addServer(ServerInfo sever) {
-        synchronized (serverTable) {
-            if (serverTable.contains(sever)) {
-                return false;
-            }
-            serverTable.add(sever);
+    public boolean loginCheck(UserInfo user) {
+        if (isAnonymousUser(user)) {
+            return true;
         }
-        return true;
+        synchronized (userTable) {
+            for (UserInfo u : userTable) {
+                if (u.equals(user) && u.getSecret().equals(user.getSecret())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public void removeUser(UserInfo user) {
+        synchronized (userTable) {
+            for (UserInfo u : userTable) {
+                if (u.equals(user) && u.getSecret().equals(user.getSecret())) {
+                    userTable.remove(u);
+                    break;
+                }
+            }
+        }
     }
 
     public void clear() {
         synchronized (userTable) {
             userTable.clear();
         }
-        synchronized (serverTable) {
-            serverTable.clear();
-        }
     }
 
     public final List<UserInfo> getRegisteredUsers() {
         return userTable;
-    }
-
-    public final List<ServerInfo> getAdjacentServers() {
-        return serverTable;
-    }
-
-    public void updateServerInfo(ServerInfo update) {
-        synchronized (serverTable) {
-            for (ServerInfo server : serverTable) {
-                if (server.equals(update)) {
-                    server.setLoad(update.getLoad());
-                    server.setId(update.getId());
-                }
-            }
-        }
     }
 
     public boolean isAnonymousUser(UserInfo user) {

@@ -1,22 +1,17 @@
 package com;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import com.base.BaseSubject;
 import com.server.ServerSettings;
 import com.server.core.ServerManager;
-import com.server.core.ServerListener;
 import com.utils.UtilHelper;
-import com.utils.log.Log;
 
 public class Server extends BaseSubject {
 
@@ -102,10 +97,6 @@ public class Server extends BaseSubject {
 
         ServerSettings.setInfo(localPort, localHost, remotePort, remoteHost,
                 remoteSecret, activityInterval);
-        if (UtilHelper.isEmptyStr(remoteHost)) {
-            log.info("the current server will start alone, here by the secret: "
-                    + ServerSettings.getLocalSecret());
-        }
         log.info("starting server");
         ServerManager.getInstance();
     }
