@@ -24,6 +24,7 @@ public class LoginFrame extends BaseFrame {
 
     @Override
     public void initView() {
+    	this.setLocation(400, 200);
         setSize(440, 330);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 

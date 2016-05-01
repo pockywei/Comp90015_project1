@@ -7,6 +7,7 @@ public class Client extends BaseSubject {
 
     public static void main(String[] args) {
         log.info("start GUI");
+        
         new LoginFrame();
     }
 
