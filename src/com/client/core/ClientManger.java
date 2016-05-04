@@ -6,8 +6,8 @@ import java.util.List;
 
 import javax.swing.SwingUtilities;
 
+import com.base.AsyncRunnable;
 import com.base.BaseManager;
-import com.base.BaseRunnable;
 import com.client.UserSettings;
 import com.client.core.inter.FrameUpdateListener;
 import com.client.core.request.ActivityMessage;
@@ -18,7 +18,7 @@ import com.protocal.Command;
 import com.protocal.Protocal;
 import com.protocal.connection.Connection;
 
-public class ClientManger extends BaseManager {
+public class ClientManger extends BaseManager implements FrameUpdateListener {
 
     private static ClientManger instance = null;
     private Connection connection = null;
@@ -78,7 +78,7 @@ public class ClientManger extends BaseManager {
             return connection = new Connection(
                     new Socket(UserSettings.getRemoteHost(),
                             UserSettings.getRemotePort()),
-                    new ClientResponse());
+                    new ClientResponse(this));
         }
         catch (Exception e) {
             log.error("connection create failed " + e);
@@ -104,18 +104,7 @@ public class ClientManger extends BaseManager {
      * @param info
      */
     public void notifyFrameSuccess(final Command com, final String info) {
-        synchronized (frameList) {
-            for (final FrameUpdateListener frame : frameList) {
 
-                SwingUtilities.invokeLater(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        frame.actionSuccess(com, info);
-                    }
-                });
-            }
-        }
     }
 
     /**
@@ -124,21 +113,10 @@ public class ClientManger extends BaseManager {
      * @param info
      */
     public void notifyFrameFailed(final Command com, final String info) {
-        synchronized (frameList) {
-            for (final FrameUpdateListener frame : frameList) {
-                SwingUtilities.invokeLater(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        frame.actionFailed(com, info);
-                    }
-                });
-            }
-        }
     }
 
     public void sendLoginRequest() throws Exception {
-        post(new BaseRunnable() {
+        post(new AsyncRunnable() {
 
             @Override
             public boolean runTask() throws Exception {
@@ -147,13 +125,18 @@ public class ClientManger extends BaseManager {
                         UserSettings.getSecret()).request();
                 return true;
             }
+
+            @Override
+            protected void preTask() {
+
+            }
         });
 
     }
 
     public void sendRegisterRequest(final String username, final String secret)
             throws Exception {
-        post(new BaseRunnable() {
+        post(new AsyncRunnable() {
 
             @Override
             public boolean runTask() throws Exception {
@@ -162,11 +145,16 @@ public class ClientManger extends BaseManager {
                         .request();
                 return true;
             }
+
+            @Override
+            protected void preTask() {
+
+            }
         });
     }
 
     public void sendActivityMessage(final String message) throws Exception {
-        post(new BaseRunnable() {
+        post(new AsyncRunnable() {
 
             @Override
             public boolean runTask() throws Exception {
@@ -174,11 +162,16 @@ public class ClientManger extends BaseManager {
                         UserSettings.getSecret(), message).request();
                 return true;
             }
+
+            @Override
+            protected void preTask() {
+
+            }
         });
     }
 
     public void sendLogoutRequest() throws Exception {
-        post(new BaseRunnable() {
+        post(new AsyncRunnable() {
 
             @Override
             public boolean runTask() throws Exception {
@@ -193,6 +186,42 @@ public class ClientManger extends BaseManager {
                 }
                 return true;
             }
+
+            @Override
+            protected void preTask() {
+
+            }
         });
+    }
+
+    @Override
+    public void actionSuccess(final Command com, final String info) {
+        synchronized (frameList) {
+            for (final FrameUpdateListener frame : frameList) {
+
+                SwingUtilities.invokeLater(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        frame.actionSuccess(com, info);
+                    }
+                });
+            }
+        }
+    }
+
+    @Override
+    public void actionFailed(final Command com, final String info) {
+        synchronized (frameList) {
+            for (final FrameUpdateListener frame : frameList) {
+                SwingUtilities.invokeLater(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        frame.actionFailed(com, info);
+                    }
+                });
+            }
+        }
     }
 }

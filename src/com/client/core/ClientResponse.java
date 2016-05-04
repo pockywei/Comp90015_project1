@@ -1,6 +1,7 @@
 package com.client.core;
 
 import com.client.UserSettings;
+import com.client.core.inter.FrameUpdateListener;
 import com.protocal.Message;
 import com.protocal.connection.Connection;
 import com.protocal.connection.inter.Response;
@@ -10,6 +11,11 @@ import com.utils.log.Log;
 public class ClientResponse implements Response {
 
     private static final Log log = Log.getInstance();
+    private FrameUpdateListener listener = null;
+
+    public ClientResponse(FrameUpdateListener listener) {
+        this.listener = listener;
+    }
 
     @Override
     public boolean process(String json, Connection connection)
@@ -26,16 +32,19 @@ public class ClientResponse implements Response {
             case INVALID_MESSAGE:
             case LOGIN_FAILED:
             case REGISTER_FAILED:
-                ClientManger.getInstance().notifyFrameFailed(msg.getCommand(),
-                        info);
+                if (listener != null) {
+                    listener.actionFailed(msg.getCommand(), info);
+                }
                 return true;
             case REGISTER_SUCCESS:
-                ClientManger.getInstance().notifyFrameSuccess(msg.getCommand(),
-                        info);
+                if (listener != null) {
+                    listener.actionSuccess(msg.getCommand(), info);
+                }
                 return true;
             case LOGIN_SUCCESS:
-                ClientManger.getInstance().notifyFrameSuccess(msg.getCommand(),
-                        info);
+                if (listener != null) {
+                    listener.actionSuccess(msg.getCommand(), info);
+                }
                 return false;
             case REDIRECT:
                 // Re-login to the given server.
@@ -43,8 +52,10 @@ public class ClientResponse implements Response {
                 ClientManger.getInstance().sendLoginRequest();
                 return true;
             case ACTIVITY_BROADCAST:
-                ClientManger.getInstance().notifyFrameSuccess(msg.getCommand(),
-                        msg.getActivity().toString());
+                if (listener != null) {
+                    listener.actionSuccess(msg.getCommand(),
+                            msg.getActivity().toString());
+                }
                 return false;
             default:
                 break;

@@ -9,7 +9,7 @@ import org.apache.logging.log4j.Logger;
 public final class Log {
 
     private static Log logInstance = null;
-    private static Logger log = LogManager.getLogger();
+    private static Logger log = LogManager.getLogger(Log.class);
     private static SimpleDateFormat formatter = new SimpleDateFormat(
             "HH:mm:ss.SSS");
     private static final String OUTPUT_FORMAT = "%s [%s] %s %s%n";
