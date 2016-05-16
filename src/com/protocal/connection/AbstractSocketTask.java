@@ -17,7 +17,7 @@ public abstract class AbstractSocketTask extends BaseRunnable {
         this.socket = socket;
         this.connection = connection;
     }
-
+    
     protected OutputStream getOutputStream() throws Exception {
         return socket.getOutputStream();
     }

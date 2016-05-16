@@ -48,20 +48,6 @@ public class ClientManger extends BaseManager implements FrameUpdateListener {
     }
 
     @Override
-    public void clear() {
-        stop();
-        // remove user's info.
-        UserSettings.logoutUser();
-        if (connection != null) {
-            connection.close();
-            connection = null;
-        }
-        synchronized (frameList) {
-            frameList.clear();
-        }
-    }
-
-    @Override
     public boolean runTask() throws Exception {
         // do nothing...but keep it alive. Once the system is finished, it will
         // be stopped.
@@ -82,8 +68,7 @@ public class ClientManger extends BaseManager implements FrameUpdateListener {
         }
         catch (Exception e) {
             log.error("connection create failed " + e);
-            notifyFrameFailed(Command.CONNECTION_ERROR,
-                    Protocal.CONNECTION_FAIL);
+            actionFailed(Command.CONNECTION_ERROR, Protocal.CONNECTION_FAIL);
         }
         return null;
     }
@@ -97,38 +82,19 @@ public class ClientManger extends BaseManager implements FrameUpdateListener {
         return connection;
     }
 
-    /**
-     * Notify updates to all frame by thread-safe way.
-     * 
-     * @param com
-     * @param info
-     */
-    public void notifyFrameSuccess(final Command com, final String info) {
-
-    }
-
-    /**
-     * Notify updates to all frame by thread-safe way.
-     * 
-     * @param info
-     */
-    public void notifyFrameFailed(final Command com, final String info) {
-    }
-
     public void sendLoginRequest() throws Exception {
         post(new AsyncRunnable() {
 
             @Override
-            public boolean runTask() throws Exception {
-                // new a connection.
-                new LoginRequest(createConnection(), UserSettings.getUsername(),
-                        UserSettings.getSecret()).request();
-                return true;
+            protected void preTask() {
+                // may pop a progressing bar here
             }
 
             @Override
-            protected void preTask() {
-
+            protected boolean onBackgroud() throws Exception {
+                return new LoginRequest(createConnection(),
+                        UserSettings.getUsername(), UserSettings.getSecret())
+                                .request();
             }
         });
 
@@ -139,16 +105,14 @@ public class ClientManger extends BaseManager implements FrameUpdateListener {
         post(new AsyncRunnable() {
 
             @Override
-            public boolean runTask() throws Exception {
-                // new a connnection.
-                new RegisterRequest(createConnection(), username, secret)
-                        .request();
-                return true;
+            protected void preTask() {
+                // may pop a progressing bar here
             }
 
             @Override
-            protected void preTask() {
-
+            protected boolean onBackgroud() {
+                return new RegisterRequest(createConnection(), username, secret)
+                        .request();
             }
         });
     }
@@ -157,15 +121,15 @@ public class ClientManger extends BaseManager implements FrameUpdateListener {
         post(new AsyncRunnable() {
 
             @Override
-            public boolean runTask() throws Exception {
-                new ActivityMessage(getConnection(), UserSettings.getUsername(),
-                        UserSettings.getSecret(), message).request();
-                return true;
+            protected void preTask() {
+                // may pop a progressing bar here
             }
 
             @Override
-            protected void preTask() {
-
+            protected boolean onBackgroud() {
+                return new ActivityMessage(getConnection(),
+                        UserSettings.getUsername(), UserSettings.getSecret(),
+                        message).request();
             }
         });
     }
@@ -174,7 +138,12 @@ public class ClientManger extends BaseManager implements FrameUpdateListener {
         post(new AsyncRunnable() {
 
             @Override
-            public boolean runTask() throws Exception {
+            protected void preTask() {
+                // may pop a progressing bar here
+            }
+
+            @Override
+            protected boolean onBackgroud() throws Exception {
                 // logout, clear all info.
                 if (new LogoutRequest(getConnection()).request()) {
                     // wait for 1-2s, then close the connection, because the
@@ -183,13 +152,9 @@ public class ClientManger extends BaseManager implements FrameUpdateListener {
                     if (connection != null && !connection.isClosed()) {
                         connection.close();
                     }
+                    return true;
                 }
-                return true;
-            }
-
-            @Override
-            protected void preTask() {
-
+                return false;
             }
         });
     }
@@ -222,6 +187,20 @@ public class ClientManger extends BaseManager implements FrameUpdateListener {
                     }
                 });
             }
+        }
+    }
+
+    @Override
+    public void clear() {
+        stop();
+        // remove user's info.
+        UserSettings.logoutUser();
+        if (connection != null) {
+            connection.close();
+            connection = null;
+        }
+        synchronized (frameList) {
+            frameList.clear();
         }
     }
 }

@@ -1,30 +1,20 @@
 package com.base;
 
-import com.client.core.inter.FrameUpdateListener;
-import com.protocal.Command;
+import javax.swing.SwingUtilities;
 
-public abstract class AsyncRunnable extends BaseRunnable
-        implements FrameUpdateListener {
+public abstract class AsyncRunnable extends BaseRunnable {
 
-    @Override
-    public void actionSuccess(Command com, String info) {
+    private Callback callback;
 
-    }
-
-    @Override
-    public void actionFailed(Command com, String info) {
-
+    public AsyncRunnable setCallback(Callback callback) {
+        this.callback = callback;
+        return this;
     }
 
     @Override
     public boolean runTask() throws Exception {
-        return false;
-    }
-
-    @Override
-    public void start() {
-        preTask();
-        super.start();
+        handleMessage(onBackgroud());
+        return true;
     }
 
     /**
@@ -33,4 +23,34 @@ public abstract class AsyncRunnable extends BaseRunnable
      * 
      */
     protected abstract void preTask();
+
+    /**
+     * true: success; false: failed
+     * 
+     * @return
+     */
+    protected abstract boolean onBackgroud() throws Exception;
+
+    private void handleMessage(final boolean isSuccess) {
+        SwingUtilities.invokeLater(new Runnable() {
+
+            @Override
+            public void run() {
+                if (callback != null) {
+                    callback.getResult(isSuccess);
+                }
+            }
+
+        });
+    }
+
+    @Override
+    public void start() {
+        preTask();
+        super.start();
+    }
+
+    public interface Callback {
+        public void getResult(boolean isSuccess);
+    }
 }

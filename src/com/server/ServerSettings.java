@@ -1,7 +1,6 @@
 package com.server;
 
 import com.beans.ServerInfo;
-import com.server.core.LocalStorage;
 import com.utils.UtilHelper;
 import com.utils.log.Log;
 
@@ -26,7 +25,9 @@ public class ServerSettings {
         ServerSettings.remoteInfo.setPort(remotePort);
         ServerSettings.remoteInfo.setHostname(remoteHost);
         ServerSettings.remoteInfo.setSecret(remoteSecret);
-        ServerSettings.activityInterval = activityInterval;
+        if (activityInterval != 0) {
+            ServerSettings.activityInterval = activityInterval;
+        }
     }
 
     public static void setLocalLoad(final int load) {

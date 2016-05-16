@@ -3,38 +3,22 @@ package com.protocal.connection;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-import com.base.EmptyRunnable;
+import com.base.BaseRunnable;
 import com.utils.UtilHelper;
 
 public class WriteTask extends AbstractSocketTask {
 
     private PrintWriter outwriter = null;
-    private String request = null;
 
-    public WriteTask(Socket socket, Connection connection)
-            throws Exception {
+    public WriteTask(Socket socket, Connection connection) throws Exception {
         super(socket, connection);
         this.outwriter = new PrintWriter(getOutputStream(), true);
-        // start with a empty runnable because the write task will not handle
-        // the first runnable.
-        start(new EmptyRunnable());
+        start();
     }
 
     @Override
     public boolean runTask() throws Exception {
-        if (!UtilHelper.isEmptyStr(request)) {
-            log.debug("request json: " + request);
-            try {
-                outwriter.println(request);
-                outwriter.flush();
-            }
-            catch (Exception e) {
-                log.error("write exception, closing request. " + e);
-                if (connection != null) {
-                    connection.close();
-                }
-            }
-        }
+        // do nothing, keep the write task as a message queue.
         return true;
     }
 
@@ -56,8 +40,34 @@ public class WriteTask extends AbstractSocketTask {
      *         closed.
      */
     public void sendMessage(String request) {
-        this.request = request;
-        post(this);
+        post(new SendTask(request));
     }
 
+    private class SendTask extends BaseRunnable {
+
+        private String request;
+
+        public SendTask(String request) {
+            this.request = request;
+        }
+
+        @Override
+        public boolean runTask() throws Exception {
+            if (!UtilHelper.isEmptyStr(request)) {
+                log.debug("request json: " + request);
+                try {
+                    outwriter.println(request);
+                    outwriter.flush();
+                }
+                catch (Exception e) {
+                    log.error("write exception, closing request. " + e);
+                    if (connection != null) {
+                        connection.close();
+                    }
+                }
+            }
+            return true;
+        }
+
+    }
 }
