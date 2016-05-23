@@ -11,13 +11,12 @@ public class ReadTask extends AbstractSocketTask {
     private BufferedReader reader = null;
     private Response response = null;
 
-    public ReadTask(Socket socket, Connection connection)
-            throws Exception {
+    public ReadTask(Socket socket, Connection connection) throws Exception {
         this(socket, null, connection);
     }
 
-    public ReadTask(Socket socket, Response response,
-            Connection connection) throws Exception {
+    public ReadTask(Socket socket, Response response, Connection connection)
+            throws Exception {
         super(socket, connection);
         this.reader = new BufferedReader(
                 new InputStreamReader(getInputStream()));
@@ -44,8 +43,8 @@ public class ReadTask extends AbstractSocketTask {
                     close = response.process(message, connection);
                 }
             }
-            log.debug(
-                    "connection closed to " + getSocketAddr() + " by client.");
+            log.debug("connection closed to " + getSocketAddr()
+                    + " by client initiatively.");
         }
         catch (Exception e) {
             log.error("connection " + getSocketAddr()

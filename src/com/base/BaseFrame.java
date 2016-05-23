@@ -32,6 +32,7 @@ public abstract class BaseFrame extends JFrame
         setLocation((dim.width - abounds.width) / 2,
                 (dim.height - abounds.height) / 2);
 
+        setResizable(false);
         setVisible(true);
         ClientManger.getInstance().addUIListener(this);
         this.addWindowListener(new WindowAdapter() {

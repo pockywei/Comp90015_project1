@@ -74,7 +74,6 @@ public class ServerManager extends AbstractServer {
      */
     @Override
     public void sendAnnounce(final Connection from) {
-        log.info("broadcast a serverAnnounce to adjacent servers");
         List<Connection> connections = getAuthentiedServers();
         synchronized (connections) {
             for (Connection c : connections) {
@@ -96,7 +95,6 @@ public class ServerManager extends AbstractServer {
     @Override
     public int sendLockRequest(final Connection from, final String username,
             final String secret) {
-        log.info("broadcast a LockRequest to adjacent servers");
         List<Connection> connections = getAuthentiedServers();
         synchronized (connections) {
             for (Connection c : connections) {
@@ -119,8 +117,6 @@ public class ServerManager extends AbstractServer {
     @Override
     public void sendActivityBroadcast(final Connection from,
             final String username, final String message) {
-        log.info(
-                "broadcast an activity message to adjacent servers and clients");
         List<Connection> serverConnections = getAuthentiedServers();
         synchronized (serverConnections) {
             for (Connection c : serverConnections) {

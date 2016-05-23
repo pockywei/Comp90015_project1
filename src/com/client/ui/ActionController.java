@@ -19,7 +19,7 @@ import com.protocal.Protocal;
 import com.utils.UtilHelper;
 import com.utils.log.Log;
 
-public class ClientActionController {
+public class ActionController {
 
     private static final Log log = Log.getInstance();
 
@@ -38,12 +38,12 @@ public class ClientActionController {
 
                 JPanel myPanel = new JPanel();
                 myPanel.setLayout(new GridLayout(2, 0));
-                JLabel hostname = new JLabel("Hostname");
+                JLabel hostname = new JLabel("RemoteHost");
 
                 myPanel.add(hostname);
                 myPanel.add(xField);
 
-                JLabel portnumber = new JLabel("Port No.");
+                JLabel portnumber = new JLabel("RemotePort");
                 myPanel.add(portnumber);
                 myPanel.add(yField);
 

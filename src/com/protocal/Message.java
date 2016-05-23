@@ -227,7 +227,7 @@ public class Message {
      * @return
      */
     public static Activity getActivity(String message) {
-        return getActivity(message, Protocal.SEND_BY_ME);
+        return getActivity(message, "");
     }
 
     /**

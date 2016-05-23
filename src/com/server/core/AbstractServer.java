@@ -84,6 +84,8 @@ public abstract class AbstractServer extends BaseManager
 
     @Override
     public Connection distributSocket(Socket s) throws Exception {
+        // TODO can not create a new connection when receives a socket. Here
+        // should firstly check the existed connection
         log.debug("incomming connection: " + UtilHelper.getSocketAddr(s));
         Connection c = new Connection(s, new ServerResponse(), this);
         return c;
