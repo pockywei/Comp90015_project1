@@ -159,7 +159,6 @@ public class ActionController {
                     return;
                 }
                 new RegisterDialog(frame);
-                
             }
         });
 
