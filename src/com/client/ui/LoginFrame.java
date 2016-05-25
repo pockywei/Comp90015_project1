@@ -1,6 +1,8 @@
 package com.client.ui;
 
 import java.awt.BorderLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 
 import javax.swing.BoxLayout;
@@ -10,7 +12,6 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
@@ -23,14 +24,16 @@ import com.protocal.Command;
 public class LoginFrame extends BaseFrame {
 
     private static final long serialVersionUID = 1L;
-    private static final int BUTTON_HEIGHT = 25;
+    private static final int BUTTON_HEIGHT = 30;
     private static final int FRAME_WIDTH = 400;
     private static final int FRAME_HEIGHT = 250;
     private static final int INDENT_WIDTH = 50;
     private static final int TEXT_WIDTH = 90;
     private static final int TEXT_EXTRA_WIDTH = 50;
-    private static final int INPUT_SIZE = 20;
-    private static final int TOP_MARGIN = 20;
+    private static final int MARGIN = 10;
+
+    private JTextField userText;
+    private JPasswordField passwordText;
 
     @Override
     public void initView() {
@@ -59,57 +62,43 @@ public class LoginFrame extends BaseFrame {
         add(bar, BorderLayout.SOUTH);
     }
 
-    /**
-     * Add empty area for top margin
-     * 
-     * @param margin
-     * @return
-     */
-    private JPanel addTopMargin(int margin) {
-        JPanel emptyArea = new JPanel();
-        emptyArea.setSize(FRAME_WIDTH, margin);
-        return emptyArea;
-    }
-
     private void placeComponents(JPanel panel, ActionController control) {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        // add input area
+        panel.add(addTextField());
+        // add three buttons
+        panel.add(addButtons(control));
+    }
 
-        // add areas
-        panel.add(addTopMargin(TOP_MARGIN));
-        JPanel userNameArea = new JPanel();
-        userNameArea.setSize(FRAME_WIDTH, BUTTON_HEIGHT);
-        userNameArea.setLayout(null);
-        panel.add(userNameArea);
+    private JPanel addTextField() {
+        JPanel inputArea = new JPanel();
+        inputArea.setLayout(new GridBagLayout());
+        inputArea.setBorder(
+                new EmptyBorder(0, INDENT_WIDTH, 0, 2 * INDENT_WIDTH));
 
-        panel.add(addTopMargin(TOP_MARGIN));
-        JPanel passwordArea = new JPanel();
-        passwordArea.setSize(FRAME_WIDTH, BUTTON_HEIGHT);
-        passwordArea.setLayout(null);
-        panel.add(passwordArea);
+        JLabel userLabel = new JLabel("Username");
+        JLabel passwordLabel = new JLabel("Password");
+        userText = new JTextField(UIHelper.INPUT_SIZE);
+        passwordText = new JPasswordField(UIHelper.INPUT_SIZE);
 
+        GridBagConstraints cell = UIHelper.makeGbc(0, 0, 0);
+        inputArea.add(userLabel, cell);
+
+        cell = UIHelper.makeGbc(1, 0, MARGIN, 1);
+        inputArea.add(userText, cell);
+
+        cell = UIHelper.makeGbc(0, 1, 0);
+        inputArea.add(passwordLabel, cell);
+
+        cell = UIHelper.makeGbc(1, 1, MARGIN, 1);
+        inputArea.add(passwordText, cell);
+        return inputArea;
+    }
+
+    private JPanel addButtons(ActionController control) {
         JPanel actionArea = new JPanel();
         actionArea.setSize(FRAME_WIDTH, BUTTON_HEIGHT);
-        actionArea.setBorder(new EmptyBorder(TOP_MARGIN, 0, 0, 0));
-        panel.add(actionArea);
-
-        // add input areas
-        JLabel userLabel = new JLabel("Username");
-        userLabel.setBounds(INDENT_WIDTH, 0, TEXT_WIDTH, BUTTON_HEIGHT);
-        userNameArea.add(userLabel);
-
-        JTextField userText = new JTextField(INPUT_SIZE);
-        userText.setBounds(INDENT_WIDTH + TEXT_WIDTH, 0, 2 * TEXT_WIDTH,
-                BUTTON_HEIGHT);
-        userNameArea.add(userText);
-
-        JLabel passwordLabel = new JLabel("Password");
-        passwordLabel.setBounds(INDENT_WIDTH, 0, TEXT_WIDTH, BUTTON_HEIGHT);
-        passwordArea.add(passwordLabel);
-
-        JPasswordField passwordText = new JPasswordField(INPUT_SIZE);
-        passwordText.setBounds(INDENT_WIDTH + TEXT_WIDTH, 0, 2 * TEXT_WIDTH,
-                BUTTON_HEIGHT);
-        passwordArea.add(passwordText);
+        actionArea.setBorder(new EmptyBorder(MARGIN, 0, 0, 0));
 
         // add three actions buttons
         JButton loginButton = new JButton("Login");
@@ -126,6 +115,7 @@ public class LoginFrame extends BaseFrame {
         control.listenGuestLoginButton(anonymousLogin, this);
         anonymousLogin.setSize(TEXT_WIDTH + TEXT_EXTRA_WIDTH, BUTTON_HEIGHT);
         actionArea.add(anonymousLogin);
+        return actionArea;
     }
 
     private void initMenu(JMenuBar menuBar, ActionController control) {
@@ -142,7 +132,7 @@ public class LoginFrame extends BaseFrame {
         control.about(about);
         help.add(about);
         JMenuItem Connect = new JMenuItem("RemoteServer");
-        control.listenConnect(Connect);
+        control.listenConnect(Connect, this);
         menu.add(Connect);
     }
 
@@ -150,7 +140,7 @@ public class LoginFrame extends BaseFrame {
     public void actionSuccess(Command com, String info) {
         switch (com) {
             case REGISTER_SUCCESS:
-                JOptionPane.showMessageDialog(null, info);
+                UIHelper.showMessageDialog(info);
                 break;
             case LOGIN_SUCCESS:
                 nextFrame(MessageFrame.class);
@@ -162,7 +152,7 @@ public class LoginFrame extends BaseFrame {
 
     @Override
     public void actionFailed(Command com, String info) {
-        JOptionPane.showMessageDialog(null, info);
+        UIHelper.showMessageDialog(info);
     }
 
     @Override

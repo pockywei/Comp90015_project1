@@ -9,7 +9,6 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -114,7 +113,7 @@ public class MessageFrame extends BaseFrame {
             }
             catch (Exception e1) {
                 log.error("logout request send failed by the exception " + e1);
-                JOptionPane.showMessageDialog(null,
+                UIHelper.showMessageDialog(
                         "logout request failed, please check the remote info or network.");
             }
         }
@@ -131,7 +130,7 @@ public class MessageFrame extends BaseFrame {
         }
         catch (Exception e1) {
             log.error("Activity request send failed by the exception " + e1);
-            JOptionPane.showMessageDialog(null,
+            UIHelper.showMessageDialog(
                     "Activity message request failed, please check the remote info or network.");
         }
     }
@@ -160,6 +159,6 @@ public class MessageFrame extends BaseFrame {
 
     @Override
     public void actionFailed(Command com, String info) {
-        JOptionPane.showMessageDialog(null, info);
+        UIHelper.showMessageDialog(info);
     }
 }

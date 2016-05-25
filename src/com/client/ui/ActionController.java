@@ -1,20 +1,18 @@
 package com.client.ui;
 
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import com.base.BaseFrame;
 import com.client.UserSettings;
 import com.client.core.ClientManger;
+import com.client.ui.ActionDialog.ActionDialogListener;
 import com.protocal.Protocal;
 import com.utils.UtilHelper;
 import com.utils.log.Log;
@@ -28,55 +26,39 @@ public class ActionController {
      * 
      * @param con
      */
-    public void listenConnect(JMenuItem con) {
+    public void listenConnect(JMenuItem con, final BaseFrame frame) {
 
         con.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent event) {
-                JTextField xField = new JTextField(10);
-                JTextField yField = new JTextField(10);
 
-                JPanel myPanel = new JPanel();
-                myPanel.setLayout(new GridLayout(2, 0));
-                JLabel hostname = new JLabel("RemoteHost");
+                new ActionDialog(frame, "Please Enter Remote Info",
+                        UIHelper.REMOTE_HEADER, new ActionDialogListener() {
 
-                myPanel.add(hostname);
-                myPanel.add(xField);
-
-                JLabel portnumber = new JLabel("RemotePort");
-                myPanel.add(portnumber);
-                myPanel.add(yField);
-
-                // add previous server info.
-                xField.setText(UserSettings.getRemoteHost());
-                yField.setText(UserSettings.getRemotePort() + "");
-
-                int input = JOptionPane.showConfirmDialog(null, myPanel,
-                        "Please Enter Remote Address and Remote Port",
-                        JOptionPane.OK_CANCEL_OPTION);
-                if (input == JOptionPane.OK_OPTION) {
-                    String host = xField.getText().trim();
-                    int port = 0;
-                    try {
-                        port = Integer.parseInt(yField.getText().trim());
+                    @Override
+                    public void confirmPerformed(ActionDialog dialog,
+                            List<JTextField> fields) {
+                        // get text fields' reference
+                        String host = fields.get(0).getText().trim();
+                        if (UtilHelper.isEmptyStr(host)) {
+                            UIHelper.showMessageDialog(
+                                    "the remote hostname can not be empty.");
+                            return;
+                        }
+                        int port = 0;
+                        try {
+                            port = Integer
+                                    .parseInt(fields.get(1).getText().trim());
+                        }
+                        catch (NumberFormatException e) {
+                            UIHelper.showMessageDialog(
+                                    "the number of port is invalid.");
+                            return;
+                        }
+                        UserSettings.setServerInfo(port, host);
+                        dialog.close();
                     }
-                    catch (NumberFormatException e) {
-                        log.error("the number of port is invalid.");
-                    }
-                    UserSettings.setServerInfo(port, host);
-                }
-            }
-        });
-
-    }
-
-    public void about(JMenuItem abt) {
-
-        abt.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent event) {
-                JOptionPane.showMessageDialog(null,
-                        "<html><center>COMP90015 PROJECT1 VER 1.0<br>by the Eyebrow</center></html>");
+                });
             }
         });
 
@@ -88,12 +70,8 @@ public class ActionController {
         login_button.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent event) {
-                if (UtilHelper.isEmptyStr(UserSettings.getRemoteHost())
-                        || UserSettings.getRemotePort() == 0) {
-                    JOptionPane.showMessageDialog(null,
-                            "Please set up the remote info first.");
+                if (!isRemoteReady())
                     return;
-                }
                 String user = username.getText().trim();
                 String secret = new String(password.getPassword());
                 if (!UtilHelper.isEmptyStr(user)
@@ -106,12 +84,12 @@ public class ActionController {
                     catch (Exception e) {
                         log.error("login request send failed by the exception "
                                 + e);
-                        JOptionPane.showMessageDialog(null,
+                        UIHelper.showMessageDialog(
                                 "login request failed, please check the remote info.");
                     }
                     return;
                 }
-                JOptionPane.showMessageDialog(null,
+                UIHelper.showMessageDialog(
                         "username or password can not be empty, please try again.");
             }
         });
@@ -124,12 +102,8 @@ public class ActionController {
         GuestLoginButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent event) {
-                if (UtilHelper.isEmptyStr(UserSettings.getRemoteHost())
-                        || UserSettings.getRemotePort() == 0) {
-                    JOptionPane.showMessageDialog(null,
-                            "Please set up the remote info first.");
+                if (!isRemoteReady())
                     return;
-                }
                 try {
                     // the current user is anonymous, turn to the message frame.
                     UserSettings.setUser(Protocal.ANONYMOUS, "");
@@ -139,7 +113,7 @@ public class ActionController {
                 catch (Exception e) {
                     log.error(
                             "login request send failed by the exception " + e);
-                    JOptionPane.showMessageDialog(null,
+                    UIHelper.showMessageDialog(
                             "login request failed, please check the remote info.");
                 }
             }
@@ -152,15 +126,71 @@ public class ActionController {
         register_Button.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent event) {
-                if (UtilHelper.isEmptyStr(UserSettings.getRemoteHost())
-                        || UserSettings.getRemotePort() == 0) {
-                    JOptionPane.showMessageDialog(null,
-                            "Please set up the remote info first.");
+                if (!isRemoteReady())
                     return;
-                }
-                new RegisterDialog(frame);
+                new ActionDialog(frame, "Register", UIHelper.REGISTER_HEADER,
+                        new ActionDialogListener() {
+
+                    @Override
+                    public void confirmPerformed(ActionDialog dialog,
+                            List<JTextField> fields) {
+                        // get text fields' reference
+                        String user = fields.get(0).getText();
+                        String secret = new String(
+                                ((JPasswordField) fields.get(1)).getPassword());
+                        String re_secret = new String(
+                                ((JPasswordField) fields.get(2)).getPassword());
+
+                        if (!UtilHelper.isEmptyStr(user)
+                                && !UtilHelper.isEmptyStr(secret)
+                                && !UtilHelper.isEmptyStr(re_secret)) {
+                            if (secret.equals(re_secret)) {
+                                try {
+                                    ClientManger.getInstance()
+                                            .sendRegisterRequest(user, secret);
+                                    dialog.close();
+                                }
+                                catch (Exception e1) {
+                                    log.error(
+                                            "register request send failed by the exception "
+                                                    + e1);
+                                    UIHelper.showMessageDialog(
+                                            "register request failed, please check the remote info.");
+                                }
+                                return;
+                            }
+                            UIHelper.showMessageDialog(
+                                    "the passwords are not equal, please try again.");
+                            return;
+                        }
+                        UIHelper.showMessageDialog(
+                                "username or password can not be empty, please try again.");
+                    }
+                });
             }
         });
 
+    }
+
+    public void about(JMenuItem abt) {
+
+        abt.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent event) {
+                UIHelper.showMessageDialog(
+                        "<html><center>COMP90015 PROJECT1 VER 1.0<br>by the Eyebrow</center></html>");
+            }
+        });
+
+    }
+
+    private boolean isRemoteReady() {
+        if (UtilHelper.isEmptyStr(UserSettings.getRemoteHost())
+                || UserSettings.getRemotePort() == 0) {
+            UIHelper.showMessageDialog(
+                    "Please set up the remote info first : [Menu -> Connect]");
+            return false;
+        }
+        return true;
     }
 }
