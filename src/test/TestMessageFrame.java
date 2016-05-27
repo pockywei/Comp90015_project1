@@ -1,4 +1,4 @@
-package com.client.ui;
+package test;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -9,40 +9,45 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
 
 import com.base.BaseFrame;
 import com.client.core.ClientManger;
+import com.client.ui.LoginFrame;
+import com.client.ui.UIHelper;
+import com.client.ui.adapter.MsgDataAdapter;
+import com.client.ui.adapter.MsgViewAdapter;
 import com.protocal.Activity;
 import com.protocal.Command;
 import com.protocal.Protocal;
 import com.utils.UtilHelper;
-import com.utils.log.FileUtils;
 
-public class MessageFrame extends BaseFrame {
+public class TestMessageFrame extends BaseFrame {
 
     private static final long serialVersionUID = 1L;
-    private static final int WINDOW_WIDTH = 550;
+    private static final int WINDOW_WIDTH = 580;
     private static final int WINDOW_HEIGHT = 700;
-    private static final int INPUT_WIDTH = 550;
     private static final int INPUT_HEIGHT = 80;
     private static final int MARGIN = 5;
+    private static final int MESSAGE_VIEW_WIDTH = 280;
+    private static final int INDENT_WIDTH = 60;
+    private static final int LIST_VISIBLE_COUNT = 10;
 
     private JTextArea inputText;
-    private JTextArea outputText;
     private JButton sendButton;
     private JButton logoutButton;
+    private JList<Activity> listView;
+    private MsgDataAdapter adapter;
 
     @Override
     public void initView() {
 
         JPanel inputPanel = new JPanel();
-
         placeInputArea(inputPanel);
 
         add(placeOutputArea(), BorderLayout.CENTER);
@@ -51,17 +56,6 @@ public class MessageFrame extends BaseFrame {
         setLocationRelativeTo(null);
         setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        // add a system message
-        SwingUtilities.invokeLater(new Runnable() {
-
-            @Override
-            public void run() {
-                addMsgView(new Activity("System Announce",
-                        "Start Chat with your online friends now! Have fun~",
-                        true));
-            }
-        });
     }
 
     private void placeInputArea(JPanel input) {
@@ -77,9 +71,8 @@ public class MessageFrame extends BaseFrame {
         inputText.setWrapStyleWord(true);
 
         JScrollPane scrollPane = new JScrollPane(inputText);
+        scrollPane.setPreferredSize(new Dimension(WINDOW_WIDTH, INPUT_HEIGHT));
         input.add(scrollPane);
-        input.setSize(INPUT_WIDTH, INPUT_HEIGHT);
-        scrollPane.setPreferredSize(new Dimension(INPUT_WIDTH, INPUT_HEIGHT));
 
         JPanel buttonGroup = new JPanel();
         sendButton = new JButton("Send");
@@ -93,24 +86,27 @@ public class MessageFrame extends BaseFrame {
     }
 
     private JScrollPane placeOutputArea() {
-        outputText = new JTextArea();
-        outputText.setLineWrap(true);
-        outputText.setEditable(false);
-        outputText.setWrapStyleWord(true);
-        outputText.setBorder(new EmptyBorder(MARGIN, MARGIN, 0, MARGIN));
+        listView = new JList<>();
+        listView.setCellRenderer(
+                new MsgViewAdapter(MESSAGE_VIEW_WIDTH, MARGIN, INDENT_WIDTH));
+        adapter = new MsgDataAdapter();
+        adapter.add(new Activity("System Announce",
+                "Start Chat with your online friends now! Have fun~", true));
+        listView.setModel(adapter);
+        listView.setVisibleRowCount(LIST_VISIBLE_COUNT);
 
-        JScrollPane outputScroll = new JScrollPane(outputText);
+        JScrollPane outputScroll = new JScrollPane(listView);
         return outputScroll;
     }
-
-    private void addMsgView(Activity ac) {
-        // format message
-        ac.setMessage(UtilHelper.getPrettyJson(ac.getMessage()));
-        outputText.append(ac.getUsername() + Protocal.RECEIVE_MESSAGE_TAG
-                + FileUtils.NEW_LINE);
-        outputText.append(ac.getMessage() + FileUtils.NEW_LINE);
-        outputText.append(FileUtils.NEW_LINE);
-        outputText.setSelectionStart(outputText.getText().length());
+    
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            
+            @Override
+            public void run() {
+                new TestMessageFrame();
+            }
+        });
     }
 
     @Override
@@ -137,11 +133,26 @@ public class MessageFrame extends BaseFrame {
         }
     }
 
+    private void addMsgView(final Activity ac) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                log.info("add a message onto page");
+                // change the message as a formatted object only if the message
+                // is a
+                // json object
+                String message = ac.getMessage();
+                ac.setMessage(UtilHelper.getPrettyJson(message));
+                adapter.add(ac);
+                listView.ensureIndexIsVisible(adapter.getSize() - 1);
+            }
+        });
+    }
+
     private void sendMessage(String message) {
         try {
             ClientManger.getInstance().sendActivityMessage(message);
             inputText.setText("");
-            addMsgView(new Activity(Protocal.SEND_BY_ME, message, false));
+            addMsgView(new Activity(Protocal.SEND_BY_ME, message, true));
         }
         catch (Exception e1) {
             log.error("Activity request send failed by the exception " + e1);
@@ -167,3 +178,4 @@ public class MessageFrame extends BaseFrame {
         UIHelper.showMessageDialog(info);
     }
 }
+

@@ -9,6 +9,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+import com.base.AsyncRunnable.Callback;
 import com.base.BaseFrame;
 import com.client.UserSettings;
 import com.client.core.ClientManger;
@@ -53,7 +54,6 @@ public class ActionController {
                         catch (NumberFormatException e) {
                             UIHelper.showMessageDialog(
                                     "the number of port is invalid.");
-                            return;
                         }
                         UserSettings.setServerInfo(port, host);
                         dialog.close();
@@ -65,7 +65,8 @@ public class ActionController {
     }
 
     public void listenLoginButton(JButton login_button,
-            final JTextField username, final JPasswordField password) {
+            final JTextField username, final JPasswordField password,
+            final BaseFrame frame) {
 
         login_button.addActionListener(new ActionListener() {
 
@@ -74,23 +75,13 @@ public class ActionController {
                     return;
                 String user = username.getText().trim();
                 String secret = new String(password.getPassword());
-                if (!UtilHelper.isEmptyStr(user)
-                        && !UtilHelper.isEmptyStr(secret)) {
-                    try {
-                        UserSettings.setUser(user, secret);
-                        ClientManger.getInstance().sendLoginRequest();
-                        return;
-                    }
-                    catch (Exception e) {
-                        log.error("login request send failed by the exception "
-                                + e);
-                        UIHelper.showMessageDialog(
-                                "login request failed, please check the remote info.");
-                    }
+                if (UtilHelper.isEmptyStr(user)
+                        || UtilHelper.isEmptyStr(secret)) {
+                    UIHelper.showMessageDialog(
+                            "username or password can not be empty, please try again.");
                     return;
                 }
-                UIHelper.showMessageDialog(
-                        "username or password can not be empty, please try again.");
+                login(user, secret, frame);
             }
         });
 
@@ -104,18 +95,7 @@ public class ActionController {
             public void actionPerformed(ActionEvent event) {
                 if (!isRemoteReady())
                     return;
-                try {
-                    // the current user is anonymous, turn to the message frame.
-                    UserSettings.setUser(Protocal.ANONYMOUS, "");
-                    ClientManger.getInstance().sendLoginRequest();
-                    return;
-                }
-                catch (Exception e) {
-                    log.error(
-                            "login request send failed by the exception " + e);
-                    UIHelper.showMessageDialog(
-                            "login request failed, please check the remote info.");
-                }
+                login(Protocal.ANONYMOUS, "", frame);
             }
         });
     }
@@ -141,30 +121,22 @@ public class ActionController {
                         String re_secret = new String(
                                 ((JPasswordField) fields.get(2)).getPassword());
 
-                        if (!UtilHelper.isEmptyStr(user)
-                                && !UtilHelper.isEmptyStr(secret)
-                                && !UtilHelper.isEmptyStr(re_secret)) {
-                            if (secret.equals(re_secret)) {
-                                try {
-                                    ClientManger.getInstance()
-                                            .sendRegisterRequest(user, secret);
-                                    dialog.close();
-                                }
-                                catch (Exception e1) {
-                                    log.error(
-                                            "register request send failed by the exception "
-                                                    + e1);
-                                    UIHelper.showMessageDialog(
-                                            "register request failed, please check the remote info.");
-                                }
-                                return;
-                            }
+                        if (UtilHelper.isEmptyStr(user)
+                                || UtilHelper.isEmptyStr(secret)
+                                || UtilHelper.isEmptyStr(re_secret)) {
+                            UIHelper.showMessageDialog(
+                                    "username or password can not be empty, please try again.");
+                            return;
+                        }
+
+                        if (!secret.equals(re_secret)) {
                             UIHelper.showMessageDialog(
                                     "the passwords are not equal, please try again.");
                             return;
                         }
-                        UIHelper.showMessageDialog(
-                                "username or password can not be empty, please try again.");
+                        
+                        register(user, secret, frame);
+                        dialog.close();
                     }
                 });
             }
@@ -188,9 +160,49 @@ public class ActionController {
         if (UtilHelper.isEmptyStr(UserSettings.getRemoteHost())
                 || UserSettings.getRemotePort() == 0) {
             UIHelper.showMessageDialog(
-                    "Please set up the remote info first : [Menu -> Connect]");
+                    "Please set up the remote info first : [Menu -> RemoteSever]");
             return false;
         }
         return true;
+    }
+
+    private void register(String username, String secret,
+            final BaseFrame frame) {
+        try {
+            frame.showProgress();
+            ClientManger.getInstance().sendRegisterRequest(username, secret,
+                    new Callback() {
+
+                        @Override
+                        public void getResult(boolean isSuccess) {
+                            frame.closeProgress();
+                        }
+                    });
+        }
+        catch (Exception e1) {
+            log.error("register request send failed by the exception " + e1);
+            UIHelper.showMessageDialog(
+                    "register request failed, please check the remote info.");
+        }
+    }
+
+    private void login(String username, String secret, final BaseFrame frame) {
+        try {
+            // the current user is anonymous, turn to the message frame.
+            UserSettings.setUser(username, secret);
+            frame.showProgress();
+            ClientManger.getInstance().sendLoginRequest(new Callback() {
+
+                @Override
+                public void getResult(boolean isSuccess) {
+                    frame.closeProgress();
+                }
+            });
+        }
+        catch (Exception e) {
+            log.error("login request send failed by the exception " + e);
+            UIHelper.showMessageDialog(
+                    "login request failed, please check the remote info.");
+        }
     }
 }

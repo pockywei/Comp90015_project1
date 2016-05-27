@@ -33,7 +33,8 @@ public class Protocal {
     public static final int LOCAL_PORT = 3780;
     public static final int SOCKET_TIME_OUT_LIMIT = 10 * 1000;
     public static final int WAIT_FOR_LOCK_RESPONSE = 1000;
-    public static final String SEND_MESSAGE = "%s > %s";
+    public static final String SEND_MESSAGE_TAG = " << ";
+    public static final String RECEIVE_MESSAGE_TAG = " >> ";
     public static final String SEND_BY_ME = "Me";
     public static final String SOCKET_ADDRESS = "%s:%d";
 

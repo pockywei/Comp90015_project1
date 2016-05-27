@@ -1,5 +1,7 @@
 package com;
 
+import javax.swing.SwingUtilities;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
@@ -24,12 +26,18 @@ public class Client extends BaseSubject {
 
     public static void main(String[] args) {
         readCommand(args);
-        log.info("start GUI");
-        new LoginFrame();
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                log.info("start GUI");
+                new LoginFrame();
+            }
+        });
     }
 
     private static void readCommand(String[] args) {
         if (args == null || args.length == 0) {
+            log.info(
+                    "-rh or -rp is missing. Please click : [Menu -> RemoteSever] to add remote info by using GUI frame.");
             return;
         }
         CommandLine cmd = null;
@@ -40,34 +48,38 @@ public class Client extends BaseSubject {
             help(options);
         }
 
+        if (!cmd.hasOption("rh") || !cmd.hasOption("rp")) {
+            log.info(
+                    "-rh or -rp is missing. Please click : [Menu -> RemoteSever] to add remote info by using GUI frame.");
+            return;
+        }
+
         // get remote info
         String remoteHost = "";
         int remotePort = 0;
-        if (cmd.hasOption("rh") && cmd.hasOption("rp")) {
-            remoteHost = cmd.getOptionValue("rh");
-            if (UtilHelper.isEmptyStr(remoteHost)) {
-                log.error("the remote hostname can not be empty.");
-                help(options);
-            }
-            try {
-                remotePort = Integer.parseInt(cmd.getOptionValue("rp"));
-            }
-            catch (NumberFormatException e) {
-                log.error("-rp requires a port number, parsed: "
-                        + cmd.getOptionValue("rp"));
-                help(options);
-            }
-            UserSettings.setServerInfo(remotePort, remoteHost);
+
+        remoteHost = cmd.getOptionValue("rh");
+        if (UtilHelper.isEmptyStr(remoteHost)) {
+            log.error("the remote hostname can not be empty.");
+            help(options);
         }
-        else {
-            log.info(
-                    "-rh or -rp is missing. Please click : [Menu -> Connect] to add remote info by using GUI frame.");
+
+        try {
+            remotePort = Integer.parseInt(cmd.getOptionValue("rp"));
         }
+        catch (NumberFormatException e) {
+            log.error("-rp requires a port number, parsed: "
+                    + cmd.getOptionValue("rp"));
+            help(options);
+        }
+
+        UserSettings.setServerInfo(remotePort, remoteHost);
+        log.info("remote info has been added : " + remoteHost + ":"
+                + remotePort);
 
         if (cmd.hasOption("s") || cmd.hasOption("u")) {
             log.info(
                     "Please use GUI frame to type into the username for -u and secret for -s.");
         }
-
     }
 }

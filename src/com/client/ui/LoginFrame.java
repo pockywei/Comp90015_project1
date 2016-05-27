@@ -58,7 +58,7 @@ public class LoginFrame extends BaseFrame {
         JToolBar bar = new JToolBar();
         bar.setFloatable(false);
         bar.add(new JLabel(
-                "Please add remote server info first : [Menu -> Connect]"));
+                "Please add remote server info first : [Menu -> RemoteSever]"));
         add(bar, BorderLayout.SOUTH);
     }
 
@@ -102,7 +102,7 @@ public class LoginFrame extends BaseFrame {
 
         // add three actions buttons
         JButton loginButton = new JButton("Login");
-        control.listenLoginButton(loginButton, userText, passwordText);
+        control.listenLoginButton(loginButton, userText, passwordText, this);
         loginButton.setSize(TEXT_WIDTH, BUTTON_HEIGHT);
         actionArea.add(loginButton);
 
@@ -137,7 +137,7 @@ public class LoginFrame extends BaseFrame {
     }
 
     @Override
-    public void actionSuccess(Command com, String info) {
+    public void actionSuccess(Command com, String info, Object o) {
         switch (com) {
             case REGISTER_SUCCESS:
                 UIHelper.showMessageDialog(info);

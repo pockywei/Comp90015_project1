@@ -38,23 +38,23 @@ public class ClientResponse implements Response {
                 return true;
             case REGISTER_SUCCESS:
                 if (listener != null) {
-                    listener.actionSuccess(msg.getCommand(), info);
+                    listener.actionSuccess(msg.getCommand(), info, null);
                 }
                 return true;
             case LOGIN_SUCCESS:
                 if (listener != null) {
-                    listener.actionSuccess(msg.getCommand(), info);
+                    listener.actionSuccess(msg.getCommand(), info, null);
                 }
                 return false;
             case REDIRECT:
                 // Re-login to the given server.
                 UserSettings.setServerInfo(msg.getPort(), msg.getHostnmae());
-                ClientManger.getInstance().sendLoginRequest();
+                ClientManger.getInstance().sendLoginRequest(null);
                 return true;
             case ACTIVITY_BROADCAST:
                 if (listener != null) {
                     listener.actionSuccess(msg.getCommand(),
-                            msg.getActivity().toString());
+                            msg.getActivity().getUsername(), msg.getActivity());
                 }
                 return false;
             default:

@@ -7,6 +7,7 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 
 import com.base.AsyncRunnable;
+import com.base.AsyncRunnable.Callback;
 import com.base.BaseManager;
 import com.client.UserSettings;
 import com.client.core.inter.FrameUpdateListener;
@@ -61,6 +62,9 @@ public class ClientManger extends BaseManager implements FrameUpdateListener {
             if (connection != null) {
                 connection.close();
             }
+            log.debug("waiting for creating connection to remote server: "
+                    + UserSettings.getRemoteHost() + ":"
+                    + UserSettings.getRemotePort());
             return connection = new Connection(
                     new Socket(UserSettings.getRemoteHost(),
                             UserSettings.getRemotePort()),
@@ -82,13 +86,8 @@ public class ClientManger extends BaseManager implements FrameUpdateListener {
         return connection;
     }
 
-    public void sendLoginRequest() throws Exception {
+    public void sendLoginRequest(Callback callback) throws Exception {
         post(new AsyncRunnable() {
-
-            @Override
-            protected void preTask() {
-                // may pop a progressing bar here
-            }
 
             @Override
             protected boolean onBackgroud() throws Exception {
@@ -96,34 +95,23 @@ public class ClientManger extends BaseManager implements FrameUpdateListener {
                         UserSettings.getUsername(), UserSettings.getSecret())
                                 .request();
             }
-        });
-
+        }.setCallback(callback));
     }
 
-    public void sendRegisterRequest(final String username, final String secret)
-            throws Exception {
+    public void sendRegisterRequest(final String username, final String secret,
+            Callback callback) throws Exception {
         post(new AsyncRunnable() {
-
-            @Override
-            protected void preTask() {
-                // may pop a progressing bar here
-            }
 
             @Override
             protected boolean onBackgroud() {
                 return new RegisterRequest(createConnection(), username, secret)
                         .request();
             }
-        });
+        }.setCallback(callback));
     }
 
     public void sendActivityMessage(final String message) throws Exception {
         post(new AsyncRunnable() {
-
-            @Override
-            protected void preTask() {
-                // may pop a progressing bar here
-            }
 
             @Override
             protected boolean onBackgroud() {
@@ -136,11 +124,6 @@ public class ClientManger extends BaseManager implements FrameUpdateListener {
 
     public void sendLogoutRequest() throws Exception {
         post(new AsyncRunnable() {
-
-            @Override
-            protected void preTask() {
-                // may pop a progressing bar here
-            }
 
             @Override
             protected boolean onBackgroud() throws Exception {
@@ -160,15 +143,14 @@ public class ClientManger extends BaseManager implements FrameUpdateListener {
     }
 
     @Override
-    public void actionSuccess(final Command com, final String info) {
+    public void actionSuccess(final Command com, final String info, final Object o) {
         synchronized (frameList) {
             for (final FrameUpdateListener frame : frameList) {
-
                 SwingUtilities.invokeLater(new Runnable() {
 
                     @Override
                     public void run() {
-                        frame.actionSuccess(com, info);
+                        frame.actionSuccess(com, info, o);
                     }
                 });
             }

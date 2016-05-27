@@ -7,9 +7,11 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
 import com.client.core.ClientManger;
 import com.client.core.inter.FrameUpdateListener;
+import com.client.ui.ActionDialog;
 import com.utils.log.CrashHandler;
 import com.utils.log.Log;
 
@@ -19,6 +21,7 @@ public abstract class BaseFrame extends JFrame
     private static final long serialVersionUID = 1L;
     private static final String TITLE = "ActivityStreamer Text I/O by Eyebrow";
     protected static final Log log = Log.getInstance();
+    private ActionDialog progressBar = new ActionDialog(BaseFrame.this);;
 
     public abstract void initView();
 
@@ -62,7 +65,35 @@ public abstract class BaseFrame extends JFrame
     }
 
     public void close() {
+        if (progressBar != null) {
+            progressBar.close();
+        }
         setVisible(false);
         dispose();
+    }
+
+    public void showProgress() {
+        SwingUtilities.invokeLater(new Runnable() {
+
+            @Override
+            public void run() {
+                if (!progressBar.isVisible()) {
+                    log.info("show progress bar");
+                    progressBar.setVisible(true);
+                }
+            }
+        });
+    }
+
+    public void closeProgress() {
+        SwingUtilities.invokeLater(new Runnable() {
+
+            @Override
+            public void run() {
+                progressBar.setVisible(false);
+                log.info("close progress bar");
+            }
+        });
+
     }
 }

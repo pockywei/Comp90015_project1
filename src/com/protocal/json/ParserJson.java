@@ -92,20 +92,20 @@ public class ParserJson {
                 msg.setSecret(root.get(Protocal.SECRET).getAsString());
                 JsonObject activity = root.get(Protocal.ACTIVITY)
                         .getAsJsonObject();
-                
+
                 if (!activity.isJsonObject()) {
                     throw new Exception();
                 }
 
                 Activity message = null;
                 if (activity.has(Protocal.ACTIVITY_MESSAGE)) {
+                    // pure text
                     message = Message.getActivity(activity
                             .get(Protocal.ACTIVITY_MESSAGE).getAsString());
                 }
                 else {
                     // The whole activity JSON will be treated as a String as
-                    // the
-                    // structure is unpredictable.
+                    // the structure is unpredictable.
                     message = Message.getActivity(activity.toString());
                 }
                 msg.setActivity(message);
@@ -119,12 +119,16 @@ public class ParserJson {
                 if (!activity.isJsonObject()) {
                     throw new Exception();
                 }
+
                 Activity broadcast = null;
                 if (activity.has(Protocal.ACTIVITY_MESSAGE)) {
+                    // pure text
                     broadcast = Message.getActivity(activity
                             .get(Protocal.ACTIVITY_MESSAGE).getAsString());
                 }
                 else {
+                    // The whole activity JSON will be treated as a String as
+                    // the structure is unpredictable.
                     broadcast = Message.getActivity(activity.toString());
                 }
 

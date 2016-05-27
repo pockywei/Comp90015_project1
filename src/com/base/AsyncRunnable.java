@@ -18,13 +18,6 @@ public abstract class AsyncRunnable extends BaseRunnable {
     }
 
     /**
-     * Provided for showing progress dialog or something that indicates user
-     * doing tasks.
-     * 
-     */
-    protected abstract void preTask();
-
-    /**
      * true: success; false: failed
      * 
      * @return
@@ -42,12 +35,6 @@ public abstract class AsyncRunnable extends BaseRunnable {
             }
 
         });
-    }
-
-    @Override
-    public void start() {
-        preTask();
-        super.start();
     }
 
     public interface Callback {

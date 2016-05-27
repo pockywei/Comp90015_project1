@@ -3,6 +3,7 @@ package com.protocal;
 import com.beans.ServerInfo;
 import com.beans.UserInfo;
 import com.google.gson.JsonObject;
+import com.utils.UtilHelper;
 
 public class Message {
 
@@ -128,14 +129,31 @@ public class Message {
     }
 
     public JsonObject getActivityMsgJson() {
-        JsonObject activity = new JsonObject();
+        // if the input message is a json object, then send it directly.
+        // otherwise, build a new json object with the field "message".
+        JsonObject activity = UtilHelper
+                .isJsonObject(getActivity().getMessage());
+        if (activity != null) {
+            return activity;
+        }
+        activity = new JsonObject();
         activity.addProperty(Protocal.ACTIVITY_MESSAGE,
                 getActivity().getMessage());
         return activity;
     }
 
     public JsonObject getActivityCastJson() {
-        JsonObject activity = new JsonObject();
+        JsonObject activity = UtilHelper
+                .isJsonObject(getActivity().getMessage());
+        // if the message is a json object, then add a field to indicate the
+        // user name. otherwise, build a new json object with the field
+        // "message".
+        if (activity != null) {
+            activity.addProperty(Protocal.ACTIVITY_SENDER,
+                    getActivity().getUsername());
+            return activity;
+        }
+        activity = new JsonObject();
         activity.addProperty(Protocal.ACTIVITY_SENDER,
                 getActivity().getUsername());
         activity.addProperty(Protocal.ACTIVITY_MESSAGE,

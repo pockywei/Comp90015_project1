@@ -4,7 +4,7 @@ import com.protocal.Command;
 
 public interface FrameUpdateListener {
 
-    public void actionSuccess(Command com, String info);
+    public void actionSuccess(Command com, String info, Object o);
 
     public void actionFailed(Command com, String info);
 }

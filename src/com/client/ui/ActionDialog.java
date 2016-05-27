@@ -5,9 +5,12 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -34,22 +37,47 @@ public class ActionDialog extends JDialog {
     private List<JTextField> fields;
     private DialogHeader[] headers;
 
+    public ActionDialog(BaseFrame parent) {
+        this(parent, "Progress");
+        setSize(FRAME_WIDTH - 4 * INDENT_WIDTH, FRAME_MIN_HEIGHT / 2);
+        setLocationRelativeTo(parent);
+        add(initProgressBar());
+    }
+
+    private JPanel initProgressBar() {
+        JPanel panel = new JPanel();
+        panel.setBorder(
+                new EmptyBorder(MARGIN, INDENT_WIDTH, MARGIN, INDENT_WIDTH));
+        // progress bar
+        URL url = getClass().getResource("loading.gif");
+        Icon icon = new ImageIcon(url);
+        final JLabel label = new JLabel(icon);
+        final JLabel text = new JLabel("connecting...");
+
+        panel.add(label);
+        panel.add(text);
+        return panel;
+    }
+
     public ActionDialog(BaseFrame parent, String title, DialogHeader[] headers,
             ActionDialogListener actionlistener) {
-        super(parent, true);
+        this(parent, title);
         this.actionlistener = actionlistener;
         this.headers = headers;
         fields = new ArrayList<>();
-        setTitle(title);
         int height = headers.length * FRAME_HEIGHT;
         setSize(FRAME_WIDTH,
                 height < FRAME_MIN_HEIGHT ? FRAME_MIN_HEIGHT : height);
         setLocationRelativeTo(parent);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setResizable(false);
-
         add(initView());
         setVisible(true);
+    }
+
+    public ActionDialog(BaseFrame parent, String title) {
+        super(parent, true);
+        setTitle(title);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setResizable(false);
     }
 
     private JPanel initView() {

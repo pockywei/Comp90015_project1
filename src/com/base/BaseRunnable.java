@@ -39,6 +39,14 @@ public abstract class BaseRunnable implements Runnable {
      */
     public abstract boolean runTask() throws Exception;
 
+    /**
+     * Provided for showing progress dialog or something that indicates user
+     * doing tasks.
+     * 
+     */
+    protected void preTask() {
+    }
+
     public boolean isRunning() {
         return !stop;
     }
@@ -63,6 +71,7 @@ public abstract class BaseRunnable implements Runnable {
     }
 
     protected void post(BaseRunnable runnable) {
+        runnable.preTask();
         queue.offer(runnable);
     }
 }
