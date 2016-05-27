@@ -67,33 +67,24 @@ public abstract class BaseFrame extends JFrame
     public void close() {
         if (progressBar != null) {
             progressBar.close();
+            progressBar = null;
         }
         setVisible(false);
         dispose();
     }
 
     public void showProgress() {
-        SwingUtilities.invokeLater(new Runnable() {
-
-            @Override
-            public void run() {
-                if (!progressBar.isVisible()) {
-                    log.info("show progress bar");
-                    progressBar.setVisible(true);
-                }
-            }
-        });
+        if (BaseFrame.this.isVisible() && progressBar != null
+                && !progressBar.isVisible()) {
+            log.info("show progress bar");
+            progressBar.setVisible(true);
+        }
     }
 
     public void closeProgress() {
-        SwingUtilities.invokeLater(new Runnable() {
-
-            @Override
-            public void run() {
-                progressBar.setVisible(false);
-                log.info("close progress bar");
-            }
-        });
-
+        if (BaseFrame.this.isVisible() && progressBar != null) {
+            progressBar.setVisible(false);
+            log.info("close progress bar");
+        }
     }
 }

@@ -38,7 +38,7 @@ public class ActionDialog extends JDialog {
     private DialogHeader[] headers;
 
     public ActionDialog(BaseFrame parent) {
-        this(parent, "Progress");
+        this(parent, "Progress", false);
         setSize(FRAME_WIDTH - 4 * INDENT_WIDTH, FRAME_MIN_HEIGHT / 2);
         setLocationRelativeTo(parent);
         add(initProgressBar());
@@ -61,7 +61,7 @@ public class ActionDialog extends JDialog {
 
     public ActionDialog(BaseFrame parent, String title, DialogHeader[] headers,
             ActionDialogListener actionlistener) {
-        this(parent, title);
+        this(parent, title, true);
         this.actionlistener = actionlistener;
         this.headers = headers;
         fields = new ArrayList<>();
@@ -73,8 +73,8 @@ public class ActionDialog extends JDialog {
         setVisible(true);
     }
 
-    public ActionDialog(BaseFrame parent, String title) {
-        super(parent, true);
+    public ActionDialog(BaseFrame parent, String title, boolean model) {
+        super(parent, model);
         setTitle(title);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setResizable(false);

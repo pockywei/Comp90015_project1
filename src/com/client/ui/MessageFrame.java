@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -75,10 +77,15 @@ public class MessageFrame extends BaseFrame {
         inputText = new JTextArea();
         inputText.setLineWrap(true);
         inputText.setWrapStyleWord(true);
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowOpened(WindowEvent e) {
+                inputText.requestFocus();
+            }
+        });
 
         JScrollPane scrollPane = new JScrollPane(inputText);
         input.add(scrollPane);
-        input.setSize(INPUT_WIDTH, INPUT_HEIGHT);
         scrollPane.setPreferredSize(new Dimension(INPUT_WIDTH, INPUT_HEIGHT));
 
         JPanel buttonGroup = new JPanel();
