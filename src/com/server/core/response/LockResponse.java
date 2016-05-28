@@ -10,6 +10,7 @@ import com.protocal.connection.Connection;
 import com.server.ServerSettings;
 import com.server.core.ServerManager;
 import com.server.core.database.LocalStorage;
+import com.server.core.listener.LockState;
 
 public class LockResponse extends AbstractResponse {
 

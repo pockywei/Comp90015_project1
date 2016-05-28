@@ -3,7 +3,7 @@ package test;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.beans.UserInfo;
-import com.server.core.response.LockState;
+import com.server.core.listener.LockState;
 
 public class TestLockstate {
 

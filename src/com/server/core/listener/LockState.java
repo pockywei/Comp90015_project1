@@ -1,4 +1,4 @@
-package com.server.core.response;
+package com.server.core.listener;
 
 public enum LockState {
     ALLOWED, DENIED, WAITTED;

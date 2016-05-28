@@ -9,7 +9,7 @@ import com.beans.UserInfo;
 import com.protocal.connection.inter.ConnectionListener;
 import com.protocal.connection.inter.ConnectionType;
 import com.protocal.connection.inter.Response;
-import com.server.core.response.LockState;
+import com.server.core.listener.LockState;
 import com.server.core.response.ServerResponse;
 import com.utils.UtilHelper;
 import com.utils.log.Log;
