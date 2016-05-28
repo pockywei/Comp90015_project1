@@ -9,8 +9,6 @@ import com.server.core.database.LocalStorage;
 
 public class LockRequestResponse extends RegisterResponse {
 
-    private UserInfo register;
-
     public LockRequestResponse(UserInfo register) {
         super(register);
     }
