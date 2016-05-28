@@ -47,7 +47,7 @@ public class LockResponse extends AbstractResponse {
         }
         // register success for the client, close the connection
         if (root.getConnectionInfo() instanceof UserInfo) {
-            return true;
+            return false;
         }
         // server will remove the root connection reference
         ServerManager.getInstance().removeRootConnection(user);
