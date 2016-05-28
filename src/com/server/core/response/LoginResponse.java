@@ -3,11 +3,12 @@ package com.server.core.response;
 import com.beans.ServerInfo;
 import com.beans.UserInfo;
 import com.protocal.Command;
+import com.protocal.Message;
 import com.protocal.Protocal;
 import com.protocal.connection.Connection;
 import com.protocal.connection.inter.ConnectionType;
-import com.server.core.LocalStorage;
 import com.server.core.ServerManager;
+import com.server.core.database.LocalStorage;
 
 public class LoginResponse extends AbstractResponse {
 
@@ -18,15 +19,16 @@ public class LoginResponse extends AbstractResponse {
     }
 
     @Override
-    public boolean process(String json, Connection connection)
+    public boolean process(Message msg, Connection connection)
             throws Exception {
+        String response;
         if (LocalStorage.getInstance().hasUser(loginUser)) {
             if (LocalStorage.getInstance().loginCheck(loginUser)) {
-                
-                connection.sendMessage(responseMsg(Command.LOGIN_SUCCESS, String
-                        .format(Protocal.LOGIN_SUCC, loginUser.getUsername())));
-                log.debug("respnose message user login success. "
-                        + loginUser.getUsername());
+                response = String.format(Protocal.LOGIN_SUCC,
+                        loginUser.getUsername());
+                connection.sendMessage(
+                        responseMsg(Command.LOGIN_SUCCESS, response));
+                log.debug(response);
 
                 // check whether it need to be redirected to another
                 // server.
@@ -43,22 +45,25 @@ public class LoginResponse extends AbstractResponse {
                 }
 
                 // add the connection to the ServerManager
-                connection.classifyConnectionType(ConnectionType.USER_CONN,
+                connection.classifyType(ConnectionType.USER_CONN,
                         loginUser);
                 return false;
             }
             else {
-                connection.sendMessage(responseMsg(Command.LOGIN_FAILED, String
-                        .format(Protocal.LOGIN_FAIL, loginUser.getUsername())));
+                response = String.format(Protocal.LOGIN_FAIL,
+                        loginUser.getUsername());
+                connection.sendMessage(
+                        responseMsg(Command.LOGIN_FAILED, response));
                 log.error("respnose message user secret does not match "
                         + loginUser.getUsername());
                 return true;
             }
         }
         // does not have this user. login failed.
-        connection.sendMessage(responseMsg(Command.LOGIN_FAILED, String.format(
-                Protocal.REGISTER_FAIL_NO_USER, loginUser.getUsername())));
-        log.error("respnose message no user " + loginUser.getUsername());
+        response = String.format(Protocal.REGISTER_FAIL_NO_USER,
+                loginUser.getUsername());
+        connection.sendMessage(responseMsg(Command.LOGIN_FAILED, response));
+        log.error(response);
         return true;
     }
 

@@ -11,6 +11,9 @@ import com.protocal.connection.Connection;
 import com.protocal.connection.inter.ConnectionListener;
 import com.protocal.connection.inter.SocketListener;
 import com.server.ServerSettings;
+import com.server.core.database.LocalStorage;
+import com.server.core.listener.ServerListener;
+import com.server.core.response.SecureResponse;
 import com.utils.UtilHelper;
 import com.utils.log.CrashHandler;
 
@@ -24,7 +27,7 @@ public abstract class AbstractServer extends BaseManager
     public AbstractServer() {
         super();
         try {
-            listener = new ServerListener(this);
+            listener = new ServerListener(this, ServerSettings.getLocalPort());
         }
         catch (IOException e) {
             log.fatal("failed to startup a listening thread: " + e);
@@ -46,16 +49,16 @@ public abstract class AbstractServer extends BaseManager
         }
     }
 
-    public abstract void sendAnnounce(Connection from);
+    public abstract int sendAnnounce(Connection from);
 
     public abstract int sendLockRequest(final Connection from,
             final String username, final String secret);
 
     public abstract ServerInfo redirect();
-
+    
     public abstract void sendAuthenticate() throws Exception;
 
-    public abstract void sendActivityBroadcast(final Connection from,
+    public abstract int sendActivityBroadcast(final Connection from,
             final String username, final String message);
 
     @Override
@@ -83,32 +86,30 @@ public abstract class AbstractServer extends BaseManager
     }
 
     @Override
-    public Connection distributSocket(Socket s) throws Exception {
-        // TODO can not create a new connection when receives a socket. Here
-        // should firstly check the existed connection
+    public void distributSocket(Socket s) throws Exception {
         log.debug("incomming socket: " + UtilHelper.getSocketAddr(s));
-        Connection c = new Connection(s, new ServerResponse(), this);
-        return c;
+        new Connection(s, new SecureResponse(), this);
     }
 
     @Override
     public void closeConnection(Connection c) throws Exception {
-        if (c != null && c.getType() != null) {
-            switch (c.getType()) {
-                case USER_CONN:
-                    synchronized (userConnections) {
-                        userConnections.remove(c);
-                        // update server user load.
-                        ServerSettings.setLocalLoad(userConnections.size());
-                    }
-                    break;
-                case SERVER_CONN:
-                    // remove connection.
-                    synchronized (serverConnections) {
-                        serverConnections.remove(c);
-                    }
-                    break;
-            }
+        if (c == null || c.getType() == null) {
+            return;
+        }
+        switch (c.getType()) {
+            case USER_CONN:
+                synchronized (userConnections) {
+                    userConnections.remove(c);
+                    // update server user load.
+                    ServerSettings.setLocalLoad(userConnections.size());
+                }
+                break;
+            case SERVER_CONN:
+                // remove connection.
+                synchronized (serverConnections) {
+                    serverConnections.remove(c);
+                }
+                break;
         }
     }
 
@@ -144,12 +145,13 @@ public abstract class AbstractServer extends BaseManager
         return userConnections;
     }
 
-    public final List<Connection> getAuthentiedServers() {
+    public final List<Connection> getAuthenticatedServers() {
         return serverConnections;
     }
 
     @Override
     public void clear() {
+        crashBroadcast();
         stop();
         if (listener != null) {
             listener.stop();
@@ -167,5 +169,14 @@ public abstract class AbstractServer extends BaseManager
             }
             serverConnections.clear();
         }
+    }
+
+    /**
+     * Once the server is stopped by any exceptions, it will broadcast redirect
+     * messages to the clients and servers
+     * 
+     */
+    private void crashBroadcast() {
+
     }
 }

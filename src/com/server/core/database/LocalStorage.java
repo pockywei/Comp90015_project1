@@ -1,4 +1,4 @@
-package com.server.core;
+package com.server.core.database;
 
 import java.util.ArrayList;
 import java.util.List;

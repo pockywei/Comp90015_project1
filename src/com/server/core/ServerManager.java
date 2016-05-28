@@ -3,6 +3,7 @@ package com.server.core;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.beans.ServerInfo;
 import com.beans.UserInfo;
@@ -10,22 +11,41 @@ import com.protocal.Protocal;
 import com.protocal.connection.Connection;
 import com.protocal.connection.inter.ConnectionType;
 import com.server.ServerSettings;
+import com.server.core.database.LocalStorage;
 import com.server.core.request.ActivityBroadCast;
 import com.server.core.request.AnnounceRequest;
 import com.server.core.request.AuthenticateRequest;
 import com.server.core.request.LockRequest;
+import com.server.core.response.ServerResponse;
 import com.utils.UtilHelper;
 
 public class ServerManager extends AbstractServer {
 
     private static ServerManager instance = null;
-    private List<Connection> registerList = new ArrayList<>();
+    private List<Connection> registerClientList = new ArrayList<>();
+    private ConcurrentHashMap<UserInfo, Connection> rootMap = new ConcurrentHashMap<>();
+
+    public void setRootConnection(Connection root, UserInfo user) {
+        rootMap.put(user, root);
+    }
+
+    public Connection getRootConnection(UserInfo user) {
+        return rootMap.get(user);
+    }
+
+    public void removeRootConnection(UserInfo user) {
+        rootMap.remove(user);
+    }
 
     public synchronized static ServerManager getInstance() {
         if (instance == null) {
             instance = new ServerManager();
         }
         return instance;
+    }
+
+    private Connection createConnection(Socket s) throws Exception {
+        return new Connection(s, new ServerResponse(), this);
     }
 
     @Override
@@ -39,12 +59,12 @@ public class ServerManager extends AbstractServer {
         }
         else {
             log.info("sending an authenticate to remote server");
-            Connection c = distributSocket(
+            Connection c = createConnection(
                     new Socket(ServerSettings.getRemoteHost(),
                             ServerSettings.getRemotePort()));
             // create a new connection to remote server.
             if (new AuthenticateRequest(c).request()) {
-                c.classifyConnectionType(ConnectionType.SERVER_CONN,
+                c.classifyType(ConnectionType.SERVER_CONN,
                         new ServerInfo()
                                 .setHostname(ServerSettings.getRemoteHost())
                                 .setPort(ServerSettings.getRemotePort()));
@@ -55,7 +75,7 @@ public class ServerManager extends AbstractServer {
     @Override
     public ServerInfo redirect() {
         // Find which server should be connected to.
-        List<Connection> connections = getAuthentiedServers();
+        List<Connection> connections = getAuthenticatedServers();
         synchronized (connections) {
             for (Connection c : connections) {
                 ServerInfo serverInfo = (ServerInfo) c.getConnectionInfo();
@@ -73,15 +93,18 @@ public class ServerManager extends AbstractServer {
      * 
      */
     @Override
-    public void sendAnnounce(final Connection from) {
-        List<Connection> connections = getAuthentiedServers();
+    public int sendAnnounce(final Connection from) {
+        List<Connection> connections = getAuthenticatedServers();
+        int count = 0;
         synchronized (connections) {
             for (Connection c : connections) {
                 // server will not send the message back.
                 if (!c.equals(from)) {
                     new AnnounceRequest(c).request();
+                    count++;
                 }
             }
+            return count;
         }
     }
 
@@ -95,16 +118,18 @@ public class ServerManager extends AbstractServer {
     @Override
     public int sendLockRequest(final Connection from, final String username,
             final String secret) {
-        List<Connection> connections = getAuthentiedServers();
+        List<Connection> connections = getAuthenticatedServers();
+        int count = 0;
         synchronized (connections) {
             for (Connection c : connections) {
                 if (!c.equals(from)) {
                     // server will not send the message back.
                     new LockRequest(c, username, secret).request();
+                    count++;
                 }
             }
+            return count;
         }
-        return connections.size();
     }
 
     /**
@@ -115,14 +140,16 @@ public class ServerManager extends AbstractServer {
      * @param message
      */
     @Override
-    public void sendActivityBroadcast(final Connection from,
+    public int sendActivityBroadcast(final Connection from,
             final String username, final String message) {
-        List<Connection> serverConnections = getAuthentiedServers();
+        List<Connection> serverConnections = getAuthenticatedServers();
+        int count = 0;
         synchronized (serverConnections) {
             for (Connection c : serverConnections) {
                 if (!c.equals(from)) {
                     // server will not send the message back.
                     new ActivityBroadCast(c, username, message).request();
+                    count++;
                 }
             }
         }
@@ -130,49 +157,31 @@ public class ServerManager extends AbstractServer {
         synchronized (userConnections) {
             for (Connection c : userConnections) {
                 new ActivityBroadCast(c, username, message).request();
+                count++;
             }
+        }
+        return count;
+    }
+
+    public void registerSuccess(Connection c, UserInfo user,
+            String responseMsg) {
+        LocalStorage.getInstance().addUser(user);
+        c.sendMessage(responseMsg);
+        synchronized (registerClientList) {
+            registerClientList.remove(c);
         }
     }
 
-    /**
-     * true: the user is logged false: the user should be authenticated.
-     * 
-     * @param user
-     * @return
-     */
-    public boolean isUserLogged(final UserInfo user) {
-        final List<Connection> loggedUsers = getLoggedUserList();
-        synchronized (loggedUsers) {
-            for (Connection c : loggedUsers) {
-                if (user.getKey().equals(c.getConnectionInfo().getKey())) {
-                    return true;
-                }
-            }
+    public void registerFailed(Connection c, String responseMsg) {
+        c.sendMessage(responseMsg);
+        synchronized (registerClientList) {
+            registerClientList.remove(c);
         }
-        return false;
-    }
-
-    /**
-     * true: the server has been authenticated; false: not
-     * 
-     * @param server
-     * @return
-     */
-    public boolean hasServer(final ServerInfo server) {
-        final List<Connection> servers = getAuthentiedServers();
-        synchronized (server) {
-            for (Connection c : servers) {
-                if (server.getKey().equals(c.getConnectionInfo().getKey())) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     public Connection getRegisterConnection(UserInfo user) {
-        synchronized (registerList) {
-            for (Connection c : registerList) {
+        synchronized (registerClientList) {
+            for (Connection c : registerClientList) {
                 if (user.getKey().equals(c.getConnectionInfo().getKey())) {
                     return c;
                 }
@@ -182,14 +191,8 @@ public class ServerManager extends AbstractServer {
     }
 
     public void addRegisterConnection(Connection registerCon) {
-        synchronized (registerList) {
-            registerList.add(registerCon);
-        }
-    }
-
-    public void removeRegisterConnection(Connection c) {
-        synchronized (registerList) {
-            registerList.remove(c);
+        synchronized (registerClientList) {
+            registerClientList.add(registerCon);
         }
     }
 }

@@ -12,6 +12,6 @@ public interface Response {
      * @return true: close connection; false: not
      * @throws Exception
      */
-    public boolean process(String json, Connection connection)
+    public boolean preProcess(String json, Connection connection)
             throws Exception;
 }

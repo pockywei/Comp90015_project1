@@ -20,7 +20,7 @@ public class ReadTask extends AbstractSocketTask {
         super(socket, connection);
         this.reader = new BufferedReader(
                 new InputStreamReader(getInputStream()));
-        this.response = response;
+        setResponse(response);
         start();
     }
 
@@ -28,6 +28,10 @@ public class ReadTask extends AbstractSocketTask {
     public boolean runTask() throws Exception {
         listening();
         return false;
+    }
+
+    public void setResponse(Response response) {
+        this.response = response;
     }
 
     /**
@@ -40,7 +44,7 @@ public class ReadTask extends AbstractSocketTask {
         try {
             while (!close && ((message = reader.readLine()) != null)) {
                 if (response != null) {
-                    close = response.process(message, connection);
+                    close = response.preProcess(message, connection);
                 }
             }
             log.debug("connection closed to " + getSocketAddr()

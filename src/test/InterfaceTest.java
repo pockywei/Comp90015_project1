@@ -24,7 +24,7 @@ public class InterfaceTest {
 class SimpleResponse implements Response {
 
     @Override
-    public boolean process(String json, Connection connection)
+    public boolean preProcess(String json, Connection connection)
             throws Exception {
         System.out.println(json);
         return false;

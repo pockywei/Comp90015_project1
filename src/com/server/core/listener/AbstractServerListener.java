@@ -1,25 +1,21 @@
-package com.server.core;
+package com.server.core.listener;
 
 import java.io.IOException;
-import java.net.ServerSocket;
 import java.net.Socket;
 
 import com.base.BaseRunnable;
 import com.protocal.connection.inter.SocketListener;
-import com.server.ServerSettings;
 import com.utils.log.exception.ListeningException;
 
-public class ServerListener extends BaseRunnable {
+public abstract class AbstractServerListener extends BaseRunnable {
 
-    private ServerSocket serverSocket = null;
     private int localPort;
     private SocketListener listener;
 
-    public ServerListener(SocketListener listener) throws IOException {
-        localPort = ServerSettings.getLocalPort();
-        serverSocket = new ServerSocket(localPort);
+    public AbstractServerListener(SocketListener listener, int localPort)
+            throws IOException {
         this.listener = listener;
-        start();
+        this.localPort = localPort;
     }
 
     @Override
@@ -27,7 +23,7 @@ public class ServerListener extends BaseRunnable {
         log.info("listening for new connections on " + localPort);
         try {
             while (!stop) {
-                Socket incomeSocket = serverSocket.accept();
+                Socket incomeSocket = accept();
                 // Incoming a client socket.
                 if (listener != null) {
                     listener.distributSocket(incomeSocket);
@@ -44,18 +40,11 @@ public class ServerListener extends BaseRunnable {
         return false;
     }
 
+    protected abstract Socket accept() throws Exception;
+
     @Override
     public void stop() {
         super.stop();
         listener = null;
-        try {
-            if (serverSocket != null) {
-                serverSocket.close();
-                log.debug("serverSocket has been safely closed.");
-            }
-        }
-        catch (IOException e) {
-            log.error("can not close serversocket.");
-        }
     }
 }

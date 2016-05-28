@@ -22,7 +22,7 @@ public class TestConnection {
 class iResponse implements Response {
 
     @Override
-    public boolean process(String json, Connection connection)
+    public boolean preProcess(String json, Connection connection)
             throws Exception {
         System.out.println(json);
         if (json.equals("get HI 6")) {

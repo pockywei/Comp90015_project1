@@ -1,6 +1,7 @@
 package com.server;
 
 import com.beans.ServerInfo;
+import com.protocal.Protocal;
 import com.utils.UtilHelper;
 import com.utils.log.Log;
 
@@ -76,5 +77,9 @@ public class ServerSettings {
 
     private static boolean verifyPort(int port) {
         return port < 0 || port > MAX_PORT_RANGE;
+    }
+
+    public static int getSSLPort() {
+        return Protocal.getSSLPort(localInfo.getPort());
     }
 }

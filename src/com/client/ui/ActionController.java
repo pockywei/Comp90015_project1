@@ -34,7 +34,7 @@ public class ActionController {
             public void actionPerformed(ActionEvent event) {
 
                 new ActionDialog(frame, "Please Enter Remote Info",
-                        UIHelper.REMOTE_HEADER, new ActionDialogListener() {
+                        UIHelper.getRemoteHeader(), new ActionDialogListener() {
 
                     @Override
                     public void confirmPerformed(ActionDialog dialog,
@@ -134,7 +134,7 @@ public class ActionController {
                                     "the passwords are not equal, please try again.");
                             return;
                         }
-                        
+
                         register(user, secret, frame);
                         dialog.close();
                     }

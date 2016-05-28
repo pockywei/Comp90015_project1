@@ -4,6 +4,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
+import javax.net.ssl.SSLSocket;
+
 import com.base.BaseRunnable;
 import com.utils.UtilHelper;
 
@@ -12,12 +14,12 @@ public abstract class AbstractSocketTask extends BaseRunnable {
     private Socket socket;
     protected Connection connection = null;
 
-    public AbstractSocketTask(Socket socket,
-            Connection connection) throws Exception {
+    public AbstractSocketTask(Socket socket, Connection connection)
+            throws Exception {
         this.socket = socket;
         this.connection = connection;
     }
-    
+
     protected OutputStream getOutputStream() throws Exception {
         return socket.getOutputStream();
     }
@@ -35,5 +37,12 @@ public abstract class AbstractSocketTask extends BaseRunnable {
 
     public void close() throws Exception {
         connection = null;
+    }
+
+    public boolean isSSLSocket() {
+        if (socket != null && socket instanceof SSLSocket) {
+            return true;
+        }
+        return false;
     }
 }

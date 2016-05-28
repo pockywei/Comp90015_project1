@@ -18,7 +18,7 @@ public class ClientResponse implements Response {
     }
 
     @Override
-    public boolean process(String json, Connection connection)
+    public boolean preProcess(String json, Connection connection)
             throws Exception {
         Message msg = new ParserJson(json).getMsg();
         if (msg == null) {

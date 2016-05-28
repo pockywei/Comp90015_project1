@@ -13,10 +13,14 @@ public class UIHelper {
     public static final DialogHeader[] REGISTER_HEADER = {
             new DialogHeader("Username"), new DialogHeader("Password", true),
             new DialogHeader("Password confirm", true) };
-    public static final DialogHeader[] REMOTE_HEADER = {
-            new DialogHeader("RemoteHost", UserSettings.getRemoteHost()),
-            new DialogHeader("RemotePort",
-                    String.valueOf(UserSettings.getRemotePort())) };
+
+    public static DialogHeader[] getRemoteHeader() {
+        DialogHeader[] header = {
+                new DialogHeader("RemoteHost", UserSettings.getRemoteHost()),
+                new DialogHeader("RemotePort",
+                        String.valueOf(UserSettings.getRemotePort())) };
+        return header;
+    }
 
     /**
      * create a cell for GridBagLayout

@@ -37,8 +37,13 @@ public class Protocal {
     public static final String RECEIVE_MESSAGE_TAG = " >> ";
     public static final String SEND_BY_ME = "Me";
     public static final String SOCKET_ADDRESS = "%s:%d";
+    public static final int SSL_HASH_TAG = 1;
 
     public static boolean isRedirect(int localLoad, int remoteLoad) {
         return (localLoad - remoteLoad) >= 2;
+    }
+
+    public static int getSSLPort(int localPort) {
+        return localPort + SSL_HASH_TAG;
     }
 }
