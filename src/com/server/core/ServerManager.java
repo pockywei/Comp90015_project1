@@ -52,8 +52,7 @@ public class ServerManager extends AbstractServer {
     public void sendAuthenticate() throws Exception {
         // no remote server info. start as a root server.
         if (UtilHelper.isEmptyStr(ServerSettings.getRemoteHost())
-                || ServerSettings.getRemotePort() == 0
-                || UtilHelper.isEmptyStr(ServerSettings.getRemoteSecret())) {
+                || ServerSettings.getRemotePort() == 0) {
             log.info("the current server will start alone, here by the secret: "
                     + ServerSettings.getLocalSecret());
         }

@@ -107,7 +107,7 @@ public class Server extends BaseSubject {
             }
         }
 
-        String remoteSecret = null;
+        String remoteSecret = "";
         if (cmd.hasOption("s")) {
             remoteSecret = cmd.getOptionValue("s");
         }

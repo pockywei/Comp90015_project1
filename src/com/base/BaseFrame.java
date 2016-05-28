@@ -7,7 +7,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
 
 import com.client.core.ClientManger;
 import com.client.core.inter.FrameUpdateListener;
@@ -21,7 +20,8 @@ public abstract class BaseFrame extends JFrame
     private static final long serialVersionUID = 1L;
     private static final String TITLE = "ActivityStreamer Text I/O by Eyebrow";
     protected static final Log log = Log.getInstance();
-    private ActionDialog progressBar = new ActionDialog(BaseFrame.this);;
+    private ActionDialog progressBar = new ActionDialog(BaseFrame.this);
+    protected boolean isClose = false;
 
     public abstract void initView();
 
@@ -53,6 +53,11 @@ public abstract class BaseFrame extends JFrame
     }
 
     public void nextFrame(Class<? extends BaseFrame> frame) {
+        if (isClose) {
+            log.debug(
+                    "the frame has been closed, it can not turn to next frame.");
+            return;
+        }
         close();
         try {
             frame.newInstance();
@@ -65,6 +70,7 @@ public abstract class BaseFrame extends JFrame
     }
 
     public void close() {
+        isClose = true;
         if (progressBar != null) {
             progressBar.close();
             progressBar = null;
@@ -74,7 +80,7 @@ public abstract class BaseFrame extends JFrame
     }
 
     public void showProgress() {
-        if (BaseFrame.this.isVisible() && progressBar != null
+        if (!isClose && BaseFrame.this.isVisible() && progressBar != null
                 && !progressBar.isVisible()) {
             log.info("show progress bar");
             progressBar.setVisible(true);
@@ -82,7 +88,7 @@ public abstract class BaseFrame extends JFrame
     }
 
     public void closeProgress() {
-        if (BaseFrame.this.isVisible() && progressBar != null) {
+        if (!isClose && BaseFrame.this.isVisible() && progressBar != null) {
             progressBar.setVisible(false);
             log.info("close progress bar");
         }
