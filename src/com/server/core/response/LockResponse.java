@@ -25,61 +25,58 @@ public class LockResponse extends AbstractResponse {
     @Override
     public boolean process(Message msg, Connection connection)
             throws Exception {
-        // if all servers are lock allowed, then send back register success.
-        int waitCount = connection.reduceCount(isAllow, user);
-        log.info("got a lockallowed message for user: " + user.getUsername()
-                + " wait count: " + waitCount);
-        LockState state = connection.hasFinishLock(user);
+        Connection root = ServerManager.getInstance().getRootConnection(user);
+        if (root == null) {
+            // top server which is connected by the clients
+            root = ServerManager.getInstance().getRegisterConnection(user);
+        }
+        LockState state = getLockState(root, user);
         // still waiting until the outcome is finished
         if (state == LockState.WAITTED) {
             return false;
         }
-        Connection root = ServerManager.getInstance().getRootConnection(user);
-        if (root != null) {
-            // sub server has finished the waiting from the leaf nodes, then
-            // send back to root.
-            log.info("lock waitting is finished : " + state + " for user: "
-                    + user.getUsername());
-            if (state == LockState.ALLOWED) {
-                sendAllowToRoot(root, user);
-            }
-            else if (state == LockState.DENIED) {
-                sendDeniedBroadcast(root, user);
-            }
-            ServerManager.getInstance().removeRootConnection(user);
-            return false;
+        // sub server has finished the waiting from the leaf nodes, then
+        // send back to root.
+        log.info("lock waitting is finished : " + state + " for user: "
+                + user.getUsername());
+        if (state == LockState.ALLOWED) {
+            sendAllow(root, user);
         }
-        // top server which is connected by the clients
-        Connection client = ServerManager.getInstance()
-                .getRegisterConnection(user);
-        if (client != null) {
-            log.info("top root server lock waitting is finished : " + state
-                    + " for user: " + user.getUsername());
-            String response = null;
-            if (state == LockState.ALLOWED) {
-                response = String.format(Protocal.REGISTER_SUCC,
-                        user.getUsername());
-                ServerManager.getInstance().registerSuccess(client, user,
-                        responseMsg(Command.REGISTER_SUCCESS, response));
-            }
-            else if (state == LockState.DENIED) {
-                response = String.format(Protocal.REGISTER_FAIL,
-                        user.getUsername());
-                ServerManager.getInstance().registerFailed(client,
-                        responseMsg(Command.REGISTER_SUCCESS, response));
-            }
-            log.info(response);
+        else if (state == LockState.DENIED) {
+            sendDenied(root, user);
         }
-        return true;
+        // register success for the client, close the connection
+        if (root.getConnectionInfo() instanceof UserInfo) {
+            return true;
+        }
+        // server will remove the root connection reference
+        ServerManager.getInstance().removeRootConnection(user);
+        return false;
     }
 
-    protected int sendDeniedBroadcast(Connection from, UserInfo user) {
+    private LockState getLockState(Connection root, UserInfo user) {
+        int waitCount = root.reduceCount(isAllow, user);
+        log.info("got a lockallowed message for user: " + user.getUsername()
+                + " wait count: " + waitCount);
+        return root.hasFinishLock(user);
+    }
+
+    protected void sendDenied(Connection from, UserInfo user) {
+        // connect to client
+        if (from.getConnectionInfo() instanceof UserInfo) {
+            String response = String.format(Protocal.REGISTER_FAIL,
+                    user.getUsername());
+            ServerManager.getInstance().registerFailed(from,
+                    responseMsg(Command.REGISTER_FAILED, response));
+            log.info(response);
+            return;
+        }
+        // connect to root server
         LocalStorage.getInstance().removeUser(user);
         log.info("respnose message lock denied, remove the user "
                 + user.getUsername());
         List<Connection> servers = ServerManager.getInstance()
                 .getAuthenticatedServers();
-        int count = 0;
         synchronized (servers) {
             for (Connection c : servers) {
                 if (!c.equals(from)) {
@@ -87,10 +84,17 @@ public class LockResponse extends AbstractResponse {
                 }
             }
         }
-        return count;
     }
 
-    protected void sendAllowToRoot(Connection root, UserInfo register) {
+    protected void sendAllow(Connection root, UserInfo register) {
+        if (root.getConnectionInfo() instanceof UserInfo) {
+            String response = String.format(Protocal.REGISTER_SUCC,
+                    user.getUsername());
+            ServerManager.getInstance().registerSuccess(root, user,
+                    responseMsg(Command.REGISTER_SUCCESS, response));
+            log.info(response);
+            return;
+        }
         LocalStorage.getInstance().addUser(register);
         root.sendMessage(responseMsg(Command.LOCK_ALLOWED, register,
                 ServerSettings.getLocalInfo()));

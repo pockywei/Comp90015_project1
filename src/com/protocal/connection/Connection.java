@@ -23,40 +23,55 @@ public final class Connection {
     private ConnectionListener listener = null;
     private Record connectionInfo = null;
     // recording each user's lock request.
-    private ConcurrentHashMap<UserInfo, LockState[]> registerMap = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<UserInfo, LockState[]> serverWaitMap = new ConcurrentHashMap<>();
+    private LockState[] clientWaitStates = new LockState[0];
 
     public void setWaitState(int waitCount, UserInfo register) {
-        registerMap.put(register, LockState.initLockStateList(waitCount));
+        LockState[] initStates = LockState.initLockStateList(waitCount);
+        if (connectionInfo instanceof UserInfo) {
+            synchronized (clientWaitStates) {
+                clientWaitStates = initStates;
+                return;
+            }
+        }
+        serverWaitMap.put(register, initStates);
     }
 
     public int reduceCount(boolean isAllow, UserInfo register) {
-        synchronized (registerMap) {
-            LockState[] states = registerMap.get(register);
+        if (connectionInfo instanceof UserInfo) {
+            synchronized (clientWaitStates) {
+                changeStates(clientWaitStates, isAllow);
+                return countWaiting(clientWaitStates);
+            }
+        }
+        synchronized (serverWaitMap) {
+            LockState[] states = serverWaitMap.get(register);
             if (states == null) {
                 return 0;
             }
-            for (int i = 0; i < states.length; i++) {
-                if (states[i] == LockState.WAITTED) {
-                    states[i] = isAllow ? LockState.ALLOWED : LockState.DENIED;
-                    break;
-                }
-            }
+            changeStates(states, isAllow);
+            return countWaiting(serverWaitMap.get(register));
         }
-        // check remained waiting count
-        int waitCount = 0;
-        final LockState[] states = registerMap.get(register);
-        for (LockState s : states) {
-            if (s == LockState.WAITTED)
-                waitCount++;
-        }
-        return waitCount;
     }
 
     public LockState hasFinishLock(UserInfo register) {
-        final LockState[] states = registerMap.get(register);
+        LockState state = null;
+        if (connectionInfo instanceof UserInfo) {
+            return isFinish(clientWaitStates);
+        }
+        final LockState[] states = serverWaitMap.get(register);
         if (states == null) {
             return null;
         }
+        state = isFinish(states);
+        // wait process finish, remove the waiting record
+        if (state != LockState.WAITTED) {
+            serverWaitMap.remove(register);
+        }
+        return state;
+    }
+
+    private LockState isFinish(final LockState[] states) {
         boolean isAllow = true;
         for (LockState s : states) {
             if (s == LockState.WAITTED) {
@@ -66,9 +81,25 @@ public final class Connection {
                 isAllow = false;
             }
         }
-        // wait process finish, remove the waiting record
-        registerMap.remove(register);
         return isAllow ? LockState.ALLOWED : LockState.DENIED;
+    }
+
+    private void changeStates(LockState[] states, boolean isAllow) {
+        for (int i = 0; i < states.length; i++) {
+            if (states[i] == LockState.WAITTED) {
+                states[i] = isAllow ? LockState.ALLOWED : LockState.DENIED;
+                break;
+            }
+        }
+    }
+
+    private int countWaiting(final LockState[] states) {
+        int waitCount = 0;
+        for (LockState s : states) {
+            if (s == LockState.WAITTED)
+                waitCount++;
+        }
+        return waitCount;
     }
 
     public Connection(Socket socket, ConnectionListener listener)

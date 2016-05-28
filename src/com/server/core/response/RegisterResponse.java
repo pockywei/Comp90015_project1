@@ -17,17 +17,17 @@ public class RegisterResponse extends AbstractResponse {
     }
 
     @Override
-    public boolean process(Message msg, Connection root) throws Exception {
+    public boolean process(Message msg, Connection client) throws Exception {
         String response;
         // check local storage
         if (!LocalStorage.getInstance().hasUser(register)) {
-            root.setConnectionInfo(register);
-            return lockBroadCast(root, register);
+            client.setConnectionInfo(register);
+            return lockBroadCast(client, register);
         }
         // the user has registered on the system.
         response = String.format(Protocal.REGISTER_FAIL,
                 register.getUsername());
-        root.sendMessage(responseMsg(Command.REGISTER_FAILED, response));
+        client.sendMessage(responseMsg(Command.REGISTER_FAILED, response));
         log.error(response);
         return true;
     }
@@ -36,13 +36,11 @@ public class RegisterResponse extends AbstractResponse {
         // broadcast a lock request message to other adjacent servers
         int waitCount = ServerManager.getInstance().sendLockRequest(root,
                 register.getUsername(), register.getSecret());
-
         // if it is a leaf node or single root server which has no any other sub
         // servers. then send back success/allowed/denied
         if (waitCount == 0) {
             return unlockMessage(root, register);
         }
-        // wait for lock allow or denied
         root.setWaitState(waitCount, register);
         // record either root connection reference or all client connection
         // references
@@ -54,6 +52,7 @@ public class RegisterResponse extends AbstractResponse {
                     "root server will be waiting for lock response from the adjacent servers");
         }
         else {
+            // root connection wait for lock allow or denied
             ServerManager.getInstance().setRootConnection(root, register);
             log.info(
                     "sub servers record the root connection reference and waiting");
