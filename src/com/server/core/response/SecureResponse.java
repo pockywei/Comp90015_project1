@@ -8,7 +8,6 @@ public class SecureResponse extends AbstractResponse {
     @Override
     public boolean process(Message msg, Connection connection)
             throws Exception {
-
         switch (msg.getCommand()) {
             case AUTHENTICATE:
                 return new AuthenticateResponse(msg.toServerInfo()).process(msg,

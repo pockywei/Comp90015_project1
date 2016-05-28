@@ -41,7 +41,7 @@ public class RegisterResponse extends AbstractResponse {
         if (waitCount == 0) {
             return unlockMessage(root, register);
         }
-        root.setWaitState(waitCount, register);
+        root.setWaitState(waitCount, register.getKey());
         // record either root connection reference or all client connection
         // references
         if (root.getConnectionInfo() instanceof UserInfo) {
@@ -53,7 +53,7 @@ public class RegisterResponse extends AbstractResponse {
         }
         else {
             // root connection wait for lock allow or denied
-            ServerManager.getInstance().setRootConnection(root, register);
+            ServerManager.getInstance().setRootConnection(root, register.getKey());
             log.info(
                     "sub servers record the root connection reference and waiting");
         }

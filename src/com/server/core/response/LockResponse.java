@@ -25,7 +25,7 @@ public class LockResponse extends AbstractResponse {
     @Override
     public boolean process(Message msg, Connection connection)
             throws Exception {
-        Connection root = ServerManager.getInstance().getRootConnection(user);
+        Connection root = ServerManager.getInstance().getRootConnection(user.getKey());
         if (root == null) {
             // top server which is connected by the clients
             root = ServerManager.getInstance().getRegisterConnection(user);
@@ -50,15 +50,15 @@ public class LockResponse extends AbstractResponse {
             return false;
         }
         // server will remove the root connection reference
-        ServerManager.getInstance().removeRootConnection(user);
+        ServerManager.getInstance().removeRootConnection(user.getKey());
         return false;
     }
 
     private LockState getLockState(Connection root, UserInfo user) {
-        int waitCount = root.reduceCount(isAllow, user);
+        int waitCount = root.reduceCount(isAllow, user.getKey());
         log.info("got a lockallowed message for user: " + user.getUsername()
                 + " wait count: " + waitCount);
-        return root.hasFinishLock(user);
+        return root.hasFinishLock(user.getKey());
     }
 
     protected void sendDenied(Connection from, UserInfo user) {

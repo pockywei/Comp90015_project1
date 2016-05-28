@@ -23,17 +23,17 @@ public class ServerManager extends AbstractServer {
 
     private static ServerManager instance = null;
     private List<Connection> registerClientList = new ArrayList<>();
-    private ConcurrentHashMap<UserInfo, Connection> rootMap = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, Connection> rootMap = new ConcurrentHashMap<>();
 
-    public void setRootConnection(Connection root, UserInfo user) {
+    public void setRootConnection(Connection root, String user) {
         rootMap.put(user, root);
     }
 
-    public Connection getRootConnection(UserInfo user) {
+    public Connection getRootConnection(String user) {
         return rootMap.get(user);
     }
 
-    public void removeRootConnection(UserInfo user) {
+    public void removeRootConnection(String user) {
         rootMap.remove(user);
     }
 
