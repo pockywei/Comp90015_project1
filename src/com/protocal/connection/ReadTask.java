@@ -53,6 +53,7 @@ public class ReadTask extends AbstractSocketTask {
         catch (Exception e) {
             log.error("connection " + getSocketAddr()
                     + " closed with exception: " + e);
+            e.printStackTrace();
         }
         finally {
             try {
