@@ -10,7 +10,7 @@ import com.server.core.database.LocalStorage;
 
 public class RegisterResponse extends AbstractResponse {
 
-    private UserInfo register;
+    protected UserInfo register;
 
     public RegisterResponse(UserInfo register) {
         this.register = register;
