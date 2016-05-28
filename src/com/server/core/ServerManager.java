@@ -59,6 +59,8 @@ public class ServerManager extends AbstractServer {
         }
         else {
             log.info("sending an authenticate to remote server");
+            log.info("the current server's secret: "
+                    + ServerSettings.getLocalSecret());
             Connection c = createConnection(
                     new Socket(ServerSettings.getRemoteHost(),
                             ServerSettings.getRemotePort()));
