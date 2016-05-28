@@ -4,23 +4,27 @@ import java.io.IOException;
 import java.net.Socket;
 
 import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLServerSocketFactory;
 
 import com.protocal.connection.inter.SocketListener;
 
-public class SSLServerListener extends AbstractServerListener {
+public class SSLServerAccepter extends AbstractAccepter {
 
     private SSLServerSocket sslServerSocket;
 
-    public SSLServerListener(SocketListener listener, int localPort)
+    public SSLServerAccepter(SocketListener listener, int localPort)
             throws IOException {
         super(listener, localPort);
-        
+        SSLServerSocketFactory factory = (SSLServerSocketFactory) SSLServerSocketFactory
+                .getDefault();
+        sslServerSocket = (SSLServerSocket) factory
+                .createServerSocket(localPort);
         start();
     }
 
     @Override
     protected Socket accept() throws Exception {
-        return null;
+        return sslServerSocket.accept();
     }
 
     @Override

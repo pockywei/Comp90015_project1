@@ -2,6 +2,7 @@ package com.client;
 
 import com.beans.ServerInfo;
 import com.beans.UserInfo;
+import com.protocal.Protocal;
 
 public class UserSettings {
 
@@ -34,6 +35,10 @@ public class UserSettings {
 
     public static int getRemotePort() {
         return remoteServer.getPort();
+    }
+
+    public static int getSSLRemotePort() {
+        return Protocal.getSSLPort(remoteServer.getPort());
     }
 
     public static String getRemoteHost() {

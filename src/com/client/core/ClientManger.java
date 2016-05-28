@@ -1,6 +1,5 @@
 package com.client.core;
 
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +17,8 @@ import com.client.core.request.RegisterRequest;
 import com.protocal.Command;
 import com.protocal.Protocal;
 import com.protocal.connection.Connection;
+import com.protocal.connection.ssl.SSLSettings;
+import com.protocal.connection.ssl.SocketFactory;
 
 public class ClientManger extends BaseManager implements FrameUpdateListener {
 
@@ -54,6 +55,9 @@ public class ClientManger extends BaseManager implements FrameUpdateListener {
         // be stopped.
         // TODO Update solution may be that adds a heart-beat mechanism to keep
         // the socket connection with servers.
+
+        // init ssl info
+        SSLSettings.initClientSSL();
         return true;
     }
 
@@ -65,9 +69,7 @@ public class ClientManger extends BaseManager implements FrameUpdateListener {
             log.debug("waiting for creating connection to remote server: "
                     + UserSettings.getRemoteHost() + ":"
                     + UserSettings.getRemotePort());
-            return connection = new Connection(
-                    new Socket(UserSettings.getRemoteHost(),
-                            UserSettings.getRemotePort()),
+            return connection = new Connection(SocketFactory.getClientSocket(),
                     new ClientResponse(this));
         }
         catch (Exception e) {
@@ -143,7 +145,8 @@ public class ClientManger extends BaseManager implements FrameUpdateListener {
     }
 
     @Override
-    public void actionSuccess(final Command com, final String info, final Object o) {
+    public void actionSuccess(final Command com, final String info,
+            final Object o) {
         synchronized (frameList) {
             for (final FrameUpdateListener frame : frameList) {
                 SwingUtilities.invokeLater(new Runnable() {

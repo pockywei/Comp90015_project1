@@ -79,7 +79,11 @@ public class ServerSettings {
         return port < 0 || port > MAX_PORT_RANGE;
     }
 
-    public static int getSSLPort() {
+    public static int getLocalSSLPort() {
         return Protocal.getSSLPort(localInfo.getPort());
+    }
+
+    public static int getSSLRemotePort() {
+        return Protocal.getSSLPort(remoteInfo.getPort());
     }
 }

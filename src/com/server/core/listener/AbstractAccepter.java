@@ -7,12 +7,12 @@ import com.base.BaseRunnable;
 import com.protocal.connection.inter.SocketListener;
 import com.utils.log.exception.ListeningException;
 
-public abstract class AbstractServerListener extends BaseRunnable {
+public abstract class AbstractAccepter extends BaseRunnable {
 
     private int localPort;
     private SocketListener listener;
 
-    public AbstractServerListener(SocketListener listener, int localPort)
+    public AbstractAccepter(SocketListener listener, int localPort)
             throws IOException {
         this.listener = listener;
         this.localPort = localPort;

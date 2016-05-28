@@ -10,6 +10,7 @@ import com.beans.UserInfo;
 import com.protocal.Protocal;
 import com.protocal.connection.Connection;
 import com.protocal.connection.inter.ConnectionType;
+import com.protocal.connection.ssl.SocketFactory;
 import com.server.ServerSettings;
 import com.server.core.database.LocalStorage;
 import com.server.core.request.ActivityBroadCast;
@@ -60,9 +61,8 @@ public class ServerManager extends AbstractServer {
             log.info("sending an authenticate to remote server");
             log.info("the current server's secret: "
                     + ServerSettings.getLocalSecret());
-            Connection c = createConnection(
-                    new Socket(ServerSettings.getRemoteHost(),
-                            ServerSettings.getRemotePort()));
+            
+            Connection c = createConnection(SocketFactory.getServerSocket());
             // create a new connection to remote server.
             if (new AuthenticateRequest(c).request()) {
                 c.classifyType(ConnectionType.SERVER_CONN,

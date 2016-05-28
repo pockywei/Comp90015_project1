@@ -6,11 +6,11 @@ import java.net.Socket;
 
 import com.protocal.connection.inter.SocketListener;
 
-public class ServerListener extends AbstractServerListener {
+public class ServerAccepter extends AbstractAccepter {
 
     private ServerSocket serverSocket = null;
 
-    public ServerListener(SocketListener listener, int localPort)
+    public ServerAccepter(SocketListener listener, int localPort)
             throws IOException {
         super(listener, localPort);
         serverSocket = new ServerSocket(localPort);

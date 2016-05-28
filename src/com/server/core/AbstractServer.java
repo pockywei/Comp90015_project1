@@ -10,9 +10,12 @@ import com.beans.ServerInfo;
 import com.protocal.connection.Connection;
 import com.protocal.connection.inter.ConnectionListener;
 import com.protocal.connection.inter.SocketListener;
+import com.protocal.connection.ssl.SSLSettings;
 import com.server.ServerSettings;
 import com.server.core.database.LocalStorage;
-import com.server.core.listener.ServerListener;
+import com.server.core.listener.AbstractAccepter;
+import com.server.core.listener.SSLServerAccepter;
+import com.server.core.listener.ServerAccepter;
 import com.server.core.response.SecureResponse;
 import com.utils.UtilHelper;
 import com.utils.log.CrashHandler;
@@ -22,12 +25,21 @@ public abstract class AbstractServer extends BaseManager
 
     private List<Connection> userConnections = new ArrayList<>();
     private List<Connection> serverConnections = new ArrayList<>();
-    private ServerListener listener = null;
+    private AbstractAccepter accepter = null;
+    private AbstractAccepter sslAccepter = null;
 
     public AbstractServer() {
         super();
         try {
-            listener = new ServerListener(this, ServerSettings.getLocalPort());
+            SSLSettings.initServerSSL();
+        }
+        catch (Exception e) {
+            log.fatal("failed to init server SSL base info: " + e);
+            CrashHandler.getInstance().errorExit();
+        }
+        try {
+            accepter = new ServerAccepter(this, ServerSettings.getLocalPort());
+            sslAccepter = new SSLServerAccepter(this, ServerSettings.getLocalSSLPort());
         }
         catch (IOException e) {
             log.fatal("failed to startup a listening thread: " + e);
@@ -55,7 +67,7 @@ public abstract class AbstractServer extends BaseManager
             final String username, final String secret);
 
     public abstract ServerInfo redirect();
-    
+
     public abstract void sendAuthenticate() throws Exception;
 
     public abstract int sendActivityBroadcast(final Connection from,
@@ -153,8 +165,11 @@ public abstract class AbstractServer extends BaseManager
     public void clear() {
         crashBroadcast();
         stop();
-        if (listener != null) {
-            listener.stop();
+        if (accepter != null) {
+            accepter.stop();
+        }
+        if (sslAccepter != null) {
+            sslAccepter.stop();
         }
         LocalStorage.getInstance().clear();
         synchronized (userConnections) {
@@ -177,6 +192,7 @@ public abstract class AbstractServer extends BaseManager
      * 
      */
     private void crashBroadcast() {
+        // TODO
 
     }
 }
