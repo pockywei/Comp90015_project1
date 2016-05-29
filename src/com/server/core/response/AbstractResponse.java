@@ -59,7 +59,7 @@ public abstract class AbstractResponse implements Response {
                         Message.getLockAllowedMsg(user.getUsername(),
                                 user.getSecret(), server.getId(), com))
                                         .getJson();
-            case SECRET_REQUEST:
+            case REAUTHENTICATE_SECRET:
                 return new JsonBuilder(Message.getLocalSecret(com,
                         ServerSettings.getLocalHostname(),
                         ServerSettings.getLocalPort(),
