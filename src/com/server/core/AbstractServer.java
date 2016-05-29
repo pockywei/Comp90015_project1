@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.base.BaseManager;
+import com.base.BaseRunnable;
 import com.beans.ServerInfo;
 import com.protocal.connection.Connection;
 import com.protocal.connection.inter.ConnectionListener;
@@ -19,9 +20,10 @@ import com.server.core.listener.ServerAccepter;
 import com.server.core.response.SecureResponse;
 import com.utils.UtilHelper;
 import com.utils.log.CrashHandler;
+import com.utils.log.CrashListener;
 
 public abstract class AbstractServer extends BaseManager
-        implements SocketListener, ConnectionListener {
+        implements SocketListener, ConnectionListener, CrashListener {
 
     private List<Connection> userConnections = new ArrayList<>();
     private List<Connection> serverConnections = new ArrayList<>();
@@ -39,7 +41,8 @@ public abstract class AbstractServer extends BaseManager
         }
         try {
             accepter = new ServerAccepter(this, ServerSettings.getLocalPort());
-            sslAccepter = new SSLServerAccepter(this, ServerSettings.getLocalSSLPort());
+            sslAccepter = new SSLServerAccepter(this,
+                    ServerSettings.getLocalSSLPort());
         }
         catch (IOException e) {
             log.fatal("failed to startup a listening thread: " + e);
@@ -52,6 +55,7 @@ public abstract class AbstractServer extends BaseManager
     public void initServer() {
         try {
             sendAuthenticate();
+            CrashHandler.getInstance().setCrashListener(this);
         }
         catch (Exception e) {
             log.error("failed to make connection to "
@@ -66,7 +70,7 @@ public abstract class AbstractServer extends BaseManager
     public abstract int sendLockRequest(final Connection from,
             final String username, final String secret);
 
-    public abstract ServerInfo redirect();
+    public abstract ServerInfo redirectClient();
 
     public abstract void sendAuthenticate() throws Exception;
 
@@ -163,7 +167,6 @@ public abstract class AbstractServer extends BaseManager
 
     @Override
     public void clear() {
-        crashBroadcast();
         stop();
         if (accepter != null) {
             accepter.stop();
@@ -191,8 +194,20 @@ public abstract class AbstractServer extends BaseManager
      * messages to the clients and servers
      * 
      */
-    private void crashBroadcast() {
-        // TODO
+    public abstract void crashBroadcast();
 
+    @Override
+    public void crash() {
+        // start a clean up thread 
+        new BaseRunnable() {
+            
+            @Override
+            public boolean runTask() throws Exception {
+                log.debug("Server will be crashed...");
+                crashBroadcast();
+                return false;
+            }
+        }.start();
+        
     }
 }

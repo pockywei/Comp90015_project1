@@ -1,8 +1,11 @@
 package com.server.core.response;
 
+import com.beans.ServerInfo;
+import com.protocal.Command;
 import com.protocal.Message;
 import com.protocal.connection.Connection;
 import com.protocal.connection.inter.ConnectionType;
+import com.server.ServerSettings;
 import com.server.core.ServerManager;
 import com.utils.log.CrashHandler;
 
@@ -44,6 +47,26 @@ public class ServerResponse extends AbstractResponse {
                     // authenticate failed
                     CrashHandler.getInstance().errorExit();
                 }
+                return true;
+            case REAUTHENTICATE:
+                // update remote info
+                ServerInfo updateRemote = msg.toServerInfo();
+                ServerSettings.updateRemoteInfo(updateRemote);
+                log.debug(
+                        " REAUTHENTICATE get new root server info, the server will re-authenticate to the remote address: "
+                                + ServerSettings.getRemoteHost() + ":"
+                                + ServerSettings.getRemotePort());
+                ServerManager.getInstance().sendAuthenticate();
+                return true;
+            case SECRET_REQUEST:
+                log.info(
+                        "get a secret request, prepare to send the local server info.");
+                connection.sendMessage(
+                        responseMsg(Command.REAUTHENTICATE_SECRET));
+                return false;
+            case REAUTHENTICATE_SECRET:
+                // broadcast REAUTHENTICATE message to other servers
+                ServerManager.getInstance().crashNotice(msg.toServerInfo());
                 return true;
             /*
              * response to the client side.

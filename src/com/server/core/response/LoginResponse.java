@@ -33,7 +33,7 @@ public class LoginResponse extends AbstractResponse {
                 // check whether it need to be redirected to another
                 // server.
                 ServerInfo redirectServer = ServerManager.getInstance()
-                        .redirect();
+                        .redirectClient();
                 if (redirectServer != null) {
                     connection.sendMessage(
                             responseMsg(Command.REDIRECT, redirectServer));

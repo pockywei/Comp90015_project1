@@ -25,11 +25,23 @@ public class LockResponse extends AbstractResponse {
     @Override
     public boolean process(Message msg, Connection connection)
             throws Exception {
-        Connection root = ServerManager.getInstance().getRootConnection(user.getKey());
+        Connection root = ServerManager.getInstance()
+                .getRootConnection(user.getKey());
         if (root == null) {
             // top server which is connected by the clients
             root = ServerManager.getInstance().getRegisterConnection(user);
         }
+
+        if (root == null) {
+            // only the case that root send a denied message back
+            log.info("get a lock result message: " + isAllow
+                    + " to the leaf node");
+            if (!isAllow) {
+                sendDenied(connection, user);
+            }
+            return false;
+        }
+
         LockState state = getLockState(root, user);
         // still waiting until the outcome is finished
         if (state == LockState.WAITTED) {
@@ -43,7 +55,12 @@ public class LockResponse extends AbstractResponse {
             sendAllow(root, user);
         }
         else if (state == LockState.DENIED) {
-            sendDenied(root, user);
+            if (root.getConnectionInfo() instanceof UserInfo) {
+                sendRootDenied(root, user, connection);
+            }
+            else {
+                sendDenied(root, user);
+            }
         }
         // register success for the client, close the connection
         if (root.getConnectionInfo() instanceof UserInfo) {
@@ -61,31 +78,6 @@ public class LockResponse extends AbstractResponse {
         return root.hasFinishLock(user.getKey());
     }
 
-    protected void sendDenied(Connection from, UserInfo user) {
-        // connect to client
-        if (from.getConnectionInfo() instanceof UserInfo) {
-            String response = String.format(Protocal.REGISTER_FAIL,
-                    user.getUsername());
-            ServerManager.getInstance().registerFailed(from,
-                    responseMsg(Command.REGISTER_FAILED, response));
-            log.info(response);
-            return;
-        }
-        // connect to root server
-        LocalStorage.getInstance().removeUser(user);
-        log.info("respnose message lock denied, remove the user "
-                + user.getUsername());
-        List<Connection> servers = ServerManager.getInstance()
-                .getAuthenticatedServers();
-        synchronized (servers) {
-            for (Connection c : servers) {
-                if (!c.equals(from)) {
-                    c.sendMessage(responseMsg(Command.LOCK_DENIED, user));
-                }
-            }
-        }
-    }
-
     protected void sendAllow(Connection root, UserInfo register) {
         if (root.getConnectionInfo() instanceof UserInfo) {
             String response = String.format(Protocal.REGISTER_SUCC,
@@ -100,5 +92,36 @@ public class LockResponse extends AbstractResponse {
                 ServerSettings.getLocalInfo()));
         log.info("respnose message lock allow to root. "
                 + register.getUsername());
+    }
+
+    protected void sendDenied(Connection root, UserInfo user) {
+        // connect to root server
+        LocalStorage.getInstance().removeUser(user);
+        log.info("respnose message lock denied, remove the user "
+                + user.getUsername());
+        broadcastDenied(root, user);
+    }
+
+    protected void sendRootDenied(Connection client, UserInfo user,
+            Connection from) {
+        String response = String.format(Protocal.REGISTER_FAIL,
+                user.getUsername());
+        ServerManager.getInstance().registerFailed(client,
+                responseMsg(Command.REGISTER_FAILED, response));
+        log.info(response);
+        // send denied broadcast
+        broadcastDenied(from, user);
+    }
+
+    private void broadcastDenied(Connection from, UserInfo user) {
+        List<Connection> servers = ServerManager.getInstance()
+                .getAuthenticatedServers();
+        synchronized (servers) {
+            for (Connection c : servers) {
+                if (!c.equals(from)) {
+                    c.sendMessage(responseMsg(Command.LOCK_DENIED, user));
+                }
+            }
+        }
     }
 }

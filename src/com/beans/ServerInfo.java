@@ -55,8 +55,9 @@ public class ServerInfo implements Record, Comparable<ServerInfo> {
         return secret;
     }
 
-    public void setSecret(String secret) {
+    public ServerInfo setSecret(String secret) {
         this.secret = secret;
+        return this;
     }
 
     public int getLoad() {

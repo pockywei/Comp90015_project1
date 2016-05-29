@@ -204,6 +204,15 @@ public class Message {
         return msg;
     }
 
+    public static Message getReAuthenticateMsg(String hostname, int port,
+            Command com, String secret) {
+        Message msg = new Message(com);
+        msg.setPort(port);
+        msg.setHostnmae(hostname);
+        msg.setSecret(secret);
+        return msg;
+    }
+
     public static Message getAnnounceMsg(String id, int load, String hostname,
             int port, Command com) {
         Message msg = new Message(com);
@@ -211,6 +220,15 @@ public class Message {
         msg.setHostnmae(hostname);
         msg.setLoad(load);
         msg.setId(id);
+        return msg;
+    }
+
+    public static Message getLocalSecret(Command com, String host, int port,
+            String secret) {
+        Message msg = new Message(com);
+        msg.setHostnmae(host);
+        msg.setPort(port);
+        msg.setSecret(secret);
         return msg;
     }
 

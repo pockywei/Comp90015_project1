@@ -49,27 +49,21 @@ public enum Command {
     LOCK_DENIED,
 
     LOCK_ALLOWED,
-    
+
+    REAUTHENTICATE,
+
+    SECRET_REQUEST,
+
+    REAUTHENTICATE_SECRET,
+
     /*
      * UI action
      */
     CONNECTION_ERROR;
 
-    private static final List<Command> USER_REQUEST = new ArrayList<>();
-    private static final List<Command> SERVER_REQUEST = new ArrayList<>();
     private static final Map<String, Command> map = new HashMap<>();
 
     static {
-        USER_REQUEST.add(LOGIN);
-        USER_REQUEST.add(LOGOUT);
-        USER_REQUEST.add(ACTIVITY_MESSAGE);
-        USER_REQUEST.add(REGISTER);
-
-        SERVER_REQUEST.add(AUTHENTICATE);
-        SERVER_REQUEST.add(SERVER_ANNOUNCE);
-        SERVER_REQUEST.add(ACTIVITY_BROADCAST);
-        SERVER_REQUEST.add(LOCK_REQUEST);
-
         map.put("INVALID_MESSAGE", INVALID_MESSAGE);
         map.put("AUTHENTICATE", AUTHENTICATE);
         map.put("AUTHENTICATION_FAIL", AUTHENTICATION_FAIL);
@@ -87,14 +81,9 @@ public enum Command {
         map.put("LOCK_REQUEST", LOCK_REQUEST);
         map.put("LOCK_DENIED", LOCK_DENIED);
         map.put("LOCK_ALLOWED", LOCK_ALLOWED);
-    }
-
-    public static boolean isClientRequest(Command com) {
-        return USER_REQUEST.contains(com);
-    }
-
-    public static boolean isServerRequest(Command com) {
-        return SERVER_REQUEST.contains(com);
+        map.put("REAUTHENTICATE", REAUTHENTICATE);
+        map.put("SECRET_REQUEST", SECRET_REQUEST);
+        map.put("REAUTHENTICATE_SECRET", REAUTHENTICATE_SECRET);
     }
 
     public static Command getCommand(String command) {

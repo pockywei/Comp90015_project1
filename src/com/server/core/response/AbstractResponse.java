@@ -9,6 +9,7 @@ import com.protocal.connection.Connection;
 import com.protocal.connection.inter.Response;
 import com.protocal.json.JsonBuilder;
 import com.protocal.json.ParserJson;
+import com.server.ServerSettings;
 import com.utils.log.Log;
 
 public abstract class AbstractResponse implements Response {
@@ -58,6 +59,11 @@ public abstract class AbstractResponse implements Response {
                         Message.getLockAllowedMsg(user.getUsername(),
                                 user.getSecret(), server.getId(), com))
                                         .getJson();
+            case SECRET_REQUEST:
+                return new JsonBuilder(Message.getLocalSecret(com,
+                        ServerSettings.getLocalHostname(),
+                        ServerSettings.getLocalPort(),
+                        ServerSettings.getLocalSecret())).getJson();
             default:
                 break;
         }
@@ -82,5 +88,9 @@ public abstract class AbstractResponse implements Response {
     protected String responseMsg(Command com, UserInfo user,
             ServerInfo server) {
         return responseMsg(com, null, user, server);
+    }
+
+    protected String responseMsg(Command com) {
+        return responseMsg(com, null, null, null);
     }
 }

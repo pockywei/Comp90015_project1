@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.net.ssl.SSLSocket;
+
 import com.beans.Record;
 import com.beans.UserInfo;
 import com.protocal.connection.inter.ConnectionListener;
@@ -22,6 +24,7 @@ public final class Connection {
     private ConnectionType type = null;
     private ConnectionListener listener = null;
     private Record connectionInfo = null;
+    private boolean isRoot = false;
     // recording each user's lock request.
     private ConcurrentHashMap<String, LockState[]> serverWaitMap = new ConcurrentHashMap<>();
     private LockState[] clientWaitStates = new LockState[0];
@@ -37,8 +40,14 @@ public final class Connection {
 
     public Connection(Socket socket, Response response,
             ConnectionListener listener) throws Exception {
+        this(socket, response, listener, false);
+    }
+
+    public Connection(Socket socket, Response response,
+            ConnectionListener listener, boolean isRoot) throws Exception {
         this.socket = socket;
         this.listener = listener;
+        this.isRoot = isRoot;
         connect(response);
     }
 
@@ -129,6 +138,10 @@ public final class Connection {
         }
     }
 
+    public boolean isRoot() {
+        return isRoot;
+    }
+
     public final Record getConnectionInfo() {
         return connectionInfo;
     }
@@ -161,7 +174,14 @@ public final class Connection {
         Connection c = (Connection) o;
         return getSocketAddr().equals(c.getSocketAddr());
     }
-    
+
+    public boolean isSSLConnection() {
+        if (socket instanceof SSLSocket) {
+            return true;
+        }
+        return false;
+    }
+
     public void setWaitState(int waitCount, String register) {
         LockState[] initStates = LockState.initLockStateList(waitCount);
         if (connectionInfo instanceof UserInfo) {

@@ -10,10 +10,15 @@ import com.base.BaseRunnable;
 public class CrashHandler implements UncaughtExceptionHandler {
     private static final Log log = Log.getInstance();
     private static CrashHandler instance = null;
-    private List<BaseManager> managerList;
-    private boolean isExit = false;
     private static final String OUTPUT_CRASH = "System shutdown by the exception!"
             + FileUtils.NEW_LINE;
+    private List<BaseManager> managerList;
+    private boolean isExit = false;
+    private CrashListener crashListener;
+
+    public void setCrashListener(CrashListener crashListener) {
+        this.crashListener = crashListener;
+    }
 
     public synchronized static CrashHandler getInstance() {
         if (instance == null) {
@@ -36,6 +41,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
                 managerList.add(ba);
             }
         }
+        testCrash();
     }
 
     @Override
@@ -47,7 +53,12 @@ public class CrashHandler implements UncaughtExceptionHandler {
             br.append(e.toString() + FileUtils.NEW_LINE);
         }
         log.error(br.toString());
-        exit(-1);
+        if (crashListener != null) {
+            crashListener.crash();
+        }
+        else {
+            errorExit();
+        }
     }
 
     /**
@@ -61,6 +72,8 @@ public class CrashHandler implements UncaughtExceptionHandler {
             @Override
             public boolean runTask() throws Exception {
                 isExit = true;
+                // wait for sending crash broadcast.
+                Thread.sleep(3000);
                 // Received Exception, clear all system resource.
                 synchronized (managerList) {
                     for (BaseManager ba : managerList) {
@@ -83,5 +96,22 @@ public class CrashHandler implements UncaughtExceptionHandler {
 
     public void errorExit() {
         exit(-1);
+    }
+
+    private void testCrash() {
+//        new Thread(new Runnable() {
+//
+//            @Override
+//            public void run() {
+//                try {
+//                    Thread.sleep(60 * 1000);
+//                    log.debug("test server crash-----------------------");
+//                    throw new NullPointerException();
+//                }
+//                catch (InterruptedException e) {
+//
+//                }
+//            }
+//        }).start();
     }
 }

@@ -86,4 +86,15 @@ public class ServerSettings {
     public static int getSSLRemotePort() {
         return Protocal.getSSLPort(remoteInfo.getPort());
     }
+
+    public static boolean isRootServer() {
+        return UtilHelper.isEmptyStr(ServerSettings.getRemoteHost())
+                || ServerSettings.getRemotePort() == 0;
+    }
+
+    public static void updateRemoteInfo(ServerInfo remote) {
+        ServerSettings.remoteInfo.setPort(remote.getPort());
+        ServerSettings.remoteInfo.setHostname(remote.getHostname());
+        ServerSettings.remoteInfo.setSecret(remote.getSecret());
+    }
 }

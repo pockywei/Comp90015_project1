@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.beans.ServerInfo;
 import com.beans.UserInfo;
+import com.protocal.Command;
 import com.protocal.Protocal;
 import com.protocal.connection.Connection;
 import com.protocal.connection.inter.ConnectionType;
@@ -17,26 +18,16 @@ import com.server.core.request.ActivityBroadCast;
 import com.server.core.request.AnnounceRequest;
 import com.server.core.request.AuthenticateRequest;
 import com.server.core.request.LockRequest;
+import com.server.core.request.RedirectRequest;
+import com.server.core.request.SecretRequest;
 import com.server.core.response.ServerResponse;
-import com.utils.UtilHelper;
+import com.utils.log.CrashHandler;
 
 public class ServerManager extends AbstractServer {
 
     private static ServerManager instance = null;
-    private List<Connection> registerClientList = new ArrayList<>();
-    private ConcurrentHashMap<String, Connection> rootMap = new ConcurrentHashMap<>();
-
-    public void setRootConnection(Connection root, String user) {
-        rootMap.put(user, root);
-    }
-
-    public Connection getRootConnection(String user) {
-        return rootMap.get(user);
-    }
-
-    public void removeRootConnection(String user) {
-        rootMap.remove(user);
-    }
+    private List<Connection> clientCache = new ArrayList<>();
+    private ConcurrentHashMap<String, Connection> serverCache = new ConcurrentHashMap<>();
 
     public synchronized static ServerManager getInstance() {
         if (instance == null) {
@@ -45,24 +36,42 @@ public class ServerManager extends AbstractServer {
         return instance;
     }
 
-    private Connection createConnection(Socket s) throws Exception {
-        return new Connection(s, new ServerResponse(), this);
+    public void setRootConnection(Connection root, String user) {
+        serverCache.put(user, root);
+    }
+
+    public Connection getRootConnection(String user) {
+        return serverCache.get(user);
+    }
+
+    public void removeRootConnection(String user) {
+        serverCache.remove(user);
+    }
+
+    public Connection createConnection(Socket s) throws Exception {
+        return createConnection(s, false);
+    }
+
+    public Connection createConnection(Socket s, boolean isRoot)
+            throws Exception {
+        return new Connection(s, new ServerResponse(), this, isRoot);
     }
 
     @Override
     public void sendAuthenticate() throws Exception {
         // no remote server info. start as a root server.
-        if (UtilHelper.isEmptyStr(ServerSettings.getRemoteHost())
-                || ServerSettings.getRemotePort() == 0) {
-            log.info("the current server will start alone, here by the secret: "
-                    + ServerSettings.getLocalSecret());
+        if (ServerSettings.isRootServer()) {
+            log.info(
+                    "the current server will start alone as a root server, here by the secret: "
+                            + ServerSettings.getLocalSecret());
         }
         else {
             log.info("sending an authenticate to remote server");
             log.info("the current server's secret: "
                     + ServerSettings.getLocalSecret());
-            
-            Connection c = createConnection(SocketFactory.getServerSocket());
+
+            Connection c = createConnection(SocketFactory.getServerSocket(),
+                    true);
             // create a new connection to remote server.
             if (new AuthenticateRequest(c).request()) {
                 c.classifyType(ConnectionType.SERVER_CONN,
@@ -74,7 +83,7 @@ public class ServerManager extends AbstractServer {
     }
 
     @Override
-    public ServerInfo redirect() {
+    public ServerInfo redirectClient() {
         // Find which server should be connected to.
         List<Connection> connections = getAuthenticatedServers();
         synchronized (connections) {
@@ -87,6 +96,30 @@ public class ServerManager extends AbstractServer {
             }
         }
         return null;
+    }
+
+    /**
+     * Top root server will pick one of the adjacent servers as a new top root
+     * server.
+     * 
+     * @return
+     */
+    public ServerInfo redirectServer() {
+        List<Connection> connections = getAuthenticatedServers();
+        ServerInfo server = null;
+        synchronized (connections) {
+            for (Connection c : connections) {
+                // only ssl server can be the reauthenticated target
+                if (c.isSSLConnection()) {
+                    server = (ServerInfo) c.getConnectionInfo();
+                    if (Protocal.isRedirect(ServerSettings.getLocalLoad(),
+                            server.getLoad())) {
+                        return server;
+                    }
+                }
+            }
+        }
+        return server;
     }
 
     /**
@@ -168,21 +201,21 @@ public class ServerManager extends AbstractServer {
             String responseMsg) {
         LocalStorage.getInstance().addUser(user);
         c.sendMessage(responseMsg);
-        synchronized (registerClientList) {
-            registerClientList.remove(c);
+        synchronized (clientCache) {
+            clientCache.remove(c);
         }
     }
 
     public void registerFailed(Connection c, String responseMsg) {
         c.sendMessage(responseMsg);
-        synchronized (registerClientList) {
-            registerClientList.remove(c);
+        synchronized (clientCache) {
+            clientCache.remove(c);
         }
     }
 
     public Connection getRegisterConnection(UserInfo user) {
-        synchronized (registerClientList) {
-            for (Connection c : registerClientList) {
+        synchronized (clientCache) {
+            for (Connection c : clientCache) {
                 if (user.getKey().equals(c.getConnectionInfo().getKey())) {
                     return c;
                 }
@@ -192,8 +225,86 @@ public class ServerManager extends AbstractServer {
     }
 
     public void addRegisterConnection(Connection registerCon) {
-        synchronized (registerClientList) {
-            registerClientList.add(registerCon);
+        synchronized (clientCache) {
+            clientCache.add(registerCon);
         }
+    }
+
+    @Override
+    public void crashBroadcast() {
+        // the current server will crash and it will process all logged clients
+        // and all adjacent servers to redirect to another server
+        log.info(
+                "the server will start to send a broadcase for gracefully quit");
+        if (!ServerSettings.isRootServer()) {
+            // the server will redirect all connection to its root server
+            ServerInfo remoteRoot = new ServerInfo()
+                    .setHostname(ServerSettings.getRemoteHost())
+                    .setPort(ServerSettings.getRemotePort())
+                    .setSecret(ServerSettings.getRemoteSecret());
+            // close the root connection
+            List<Connection> servers = getAuthenticatedServers();
+            synchronized (servers) {
+                for (Connection c : servers) {
+                    if (c.isRoot()) {
+                        // close the connection with the new root server to make
+                        // sure that the new root will not redirect request to
+                        // the current server.
+                        c.close();
+                        break;
+                    }
+                }
+            }
+            crashNotice(remoteRoot);
+            return;
+        }
+
+        // the current crashed server is the top root server
+        ServerInfo redirectInfo = redirectServer();
+        if (redirectInfo == null) {
+            // TODO compatibility issue, the redirect process can not be able to
+            // do the broadcost message.
+            return;
+        }
+        List<Connection> servers = getAuthenticatedServers();
+        Connection redirect = null;
+        synchronized (servers) {
+            for (Connection c : servers) {
+                if (redirectInfo.getKey()
+                        .equals(c.getConnectionInfo().getKey())) {
+                    redirect = c;
+                    break;
+                }
+            }
+        }
+        if (redirect != null) {
+            // request the target server's secret
+            new SecretRequest(redirect).request();
+        }
+    }
+
+    public void crashNotice(ServerInfo s) {
+        // redirect all client to the new root server
+        log.debug("redirect all client to the new root server: "
+                + s.getHostname() + ":" + s.getPort());
+        List<Connection> clients = getLoggedUserList();
+        synchronized (clients) {
+            for (Connection c : clients) {
+                new RedirectRequest(c, s, Command.REDIRECT).request();
+            }
+        }
+
+        log.debug("redirect other server to the new root server: "
+                + s.getHostname() + ":" + s.getPort());
+        // reauthenticate all other servers to the new root server
+        List<Connection> servers = getAuthenticatedServers();
+        synchronized (servers) {
+            for (Connection c : servers) {
+                new RedirectRequest(c, s, Command.REAUTHENTICATE).request();
+            }
+        }
+
+        // System exit
+        CrashHandler.getInstance().errorExit();
     }
 }

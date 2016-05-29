@@ -15,30 +15,36 @@ public class SSLSettings {
     private static final String password = "123456";
 
     public static void initClientSSL() throws Exception {
-        KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
-        trustStore.load(SSLSettings.class.getResourceAsStream(key),
-                null);
-
-        TrustManagerFactory trustFactory = TrustManagerFactory
-                .getInstance(TrustManagerFactory.getDefaultAlgorithm());
-        trustFactory.init(trustStore);
-        
-        TrustManager[] trustManagers = trustFactory.getTrustManagers();
-        defaultSSL(null, trustManagers);
+        defaultSSL(null, getTM());
     }
 
     public static void initServerSSL() throws Exception {
+        defaultSSL(getKM(), getTM());
+    }
+
+    private static KeyManager[] getKM() throws Exception {
         KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
         char[] keyPassword = password.toCharArray();
-        keyStore.load(SSLSettings.class.getResourceAsStream(key),
-                keyPassword);
+        keyStore.load(SSLSettings.class.getResourceAsStream(key), keyPassword);
 
         KeyManagerFactory keyFactory = KeyManagerFactory
                 .getInstance(KeyManagerFactory.getDefaultAlgorithm());
         keyFactory.init(keyStore, keyPassword);
 
         KeyManager[] keyManagers = keyFactory.getKeyManagers();
-        defaultSSL(keyManagers, null);
+        return keyManagers;
+    }
+
+    private static TrustManager[] getTM() throws Exception {
+        KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
+        trustStore.load(SSLSettings.class.getResourceAsStream(key), null);
+
+        TrustManagerFactory trustFactory = TrustManagerFactory
+                .getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        trustFactory.init(trustStore);
+
+        TrustManager[] trustManagers = trustFactory.getTrustManagers();
+        return trustManagers;
     }
 
     private static void defaultSSL(KeyManager[] km, TrustManager[] tm)
