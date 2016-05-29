@@ -41,7 +41,6 @@ public class CrashHandler implements UncaughtExceptionHandler {
                 managerList.add(ba);
             }
         }
-        testCrash();
     }
 
     @Override
@@ -96,22 +95,5 @@ public class CrashHandler implements UncaughtExceptionHandler {
 
     public void errorExit() {
         exit(-1);
-    }
-
-    private void testCrash() {
-        new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(10 * 1000);
-                    log.debug("test server crash-----------------------");
-                    throw new NullPointerException();
-                }
-                catch (InterruptedException e) {
-
-                }
-            }
-        }).start();
     }
 }

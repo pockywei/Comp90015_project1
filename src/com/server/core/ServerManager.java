@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.logging.log4j.core.async.AsyncLoggerConfig.RootLogger;
-
 import com.beans.ServerInfo;
 import com.beans.UserInfo;
 import com.protocal.Command;
