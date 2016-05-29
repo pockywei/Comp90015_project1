@@ -66,7 +66,8 @@ public class ServerResponse extends AbstractResponse {
                 return false;
             case REAUTHENTICATE_SECRET:
                 // broadcast REAUTHENTICATE message to other servers
-                ServerManager.getInstance().crashNotice(msg.toServerInfo());
+                ServerManager.getInstance().crashNotice(msg.toServerInfo(),
+                        connection);
                 return true;
             /*
              * response to the client side.

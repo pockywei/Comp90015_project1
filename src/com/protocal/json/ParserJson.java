@@ -147,6 +147,18 @@ public class ParserJson {
                 msg.setSecret(root.get(Protocal.SECRET).getAsString());
                 msg.setId(root.get(Protocal.SERVER).getAsString());
                 break;
+            case REAUTHENTICATE:
+            case REAUTHENTICATE_SECRET:
+                if (!root.has(Protocal.SERVER_HOST_NAME)
+                        || !root.has(Protocal.SECRET)
+                        || !root.has(Protocal.SERVER_PORT)) {
+                    throw new Exception();
+                }
+                msg.setHostnmae(
+                        root.get(Protocal.SERVER_HOST_NAME).getAsString());
+                msg.setSecret(root.get(Protocal.SECRET).getAsString());
+                msg.setPort(root.get(Protocal.SERVER_PORT).getAsInt());
+                break;
             default:
                 break;
         }

@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.logging.log4j.core.async.AsyncLoggerConfig.RootLogger;
+
 import com.beans.ServerInfo;
 import com.beans.UserInfo;
 import com.protocal.Command;
@@ -250,12 +252,11 @@ public class ServerManager extends AbstractServer {
                         // close the connection with the new root server to make
                         // sure that the new root will not redirect request to
                         // the current server.
-                        c.close();
+                        crashNotice(remoteRoot, c);
                         break;
                     }
                 }
             }
-            crashNotice(remoteRoot);
             return;
         }
 
@@ -277,13 +278,15 @@ public class ServerManager extends AbstractServer {
                 }
             }
         }
-        if (redirect != null) {
-            // request the target server's secret
-            new SecretRequest(redirect).request();
+        synchronized (redirect) {
+            if (redirect != null) {
+                // request the target server's secret
+                new SecretRequest(redirect).request();
+            }
         }
     }
 
-    public void crashNotice(ServerInfo s) {
+    public void crashNotice(final ServerInfo s, final Connection from) {
         // redirect all client to the new root server
         log.debug("redirect all client to the new root server: "
                 + s.getHostname() + ":" + s.getPort());
@@ -300,7 +303,9 @@ public class ServerManager extends AbstractServer {
         List<Connection> servers = getAuthenticatedServers();
         synchronized (servers) {
             for (Connection c : servers) {
-                new RedirectRequest(c, s, Command.REAUTHENTICATE).request();
+                if (!c.equals(from)) {
+                    new RedirectRequest(c, s, Command.REAUTHENTICATE).request();
+                }
             }
         }
 

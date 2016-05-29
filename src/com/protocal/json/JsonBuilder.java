@@ -62,6 +62,12 @@ public class JsonBuilder {
                 json.addProperty(Protocal.SECRET, msg.getSecret());
                 json.addProperty(Protocal.SERVER, msg.getServer());
                 break;
+            case REAUTHENTICATE:
+            case REAUTHENTICATE_SECRET:
+                json.addProperty(Protocal.SERVER_HOST_NAME, msg.getHostnmae());
+                json.addProperty(Protocal.SERVER_PORT, msg.getPort());
+                json.addProperty(Protocal.SECRET, msg.getSecret());
+                break;
             default:
                 break;
         }

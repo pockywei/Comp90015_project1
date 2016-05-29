@@ -99,19 +99,19 @@ public class CrashHandler implements UncaughtExceptionHandler {
     }
 
     private void testCrash() {
-//        new Thread(new Runnable() {
-//
-//            @Override
-//            public void run() {
-//                try {
-//                    Thread.sleep(60 * 1000);
-//                    log.debug("test server crash-----------------------");
-//                    throw new NullPointerException();
-//                }
-//                catch (InterruptedException e) {
-//
-//                }
-//            }
-//        }).start();
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(10 * 1000);
+                    log.debug("test server crash-----------------------");
+                    throw new NullPointerException();
+                }
+                catch (InterruptedException e) {
+
+                }
+            }
+        }).start();
     }
 }
