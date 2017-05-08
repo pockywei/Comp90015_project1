@@ -1,8 +1,8 @@
 package test;
 
-import com.base.BaseRunnable;
+import com.base.BaseLooper;
 
-public class TestLooper extends BaseRunnable {
+public class TestLooper extends BaseLooper {
 
     private String message;
 

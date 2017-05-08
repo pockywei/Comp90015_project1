@@ -2,7 +2,7 @@ package com.base;
 
 import com.utils.log.CrashHandler;
 
-public abstract class BaseManager extends BaseRunnable {
+public abstract class BaseManager extends BaseLooper {
 
     public BaseManager() {
         CrashHandler.getInstance().addManager(this);

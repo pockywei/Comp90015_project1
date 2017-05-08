@@ -33,7 +33,7 @@ public class ClientResponse implements Response {
             case LOGIN_FAILED:
             case REGISTER_FAILED:
                 // for showing dialog
-                Thread.sleep(500);
+//                Thread.sleep(500);
                 if (listener != null) {
                     listener.actionFailed(msg.getCommand(), info);
                 }

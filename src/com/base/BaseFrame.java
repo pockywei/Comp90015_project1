@@ -10,7 +10,6 @@ import javax.swing.JFrame;
 
 import com.client.core.ClientManger;
 import com.client.core.inter.FrameUpdateListener;
-import com.client.ui.ActionDialog;
 import com.utils.log.CrashHandler;
 import com.utils.log.Log;
 
@@ -20,7 +19,7 @@ public abstract class BaseFrame extends JFrame
     private static final long serialVersionUID = 1L;
     private static final String TITLE = "ActivityStreamer Text I/O by Eyebrow";
     protected static final Log log = Log.getInstance();
-    private ActionDialog progressBar = new ActionDialog(BaseFrame.this);
+    // private ActionDialog progressBar = new ActionDialog(BaseFrame.this);
     protected boolean isClose = false;
 
     public abstract void initView();
@@ -71,26 +70,26 @@ public abstract class BaseFrame extends JFrame
 
     public void close() {
         isClose = true;
-        if (progressBar != null) {
-            progressBar.close();
-            progressBar = null;
-        }
+        // if (progressBar != null) {
+        // progressBar.close();
+        // progressBar = null;
+        // }
         setVisible(false);
         dispose();
     }
 
     public void showProgress() {
-        if (!isClose && BaseFrame.this.isVisible() && progressBar != null
-                && !progressBar.isVisible()) {
-            log.info("show progress bar");
-            progressBar.setVisible(true);
-        }
+        // if (!isClose && BaseFrame.this.isVisible() && progressBar != null
+        // && !progressBar.isVisible()) {
+        // log.info("show progress bar");
+        // progressBar.setVisible(true);
+        // }
     }
 
     public void closeProgress() {
-        if (!isClose && BaseFrame.this.isVisible() && progressBar != null) {
-            progressBar.setVisible(false);
-            log.info("close progress bar");
-        }
+        // if (!isClose && BaseFrame.this.isVisible() && progressBar != null) {
+        // progressBar.setVisible(false);
+        // log.info("close progress bar");
+        // }
     }
 }

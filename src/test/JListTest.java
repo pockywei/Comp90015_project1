@@ -28,6 +28,7 @@ import com.utils.UtilHelper;
 
 public class JListTest extends JFrame {
 
+    private static final long serialVersionUID = 1L;
     static JListTest myFrame;
     static int countMe = 0;
 
@@ -84,7 +85,7 @@ public class JListTest extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                String message = UtilHelper.toHTML(getMessage());
+//                String message = UtilHelper.toHTML(getMessage());
                 activities.add(new Activity("user : " + activities.size(),
                         longStr, true));
                 adapter.update();
@@ -128,6 +129,7 @@ public class JListTest extends JFrame {
 
 class ListViewAdapter extends DefaultListCellRenderer {
 
+    private static final long serialVersionUID = 1L;
     final JPanel leftView = new JPanel(new BorderLayout());
     final JPanel leftProfileView = new JPanel(new BorderLayout());
     final JLabel leftNameView = new JLabel();
@@ -174,6 +176,7 @@ class ListViewAdapter extends DefaultListCellRenderer {
 
 class ListDataAdapter extends DefaultListModel<Activity> {
 
+    private static final long serialVersionUID = 1L;
     private List<Activity> activities;
 
     public ListDataAdapter(List<Activity> activities) {

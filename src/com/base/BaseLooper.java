@@ -4,11 +4,11 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import com.utils.log.Log;
 
-public abstract class BaseRunnable implements Runnable {
+public abstract class BaseLooper implements Runnable {
 
     protected static final Log log = Log.getInstance();
     protected boolean stop = true;
-    private LinkedBlockingQueue<BaseRunnable> queue = new LinkedBlockingQueue<>();
+    private LinkedBlockingQueue<BaseLooper> queue = new LinkedBlockingQueue<>();
 
     @Override
     public void run() {
@@ -54,7 +54,7 @@ public abstract class BaseRunnable implements Runnable {
     public void stop() {
         if (!stop) {
             stop = true;
-            post(new StopRunnable());
+            post(new StopLoop());
             log.debug(this.getClass().getSimpleName()
                     + " task has been stopped.");
         }
@@ -64,14 +64,25 @@ public abstract class BaseRunnable implements Runnable {
         start(this);
     }
 
-    protected void start(BaseRunnable task) {
+    protected void start(BaseLooper task) {
         post(task);
         // Starting a thread or adding this runnable into a thread-pool.
         new Thread(this).start();
     }
 
-    protected void post(BaseRunnable runnable) {
+    protected void post(BaseLooper runnable) {
         runnable.preTask();
         queue.offer(runnable);
+    }
+    
+    public class StopLoop extends BaseLooper {
+
+        @Override
+        public boolean runTask() throws Exception {
+            // do nothing, just for gracefully interrupt the thread with a message
+            // queue.
+            return false;
+        }
+
     }
 }

@@ -3,7 +3,7 @@ package com.protocal.connection;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-import com.base.BaseRunnable;
+import com.base.BaseLooper;
 import com.utils.UtilHelper;
 
 public class WriteTask extends AbstractSocketTask {
@@ -43,7 +43,7 @@ public class WriteTask extends AbstractSocketTask {
         post(new SendTask(request));
     }
 
-    private class SendTask extends BaseRunnable {
+    private class SendTask extends BaseLooper {
 
         private String request;
 
