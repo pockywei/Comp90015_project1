@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.base.BaseManager;
-import com.base.BaseLooper;
+import com.base.BaseRunnable;
 import com.beans.ServerInfo;
 import com.protocal.connection.Connection;
 import com.protocal.connection.inter.ConnectionListener;
@@ -199,7 +199,7 @@ public abstract class AbstractServer extends BaseManager
     @Override
     public void crash() {
         // start a clean up thread 
-        new BaseLooper() {
+        new BaseRunnable() {
             
             @Override
             public boolean runTask() throws Exception {

@@ -3,11 +3,11 @@ package com.server.core.listener;
 import java.io.IOException;
 import java.net.Socket;
 
-import com.base.BaseLooper;
+import com.base.BaseRunnable;
 import com.protocal.connection.inter.SocketListener;
 import com.utils.log.exception.ListeningException;
 
-public abstract class AbstractAccepter extends BaseLooper {
+public abstract class AbstractAccepter extends BaseRunnable {
 
     private int localPort;
     private SocketListener listener;

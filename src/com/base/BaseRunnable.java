@@ -4,11 +4,11 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import com.utils.log.Log;
 
-public abstract class BaseLooper implements Runnable {
+public abstract class BaseRunnable implements Runnable {
 
     protected static final Log log = Log.getInstance();
     protected boolean stop = true;
-    private LinkedBlockingQueue<BaseLooper> queue = new LinkedBlockingQueue<>();
+    private LinkedBlockingQueue<BaseRunnable> queue = new LinkedBlockingQueue<>();
 
     @Override
     public void run() {
@@ -64,18 +64,18 @@ public abstract class BaseLooper implements Runnable {
         start(this);
     }
 
-    protected void start(BaseLooper task) {
+    protected void start(BaseRunnable task) {
         post(task);
         // Starting a thread or adding this runnable into a thread-pool.
         new Thread(this).start();
     }
 
-    protected void post(BaseLooper runnable) {
+    protected void post(BaseRunnable runnable) {
         runnable.preTask();
         queue.offer(runnable);
     }
     
-    public class StopLoop extends BaseLooper {
+    public class StopLoop extends BaseRunnable {
 
         @Override
         public boolean runTask() throws Exception {

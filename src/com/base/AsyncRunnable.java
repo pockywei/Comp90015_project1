@@ -2,7 +2,7 @@ package com.base;
 
 import javax.swing.SwingUtilities;
 
-public abstract class AsyncRunnable extends BaseLooper {
+public abstract class AsyncRunnable extends BaseRunnable {
 
     private Callback callback;
 

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.base.BaseManager;
-import com.base.BaseLooper;
+import com.base.BaseRunnable;
 
 public class CrashHandler implements UncaughtExceptionHandler {
     private static final Log log = Log.getInstance();
@@ -66,7 +66,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
      * @param arg
      */
     private void exit(final int arg) {
-        new BaseLooper() {
+        new BaseRunnable() {
 
             @Override
             public boolean runTask() throws Exception {

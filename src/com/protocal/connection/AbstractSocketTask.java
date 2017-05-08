@@ -6,10 +6,10 @@ import java.net.Socket;
 
 import javax.net.ssl.SSLSocket;
 
-import com.base.BaseLooper;
+import com.base.BaseRunnable;
 import com.utils.UtilHelper;
 
-public abstract class AbstractSocketTask extends BaseLooper {
+public abstract class AbstractSocketTask extends BaseRunnable {
 
     private Socket socket;
     protected Connection connection = null;
